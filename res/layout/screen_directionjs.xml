@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainlayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true" >
+
+        <org.doubango.imsdroid.map.GameView
+            android:id="@+id/gameView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_joystick"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/joystickbg" >
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/runjs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_above="@+id/hangupbtn"
+	    android:layout_toRightOf="@+id/linearLayout1"
+        android:text="run" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:id="@+id/layout_robot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000" >
+
+            <com.capricorn.ArcMenu
+                android:id="@+id/arc_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </com.capricorn.ArcMenu>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_seekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="258dp"
+            android:background="#00000000" >
+
+            <org.doubango.imsdroid.Screens.ScreenUIVerticalSeekBar
+                android:id="@+id/robotseekbar"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_centerHorizontal="true"
+                android:progressDrawable="@drawable/seekbar_progress"
+                android:thumb="@drawable/seekbar_thumb" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotbody" />
+
+            <ImageView
+                android:id="@+id/bluetooth_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotbody_ble"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/wifi_status1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotwifi_status1"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/wifi_status2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotwifi_status2"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/wifi_status3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotwifi_status3"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/wifi_status4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/robotwifi_status4"
+                android:visibility="invisible" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/getAxisBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_above="@+id/runjs"
+	    android:layout_toRightOf="@+id/linearLayout1"
+        android:text="GetAxis" />
+
+	<TextView
+        android:id="@+id/Axis_show_X"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_above="@+id/getAxisBtn"
+	    android:layout_toRightOf="@+id/linearLayout1"
+        android:text="Axis_show_Y" />
+
+    <TextView
+        android:id="@+id/Axis_show_Y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="36dp"
+		android:layout_above="@+id/getAxisBtn"
+        android:layout_toRightOf="@+id/Axis_show_X"
+        android:text="Axis_show_X" />
+
+	<Button
+	    android:id="@+id/hangupbtn"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/layout_joystick"
+	    android:layout_toRightOf="@+id/linearLayout1"
+	    android:text="hangup" />
+
+</RelativeLayout>
