@@ -268,7 +268,7 @@ public class GameView extends View {
 				fixWidthMapData = fixHeightMapData = 5;
 
 				requestLayout();
-				drawZoomMap(event);
+				//drawZoomMap(event);
 
 			}
 		}
