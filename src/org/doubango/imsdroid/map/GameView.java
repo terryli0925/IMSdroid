@@ -117,6 +117,7 @@ public class GameView extends View {
 		st = new ShowThread();
 		getScreenSize();
 
+
 		loggin = NetworkStatus.getInstance();
 	}
 
@@ -183,12 +184,6 @@ public class GameView extends View {
 
 		/* Draw BaseMap */
 		reDrawBitmapSize(canvas, paint, baseMap, fixWidthMapData, fixHeightMapData, mapWidth, mapHeight);
-		
-		
-		// Log.i(TAG,"getting onMyDraw");
-		map = game.map;
-		row = map.length;
-		col = map[0].length;
 		
 		
 		for (int i = 0; i < row; i++) {
@@ -484,9 +479,7 @@ public class GameView extends View {
 
 	public void setGridSize(){
 		/* The setGridSize */
-		map = game.map;
-		row = map.length;
-		col = map[0].length;
+		getMapSize();
 		
 		/* Draw Map position on the upper left */
 		if(isZoom){
