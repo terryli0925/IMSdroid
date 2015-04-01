@@ -69,11 +69,11 @@ public class UartReceive {
 		encoderStart = true;
 		combineStart = true;
 	
-		handler.postDelayed(rNano, nanoInterval);
-	
-		handler.postDelayed(rEncoder, encoderReadWaitInterval);
-
-       	handler.postDelayed(rCombine, combineInterval);
+//		handler.postDelayed(rNano, nanoInterval);
+//	
+//		handler.postDelayed(rEncoder, encoderReadWaitInterval);
+//
+//       	handler.postDelayed(rCombine, combineInterval);
 		
 	}
 	

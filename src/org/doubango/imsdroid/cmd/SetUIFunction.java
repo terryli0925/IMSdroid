@@ -14,6 +14,7 @@ import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.Screens.ScreenAV;
 import org.doubango.imsdroid.Screens.ScreenDraw;
 import org.doubango.imsdroid.Screens.ScreenUIJoyStick;
+import org.doubango.imsdroid.Screens.ScreenUISildeMenu;
 import org.doubango.imsdroid.Screens.ScreenUIVerticalSeekBar;
 import org.doubango.imsdroid.UartReceive.EncoderWriteThread;
 import org.doubango.imsdroid.Utils.NetworkStatus;
@@ -47,7 +48,9 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -137,6 +140,10 @@ public class SetUIFunction {
 	ScreenAV _ScreenAV;
 
 	/* Temporary declare */
+	LinearLayout slideLayout;
+	private ImageButton arrow;
+	private ScreenUISildeMenu mAinmMenuOpen, mAinmMenuClose;
+	private boolean isMenuOpen = false;
 
 
 	private static SetUIFunction instance;
@@ -157,8 +164,7 @@ public class SetUIFunction {
 	        return instance;
 	}
 	
-	public void SaveAVSession(ScreenAV screenAV)
-	{
+	public void SaveAVSession(ScreenAV screenAV){
 		_ScreenAV = screenAV;
 	}
 
@@ -225,6 +231,20 @@ public class SetUIFunction {
 		// WiFi & BlueTooth Monitor 
 		wifiService.scheduleAtFixedRate(new wifiMonitorThread(), 5000, 5000, TimeUnit.MILLISECONDS);
 
+		
+		// SlideRobot Menu
+		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
+		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
+		arrow.setOnClickListener(onClickListener);
+		
+		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
+		param.width = 0;
+		slideLayout.setLayoutParams(param);
+		
+		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
+		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
+		
+		
 		/*--------------------------------------------------*/
 		/* Temporary */
 		Button getAxisBtn = (Button) globalActivity
@@ -292,7 +312,6 @@ public class SetUIFunction {
 			case MotionEvent.ACTION_MOVE:
 				isContinue = true;
 				instructor = js.get8Direction();
-				Log.i("shinhua1", str[instructor]);
 				if (instructor != 0) {
 					useThreadPool(newService, str[instructor]);
 				}
@@ -346,6 +365,17 @@ public class SetUIFunction {
 				//SendCmdToBoardAlgorithm.SetCompass();
 
 				break;
+			
+			case R.id.img_arrow:
+				if(isMenuOpen){
+					slideLayout.startAnimation(mAinmMenuClose);
+					isMenuOpen = false;
+				}else if(!isMenuOpen){
+					slideLayout.startAnimation(mAinmMenuOpen);
+					isMenuOpen = true;
+				}
+				break;
+				
 
 			default:
 				break;
@@ -514,7 +544,6 @@ public class SetUIFunction {
 			rssi = wifi.getConnectionInfo().getRssi();
 			level = wifi.calculateSignalLevel(rssi, 4);
 			tempString = Integer.toString(rssi);
-			Log.i("shinhua1", "level " + tempString);
 		
 			message = wifiUIHandler.obtainMessage(1,tempString);
 			wifiUIHandler.sendMessage(message);

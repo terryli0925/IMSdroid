@@ -23,7 +23,7 @@ import android.util.Log;
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static boolean IS_SERVER = true;
+    public static boolean IS_SERVER = true; // Server: true, Client: false
     public static String SERVER_NAME = "james1";
 
 	private static XMPPConnection connection;
