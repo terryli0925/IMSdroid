@@ -139,7 +139,8 @@ public class SetUIFunction {
 	public int Axis_BRSserchArray_Index_Y = 0;
 	public int Axis_BRSserchArray_Index_X = 0;
 
-	private int Axis_GetPollTime = 1000;
+	//private int Axis_GetPollTime = 1000;
+	private int Axis_GetPollTime = 5000;   //For test
 
 	ScreenAV _ScreenAV;
 
@@ -182,7 +183,6 @@ public class SetUIFunction {
 		game = new Game();
 		
 		XMPPSet = new XMPPSetting();
-		XMPPSet.setGameView(gameView);
 		gameView.setXMPPSetting(XMPPSet);
 
 		SendAlgo = new SendCmdToBoardAlgorithm();
@@ -337,9 +337,7 @@ public class SetUIFunction {
 			case R.id.getAxisBtn:
 				SendCmdToBoardAlgorithm.SetCompass();
 				handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
-				Log.d("jamesdebug", "touchBtn");
 
-				// uartRec.RunRecThread();
 				break;
 
 			case R.id.runjs:
@@ -498,22 +496,21 @@ public class SetUIFunction {
 	public class Axis_thread implements Runnable {
 		@SuppressLint("UseValueOf") public void run() {
 
-			//TODO: Get source position
-			
-		    gameView.postInvalidate();
+		    //Client don't need to get robot position
+		    if (XMPPSetting.IS_SERVER) {
+		        //TODO: Get source position
+		        //For test
+		        game.source[0] = game.source[0] + 1;
+		        game.source[1] = game.source[1] + 1;
 
-			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		        gameView.postInvalidate();
 
-			if (loggin.GetLogStatus() && XMPPSetting.IS_SERVER) {
-			    //game.source[0]+1 for test
-			    XMPPSet.XMPPSendText("william1", "source " + (game.source[0]+1) +" " + game.source[1]);
-			}
+		        if (loggin.GetLogStatus()) {
+		            XMPPSet.XMPPSendText("william1", "source " + game.source[0] +" " + game.source[1]);
+		        }
 
-			handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
+		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
+		    }
 		}
 	}
 

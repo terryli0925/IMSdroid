@@ -31,7 +31,7 @@ public class XMPPSetting {
 	private boolean LogSuc = false;
 	
 	public Game game = new Game();
-	public GameView _gameView;
+	public static GameView _gameView;
 
 	//public XMPPSetting(ScreenAV xmppClient)
 	public XMPPSetting()
@@ -39,11 +39,6 @@ public class XMPPSetting {
 		//this.xmppClient = xmppClient;
 	}
 
-	public void setGameView(GameView gameView)
-	{
-		_gameView = gameView;
-	}
-	
 	public boolean XMPPStart(String Name , String Pass)
 	{
 		// Hardcode here , we could modify later.
@@ -100,29 +95,23 @@ public class XMPPSetting {
 		            Message message = (Message) packet;
 		            if (message.getBody() != null) {
 		                String fromName = StringUtils.parseBareAddress(message.getFrom());
-		                //Log.i(TAG, " Enter xmpp receive thread" );
-		                
 		                String[] inM = message.getBody().split("\\s+");
-		                char[] inMChar = inM[0].toCharArray();
-		                if (inMChar[0] == 's' &&  inMChar[1] == 'o' && inMChar[2] == 'u'
-		                        && inMChar[3] == 'r' && inMChar[4] == 'c' && inMChar[5] == 'e')
+
+		                if (inM[0].equals("source"))
 		                { 
-			                	Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
-			                	game.source[0] = Integer.parseInt(inM[1]);
-			                	game.source[1] = Integer.parseInt(inM[2]);  
-			                	
-			                	//_gameView.postInvalidate();
-								//try{Thread.sleep(100);}catch(Exception e){e.printStackTrace();}
-			                	
+		                    Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
+		                    MapList.source[0] = Integer.parseInt(inM[1]);
+		                    MapList.source[1] = Integer.parseInt(inM[2]);
+
+		                    _gameView.postInvalidate();
 		                }
-		                if (inMChar[0] == 't' &&  inMChar[1] == 'a' && inMChar[2] == 'r'
-		                        && inMChar[3] == 'g' && inMChar[4] == 'e' && inMChar[5] == 't')
+		                else if (inM[0].equals("target"))
 		                {
 		                    Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
 		                    MapList.target[0][0] = Integer.parseInt(inM[1]);
 		                    MapList.target[0][1] = Integer.parseInt(inM[2]);
-		                    
-		                    //_gameView.postInvalidate();
+
+		                    _gameView.postInvalidate();
 		                }
 		                else
 		                {

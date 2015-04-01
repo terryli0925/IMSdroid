@@ -66,5 +66,6 @@ public class MapScreenView{
     	game.runButton = this.jsRunBtn;
     	sendCmdToBoardAlgorithm._gameView = this.gameView;
     	sendCmdToBoardAlgorithm._game = this.game;
+    	XMPPSetting._gameView = this.gameView;
     }
 }

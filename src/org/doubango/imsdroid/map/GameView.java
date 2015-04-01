@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.XMPPSetting;
+import org.doubango.imsdroid.Utils.NetworkStatus;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -37,6 +38,7 @@ public class GameView extends View {
 	public Game game;
 	GameView GV;
 	public XMPPSetting _XMPPSet;
+	private NetworkStatus loggin;
 	public Spinner mySpinner;// Spinner���ޥ�
 	public TextView CDTextView;
 	int span = 16;
@@ -109,6 +111,7 @@ public class GameView extends View {
 		getScreenSize();
 		Log.i("shinhua", "GameView Constructor");
 
+		loggin = NetworkStatus.getInstance();
 	}
 
 	protected void onDraw(Canvas canvas) {
@@ -299,13 +302,18 @@ public class GameView extends View {
 				gridX = pos[0];
 				gridY = pos[1];
 				Log.i("jamesdebug","touch target draw before");
-				// Setting net Target postion
-			//	if (touchDown && pos[0] != -1 && pos[1] != -1) {
+
 				if ( pos[0] != -1 && pos[1] != -1) {
 					MapList.target[0][0] = pos[0];
 					MapList.target[0][1] = pos[1];
-					_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-					Log.i("jamesdebug","touch target draw after");
+
+					if (loggin.GetLogStatus()) {
+					    if (XMPPSetting.IS_SERVER) {
+					        _XMPPSet.XMPPSendText("william1", "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+					    } else {
+					        _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+					    }
+					}
 					zoomout = true;
 				}
 
@@ -510,5 +518,4 @@ public class GameView extends View {
 	public void setXMPPSetting(XMPPSetting xmppSetting) {
 	    _XMPPSet = xmppSetting;
 	}
-
 }
