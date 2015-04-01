@@ -117,14 +117,6 @@ public class SetUIFunction {
 	RelativeLayout seekbarlayout;
 	LayoutParams seekbarparams, seekBarlayoutparams;
 
-	/* DrogMenu */
-	ViewGroup dragMenu;
-	private View selected_item = null;
-	private int offset_x = 0;
-	private int offset_y = 0;
-	ImageView img;
-	int clickCount = 0;
-
 	/* Robot body - WiFI*/
 	private ImageView wifistatus1, wifistatus2, wifistatus3, wifistatus4;
 
@@ -170,7 +162,8 @@ public class SetUIFunction {
 		_ScreenAV = screenAV;
 	}
 
-	@SuppressLint("NewApi") public void StartUIFunction() {
+	@SuppressLint("NewApi") 
+	public void StartUIFunction() {
 
 		Axis_show_X = (TextView) globalActivity.findViewById(R.id.Axis_show_X);
 		Axis_show_Y = (TextView) globalActivity.findViewById(R.id.Axis_show_Y);
@@ -376,8 +369,6 @@ public class SetUIFunction {
 
 				@Override
 				public void onClick(View v) {
-					// Toast.makeText(getApplicationContext(), "position:" +
-					// message[position], Toast.LENGTH_SHORT).show();
 					setPanelPosition(position);
 				}
 			});
@@ -389,27 +380,17 @@ public class SetUIFunction {
 		switch (position) {
 		case 0:
 			Log.i(TAG, "angleBottom");
-			try {
-				SendToBoard("pitchAngle bottom");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			sendCommands("pitchAngle bottom");
 			break;
+			
 		case 1:
 			Log.i(TAG, "angleMiddle");
-			try {
-				SendToBoard("pitchAngle middle");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			sendCommands("pitchAngle middle");
 			break;
+		
 		case 2:
 			Log.i(TAG, "angleTop");
-			try {
-				SendToBoard("pitchAngle top");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			sendCommands("pitchAngle top");
 			break;
 		}
 	}
@@ -421,19 +402,10 @@ public class SetUIFunction {
 		public void onProgressChanged(SeekBar seekBar, int progress,
 				boolean fromUser) {
 
-			if(progress < 1){
-				
-				try {
-					SendToBoard("stretch bottom");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}else if (progress == 1){
-				try {
-					SendToBoard("stretch top");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			if (progress < 1) {
+				sendCommands("stretch bottom");
+			} else if (progress == 1) {
+				sendCommands("stretch top");
 			}
 		}
 
@@ -448,6 +420,16 @@ public class SetUIFunction {
 		}
 
 	};
+	
+	private void sendCommands(String message){
+		try {
+			SendToBoard(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 	/* XMPP Sendfunction */
 	public void SendToBoard(String inStr) throws IOException {
@@ -519,25 +501,6 @@ public class SetUIFunction {
 		service.execute(new MyThread(Msg));
 	}
 
-	/* Clean drag & drop menu click count */
-	private class cThread implements Runnable{
-
-		@Override
-		public void run() {
-			try {
-				Thread.sleep(450);
-				clickCount = 0;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/* Create thread service.execute for clean button click count */ 
-	private void cleanThread(ExecutorService service){
-		service.execute(new cThread());
-	}
-	
 	/* Monitor wifi signal */
 	private class wifiMonitorThread implements Runnable{
 		int rssi, level;

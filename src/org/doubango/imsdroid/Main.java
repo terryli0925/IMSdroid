@@ -125,8 +125,8 @@ public class Main extends ActivityGroup {
         }
         else if(mScreenService != null){
         	//mScreenService.show(ScreenHome.class);
-        	mScreenService.show(ScreenWLogin.class);
-//        	mScreenService.show(ScreenXYZsignin.class);
+        	//mScreenService.show(ScreenWLogin.class);
+        	mScreenService.show(ScreenXYZsignin.class);
         }
     }
     

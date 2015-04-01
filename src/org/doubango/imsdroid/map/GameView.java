@@ -6,8 +6,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.doubango.imsdroid.R;
+
 import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.Utils.NetworkStatus;
+
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
@@ -99,6 +102,11 @@ public class GameView extends View {
 	int width, height, screenWidth, screenHeight, mapWidth, mapHeight;
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
+	
+	
+	/* Drawing BaseMap */
+	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
+	
 
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
@@ -107,9 +115,7 @@ public class GameView extends View {
 		}
 		mContext = context;
 		st = new ShowThread();
-
 		getScreenSize();
-		Log.i("shinhua", "GameView Constructor");
 
 		loggin = NetworkStatus.getInstance();
 	}
@@ -174,9 +180,13 @@ public class GameView extends View {
 		//canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
-		// canvas.drawRect(5, 55, 325, 376, paint);
-		map = game.map;
+
+		/* Draw BaseMap */
+		reDrawBitmapSize(canvas, paint, baseMap, fixWidthMapData, fixHeightMapData, mapWidth, mapHeight);
+		
+		
 		// Log.i(TAG,"getting onMyDraw");
+		map = game.map;
 		row = map.length;
 		col = map[0].length;
 		
@@ -187,28 +197,28 @@ public class GameView extends View {
 					paint.setColor(Color.WHITE);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
-					canvas.drawRect(fixWidthMapData + j * (span + 1),
-							fixHeightMapData + i * (span + 1), fixWidthMapData
-									+ j * (span + 1) + span, fixHeightMapData
-									+ i * (span + 1) + span, paint);
+//					canvas.drawRect(fixWidthMapData + j * (span + 1),
+//							fixHeightMapData + i * (span + 1), fixWidthMapData
+//									+ j * (span + 1) + span, fixHeightMapData
+//									+ i * (span + 1) + span, paint);
 				} else if (map[i][j] == 1) {// �¦�
 					paint.setColor(Color.BLACK);
 					//paint.setStyle(Style.FILL);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
-					canvas.drawRect(fixWidthMapData + j * (span + 1),
-							fixHeightMapData + i * (span + 1), fixWidthMapData
-									+ j * (span + 1) + span, fixHeightMapData
-									+ i * (span + 1) + span, paint);
+//					canvas.drawRect(fixWidthMapData + j * (span + 1),
+//							fixHeightMapData + i * (span + 1), fixWidthMapData
+//									+ j * (span + 1) + span, fixHeightMapData
+//									+ i * (span + 1) + span, paint);
 				}else if (map[i][j] == 2) {// �¦�
 					paint.setColor(Color.LTGRAY);
 					//paint.setStyle(Style.FILL);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
-					canvas.drawRect(fixWidthMapData + j * (span + 1),
-							fixHeightMapData + i * (span + 1), fixWidthMapData
-									+ j * (span + 1) + span, fixHeightMapData
-									+ i * (span + 1) + span, paint);
+//					canvas.drawRect(fixWidthMapData + j * (span + 1),
+//							fixHeightMapData + i * (span + 1), fixWidthMapData
+//									+ j * (span + 1) + span, fixHeightMapData
+//									+ i * (span + 1) + span, paint);
 				}
 			}
 		}
@@ -222,66 +232,74 @@ public class GameView extends View {
 				fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
 						+ game.target[1] * (span + 1), paint);
 
-		 Log.i("jamesdebug","Draw target = "+ game.target[0] + " , " + game.target[1]);
 
 		// William Added
 		//onDrawText(canvas);
 
-		 /*Log.i(TAG,"drawcircleflag = " + drawCircleFlag );
-		 if (drawCircleFlag == true) {
-		     DrawRobotPosition(canvas);
-		 }*/
+		 Log.i(TAG,"drawcircleflag = " + drawCircleFlag );
+		if (drawCircleFlag == true) {
+			DrawRobotPosition(canvas);
+		}
 
+		
+
+	}
+	
+	private void reDrawBitmapSize(Canvas mCanvas, Paint mPaint, Bitmap mBitmap, int xCoordinate, int yCoordinate, int newWidth, int newHeight){
+		
+		/* Get Original map size */
+		int width = mBitmap.getWidth();
+		int height = mBitmap.getHeight();
+		
+		/* Calculate Scale */
+		float scaleWidth = ((float) newWidth) / width;
+		float scaleHeight =((float) newHeight) / height;
+		
+		Matrix matrix = new Matrix();
+		matrix.postScale(scaleWidth, scaleHeight);
+
+		Bitmap newBasemap = Bitmap.createBitmap(mBitmap, 0, 0, width, height, matrix, true);
+		mCanvas.drawBitmap(newBasemap, xCoordinate, yCoordinate, mPaint);
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		// TODO Auto-generated method stub
-		// Log.i("william","test");
-
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			Log.i("shinhua", "x: " + event.getX() + " y: " + event.getY());
-		
 			if(event.getX() >= fixWidthMapData && event.getY() <= fixWidthMapData){
-				
-				span = 30;
-				//span = 15;
-				getMapSize();
-	
-				xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
-				ycoordinate = (int) ((screenHeight / 2) - (mapHeight / 2));
-				
-				//fixWidthMapData = xcoordinate; 	// ZoomIn Screen in the right
-				fixWidthMapData = 0; 			// ZoomIn Screen in the middle
-				fixHeightMapData = ycoordinate;
-	
-				isZoom = true;
-				touchDown = true;
-	
-				requestLayout();
+				changeMapZoomIn(true);
 			}
-			
 			drawZoomMap(event);
-			
-		} else if (event.getAction() == MotionEvent.ACTION_UP) {
-			if (zoomout) {
-				
-				isZoom = !isZoom;
-				zoomout = false;
-
-				span = 15;
-				xcoordinate = ycoordinate = 5;
-				fixWidthMapData = fixHeightMapData = 5;
-
-				requestLayout();
-				//drawZoomMap(event);
-
-			}
 		}
+			
 		return true;
 
 	}
 
+    public void changeMapZoomIn(boolean zoomIn) {
+        if (zoomIn) {
+            span = 30;
+            getMapSize();
+
+            xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
+            ycoordinate = (int) ((screenHeight / 2) - (mapHeight / 2));
+
+            //fixWidthMapData = xcoordinate;    // ZoomIn Screen in the right
+            fixWidthMapData = 0;            // ZoomIn Screen in the middle
+            fixHeightMapData = ycoordinate;
+
+            isZoom = true;
+        }else {
+            // Let map screen change back into small size
+            isZoom = !isZoom;
+
+            span = 15;
+            xcoordinate = ycoordinate = 5;
+            fixWidthMapData = fixHeightMapData = 5;
+            
+        }
+        requestLayout();
+    }
+	
 	private void drawZoomMap(MotionEvent event) {
 		int pointerCount = event.getPointerCount();
 
@@ -321,18 +339,22 @@ public class GameView extends View {
 				postInvalidate();
 
 				// Log.i(TAG,"Thread ID = " + android.os.Process.myTid());
-
-				// Avoid thread competition , when user touch 2 points at
-				// the same time
-				try {
-					Thread.sleep(20);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				avoidThreadCompetition(20);
 			}
 		}
 	}
+	
+	// Avoid thread competition , when user touch 2 points at the same time
+	private void avoidThreadCompetition(long millis){ 
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 	public int[] getPos(MotionEvent e) {// ±N®y¼Ð´«ºâ¦¨°}¦Cªººû¼Æ
 		int[] pos = new int[2];
@@ -441,7 +463,8 @@ public class GameView extends View {
 	 * }
 	 */
 
-	@SuppressLint("NewApi") public void getScreenSize() {
+	@SuppressLint("NewApi") 
+	public void getScreenSize() {
 		WindowManager wm = (WindowManager) mContext
 				.getSystemService(mContext.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
@@ -457,7 +480,6 @@ public class GameView extends View {
 		col = map[0].length;
 		mapWidth = (col * (span + 1));
 		mapHeight = (row * (span + 1));
-		//Log.i("shinhua", "MapSize: " + mapWidth + " & " + mapHeight);
 	}
 
 	public void setGridSize(){
@@ -481,7 +503,6 @@ public class GameView extends View {
 			setVIEW_WIDTH(screenWidth);
 			//setVIEW_WIDTH(width);
 			setVIEW_HEIGHT(height);
-			
 		}
 
 	}
