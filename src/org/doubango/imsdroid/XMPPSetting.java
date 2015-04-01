@@ -6,6 +6,7 @@ import org.doubango.imsdroid.cmd.SetUIFunction;
 import org.doubango.imsdroid.cmd.SetUIFunction.Axis_thread;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
+import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.SendCmdToBoardAlgorithm;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
@@ -20,9 +21,10 @@ import org.jivesoftware.smack.util.StringUtils;
 import android.util.Log;
 
 public class XMPPSetting {
+    private static String TAG = "william";
 
-	
-	private String TAG = "william";
+    public static boolean IS_SERVER = true;
+    public static String SERVER_NAME = "james1";
 
 	private static XMPPConnection connection;
 	private UartCmd UCmd = UartCmd.getInstance();
@@ -102,8 +104,8 @@ public class XMPPSetting {
 		                
 		                String[] inM = message.getBody().split("\\s+");
 		                char[] inMChar = inM[0].toCharArray();
-		                if (inMChar[0] == 's' &&  inMChar[1] == 't' && inMChar[2] == 'a' 
-		                		&& inMChar[3] == 'r' && inMChar[4] == 't')
+		                if (inMChar[0] == 's' &&  inMChar[1] == 'o' && inMChar[2] == 'u'
+		                        && inMChar[3] == 'r' && inMChar[4] == 'c' && inMChar[5] == 'e')
 		                { 
 			                	Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
 			                	game.source[0] = Integer.parseInt(inM[1]);
@@ -112,6 +114,15 @@ public class XMPPSetting {
 			                	//_gameView.postInvalidate();
 								//try{Thread.sleep(100);}catch(Exception e){e.printStackTrace();}
 			                	
+		                }
+		                if (inMChar[0] == 't' &&  inMChar[1] == 'a' && inMChar[2] == 'r'
+		                        && inMChar[3] == 'g' && inMChar[4] == 'e' && inMChar[5] == 't')
+		                {
+		                    Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
+		                    MapList.target[0][0] = Integer.parseInt(inM[1]);
+		                    MapList.target[0][1] = Integer.parseInt(inM[2]);
+		                    
+		                    //_gameView.postInvalidate();
 		                }
 		                else
 		                {
@@ -155,5 +166,4 @@ public class XMPPSetting {
 	{
 		return this.connection;
 	}
-
 }

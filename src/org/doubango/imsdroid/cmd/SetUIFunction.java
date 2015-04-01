@@ -183,6 +183,7 @@ public class SetUIFunction {
 		
 		XMPPSet = new XMPPSetting();
 		XMPPSet.setGameView(gameView);
+		gameView.setXMPPSetting(XMPPSet);
 
 		SendAlgo = new SendCmdToBoardAlgorithm();
 
@@ -496,7 +497,8 @@ public class SetUIFunction {
 
 	public class Axis_thread implements Runnable {
 		@SuppressLint("UseValueOf") public void run() {
-			handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
+
+			//TODO: Get source position
 			
 		    gameView.postInvalidate();
 
@@ -506,10 +508,12 @@ public class SetUIFunction {
 				e.printStackTrace();
 			}
 
-			if (loggin.GetLogStatus()) {
-    			XMPPSet.XMPPSendText("william1", "start " + game.source[0] +
-    					" " + game.source[1]);
+			if (loggin.GetLogStatus() && XMPPSetting.IS_SERVER) {
+			    //game.source[0]+1 for test
+			    XMPPSet.XMPPSendText("william1", "source " + (game.source[0]+1) +" " + game.source[1]);
 			}
+
+			handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
 		}
 	}
 

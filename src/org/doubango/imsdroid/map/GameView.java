@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.doubango.imsdroid.R;
+import org.doubango.imsdroid.XMPPSetting;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -34,6 +36,7 @@ public class GameView extends View {
 
 	public Game game;
 	GameView GV;
+	public XMPPSetting _XMPPSet;
 	public Spinner mySpinner;// Spinner���ޥ�
 	public TextView CDTextView;
 	int span = 16;
@@ -301,6 +304,7 @@ public class GameView extends View {
 				if ( pos[0] != -1 && pos[1] != -1) {
 					MapList.target[0][0] = pos[0];
 					MapList.target[0][1] = pos[1];
+					_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
 					Log.i("jamesdebug","touch target draw after");
 					zoomout = true;
 				}
@@ -501,6 +505,10 @@ public class GameView extends View {
 
 	public void PathQueueClear() {
 		this.pathQueue.clear();
+	}
+
+	public void setXMPPSetting(XMPPSetting xmppSetting) {
+	    _XMPPSet = xmppSetting;
 	}
 
 }
