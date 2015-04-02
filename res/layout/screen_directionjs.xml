@@ -32,21 +32,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_above="@+id/hangupbtn"
-	    android:layout_toRightOf="@+id/linearLayout1"
+	   	android:layout_toLeftOf="@+id/layout_joystick"
         android:text="run" />
 
-    <LinearLayout
+ <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/hangupbtn"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+    >
 
         <RelativeLayout
             android:id="@+id/layout_robot"
             android:layout_width="wrap_content"
-            android:layout_height="296dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="#00000000" >
 
             <com.capricorn.ArcMenu
@@ -58,9 +58,8 @@
 
         <RelativeLayout
             android:id="@+id/layout_seekbar"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="258dp"
-            android:layout_weight="0.87"
             android:background="#00000000" >
 
             <org.doubango.imsdroid.Screens.ScreenUIVerticalSeekBar
@@ -136,7 +135,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_above="@+id/runjs"
-	    android:layout_toRightOf="@+id/linearLayout1"
+		android:layout_toLeftOf="@+id/layout_joystick"
         android:text="GetAxis" />
 
 	<TextView
@@ -144,24 +143,53 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_above="@+id/getAxisBtn"
-	    android:layout_toRightOf="@+id/linearLayout1"
+	
+	 	android:layout_toLeftOf="@+id/layout_joystick"
         android:text="Axis_show_Y" />
-
-    <TextView
-        android:id="@+id/Axis_show_Y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="36dp"
-		android:layout_above="@+id/getAxisBtn"
-        android:layout_toRightOf="@+id/Axis_show_X"
-        android:text="Axis_show_X" />
 
 	<Button
 	    android:id="@+id/hangupbtn"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignBottom="@+id/layout_joystick"
-	    android:layout_toRightOf="@+id/linearLayout1"
+	    android:layout_toLeftOf="@+id/layout_joystick"
 	    android:text="hangup" />
+
+	<TextView
+	    android:id="@+id/Axis_show_Y"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/Axis_show_X"
+	    android:layout_toLeftOf="@+id/layout_joystick"
+	    android:text="Axis_show_X" />
+
+	<ImageButton
+	    android:id="@+id/img_arrow"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_toRightOf="@+id/linearLayout1"
+	    android:src="@drawable/arrow_in" 
+	    android:background="@null"/>
+
+	<ImageButton
+	    android:id="@+id/imageButton1"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/hangupbtn"
+	    android:layout_alignLeft="@+id/img_arrow"
+	    android:layout_below="@+id/Axis_show_X"
+	    android:src="@drawable/manual0"
+	    android:padding="0dp"  />
+
+	<ImageButton
+	    android:id="@+id/imageButton2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/imageButton1"
+	    android:layout_alignTop="@+id/imageButton1"
+	    android:layout_toRightOf="@+id/imageButton1"
+	    android:src="@drawable/semiauto0"
+	    android:padding="0dp" />
 
 </RelativeLayout>
