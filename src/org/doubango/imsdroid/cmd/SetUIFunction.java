@@ -50,11 +50,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.capricorn.ArcMenu;
 
@@ -67,7 +69,6 @@ public class SetUIFunction {
 	private XMPPSetting XMPPSet;
 	private NetworkStatus loggin;
 	public UartCmd uartCmd = UartCmd.getInstance();
-	
 	
 //	public UartCmd uartCmd;
 	
@@ -86,9 +87,10 @@ public class SetUIFunction {
 
 	SendCmdToBoardAlgorithm SendAlgo;
 
-	/* ThreadPool declare for JoyStick operate */
+	
 	int height, width;
-
+	
+	/* ThreadPool declare for JoyStick operate */
 	private ExecutorService newService = Executors.newFixedThreadPool(1);
 	private ExecutorService cleanService = Executors.newFixedThreadPool(1);
 	private ScheduledExecutorService wifiService = Executors.newScheduledThreadPool(1);
@@ -123,11 +125,22 @@ public class SetUIFunction {
 	/* Robot body - WiFI*/
 	private ImageView wifistatus1, wifistatus2, wifistatus3, wifistatus4;
 
+	/* SlideMenu */
+	private ImageButton arrow;
+	LinearLayout slideLayout;
+	private ScreenUISildeMenu mAinmMenuOpen, mAinmMenuClose;
+	private boolean isMenuOpen = false;
+	
+	/* ImageButton */
+	private ImageButton manual, semiauto, auto, navistart, reset, setup;
+	
+	
+	
 	private Handler handler = new Handler();
 	
 	/* Detect Robot Location */
 	Runnable Axis_trigger_thread = new Axis_thread();
-
+	
 	/* Navigation parameter */ 
 	public int Axis_InputY_fromDW1000;
 	public int Axis_InputX_fromDW1000;
@@ -140,10 +153,6 @@ public class SetUIFunction {
 	ScreenAV _ScreenAV;
 
 	/* Temporary declare */
-	LinearLayout slideLayout;
-	private ImageButton arrow;
-	private ScreenUISildeMenu mAinmMenuOpen, mAinmMenuClose;
-	private boolean isMenuOpen = false;
 
 
 	private static SetUIFunction instance;
@@ -193,6 +202,8 @@ public class SetUIFunction {
 				.findViewById(R.id.layout_joystick);
 		setJoyStickParameter(globalActivity);
 		layout_joystick.setOnTouchListener(joystickListener);
+		
+		layout_joystick.setVisibility(View.GONE);
 
 		/* Button declare */
 		jsRunBtn = (Button) globalActivity.findViewById(R.id.runjs);
@@ -201,49 +212,10 @@ public class SetUIFunction {
 		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
 		btHang.setOnClickListener(onClickListener);
 		
-		/* Arc Menu */
-		/* Set layout size & position */
-		setARClayoutSize(width);
-		LayoutParams params = new RelativeLayout.LayoutParams(arcLayoutsize,
-				arcLayoutsize);
-		Log.i("shinhua", "params width " + params.width + "params height"
-				+ params.height);
-		RelativeLayout layout = (RelativeLayout) globalActivity
-				.findViewById(R.id.layout_robot);
 
-		arcMenu = (ArcMenu) globalActivity.findViewById(R.id.arc_menu);
-		arcMenu.setLayoutParams(params);
-		initArcMenu(arcMenu, ITEM_DRAWABLES, globalActivity);
-
-		/* Robot seekbar */
-		seekbar = (ScreenUIVerticalSeekBar) globalActivity
-				.findViewById(R.id.robotseekbar);
-		seekbarlayout = (RelativeLayout) globalActivity
-				.findViewById(R.id.layout_seekbar);
-		setSeekbarParameter();
-		
-		/* Temporary - Wifi & bluetooth */
-		wifistatus1 = (ImageView) globalActivity.findViewById(R.id.wifi_status1);
-		wifistatus2 = (ImageView) globalActivity.findViewById(R.id.wifi_status2);
-		wifistatus3 = (ImageView) globalActivity.findViewById(R.id.wifi_status3);
-		wifistatus4 = (ImageView) globalActivity.findViewById(R.id.wifi_status4);
-
-		// WiFi & BlueTooth Monitor 
-		wifiService.scheduleAtFixedRate(new wifiMonitorThread(), 5000, 5000, TimeUnit.MILLISECONDS);
-
-		
-		// SlideRobot Menu
-		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
-		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
-		arrow.setOnClickListener(onClickListener);
-		
-		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
-		param.width = 0;
-		slideLayout.setLayoutParams(param);
-		
-		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
-		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
-		
+		delareRobot();
+		declareSlideRobotMenu();
+		declareImageButton();
 		
 		/*--------------------------------------------------*/
 		/* Temporary */
@@ -267,10 +239,6 @@ public class SetUIFunction {
 		height = size.y;
 	}
 
-	private void setARClayoutSize(int width) {
-		this.arcLayoutsize = width / 6;
-	}
-
 	private void setJoyStickParameter(Activity v) {
 		js = new ScreenUIJoyStick(v.getApplicationContext(), layout_joystick,
 				R.drawable.joystick);
@@ -285,6 +253,33 @@ public class SetUIFunction {
 		js.drawStickDefault(); /* Draw JoyStick function */
 	}
 
+	private void delareRobot(){
+		
+		/* Arc Menu */
+		/* Set layout size & position */
+		this.arcLayoutsize = width / 6;
+		LayoutParams params = new RelativeLayout.LayoutParams(arcLayoutsize, arcLayoutsize);
+		RelativeLayout layout = (RelativeLayout) globalActivity.findViewById(R.id.layout_robot);
+
+		arcMenu = (ArcMenu) globalActivity.findViewById(R.id.arc_menu);
+		arcMenu.setLayoutParams(params);
+		initArcMenu(arcMenu, ITEM_DRAWABLES, globalActivity);
+
+		/* Robot seekbar */
+		seekbar = (ScreenUIVerticalSeekBar) globalActivity.findViewById(R.id.robotseekbar);
+		seekbarlayout = (RelativeLayout) globalActivity.findViewById(R.id.layout_seekbar);
+		setSeekbarParameter();
+		
+		/* Wifi */
+		wifistatus1 = (ImageView) globalActivity.findViewById(R.id.wifi_status1);
+		wifistatus2 = (ImageView) globalActivity.findViewById(R.id.wifi_status2);
+		wifistatus3 = (ImageView) globalActivity.findViewById(R.id.wifi_status3);
+		wifistatus4 = (ImageView) globalActivity.findViewById(R.id.wifi_status4);
+
+		// WiFi & BlueTooth Monitor 
+		wifiService.scheduleAtFixedRate(new wifiMonitorThread(), 5000, 5000, TimeUnit.MILLISECONDS);
+	}
+	
 	private void setSeekbarParameter() {
 		seekBarlayoutparams = seekbarlayout.getLayoutParams();
 		seekBarlayoutparams.height = (int) ((width / 6) * 1.5);
@@ -297,7 +292,41 @@ public class SetUIFunction {
 		seekbar.setOnSeekBarChangeListener(seekbarListener);
 
 	}
+	
+	private void declareSlideRobotMenu(){
+		
+		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
+		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
+		arrow.setOnClickListener(onClickListener);
+		
+		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
+		param.width = 0;
+		slideLayout.setLayoutParams(param);
+		
+		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
+		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
+	}
+	
+	private void declareImageButton(){
+	   
+		/* Declare manual, semiauto, auto, navistart, reset, setup */
+		manual   = (ImageButton) globalActivity.findViewById(R.id.img_manual);
+		semiauto = (ImageButton) globalActivity.findViewById(R.id.img_semiauto);
+		auto     = (ImageButton) globalActivity.findViewById(R.id.img_auto);
+		navistart = (ImageButton) globalActivity.findViewById(R.id.img_navi);
+		reset = (ImageButton) globalActivity.findViewById(R.id.img_reset);
+		setup = (ImageButton) globalActivity.findViewById(R.id.img_setup);
+		
 
+		
+		manual.setOnClickListener(onClickListener);
+		semiauto.setOnClickListener(onClickListener);
+		auto.setOnClickListener(onClickListener);
+		navistart.setOnClickListener(onClickListener);
+		reset.setOnClickListener(onClickListener);
+		setup.setOnClickListener(onClickListener);
+	}
+	
 	/* The OnTouchListener of Draw JoyStick */
 	OnTouchListener joystickListener = new OnTouchListener() {
 		@Override
@@ -375,8 +404,33 @@ public class SetUIFunction {
 					isMenuOpen = true;
 				}
 				break;
+			
 				
-
+			case R.id.img_manual:
+				revertImageButton();
+				layout_joystick.setVisibility(View.VISIBLE);
+				manual.setImageResource(R.drawable.manual1);
+				break;
+			case R.id.img_semiauto:
+				revertImageButton();
+				layout_joystick.setVisibility(View.GONE);
+				semiauto.setImageResource(R.drawable.semiauto1);
+				break;
+			case R.id.img_auto:
+				revertImageButton();
+				layout_joystick.setVisibility(View.GONE);
+				auto.setImageResource(R.drawable.auto1);
+				break;
+			case R.id.img_navi:
+				Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
+				break;
+			case R.id.img_reset:
+				Toast.makeText(mContext, "Navi Reset", Toast.LENGTH_LONG).show();
+				break;
+			case R.id.img_setup:
+				Toast.makeText(mContext, "Setup", Toast.LENGTH_LONG).show();
+				break;
+				
 			default:
 				break;
 
@@ -384,6 +438,12 @@ public class SetUIFunction {
 		}
 
 	};
+	
+	private void revertImageButton(){
+		manual.setImageResource(R.drawable.manual0);
+		semiauto.setImageResource(R.drawable.semiauto0);
+		auto.setImageResource(R.drawable.auto0);
+	}
 
 	/* Arc Menu */
 	private void initArcMenu(final ArcMenu menu, int[] itemDrawables, Activity v) {
