@@ -217,9 +217,9 @@ public class GameView extends View {
 
 		// Canvas drawBitmap: Track point
 		if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
-		    for (int i = 0; i < RobotOperationMode.nextTargetQueue.size(); i++) {
-		        int[][] tempTarget = RobotOperationMode.nextTargetQueue.get(i);
-		        if (i == RobotOperationMode.nextTargetQueue.size() -1) {
+		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
+		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
+		        if (i == RobotOperationMode.targetQueue.size() -1) {
 		            canvas.drawBitmap(redBall,
 		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
 		                    + tempTarget[0][1] * (span + 1), paint);
@@ -332,35 +332,26 @@ public class GameView extends View {
 				        MapList.target[0][0] = pos[0];
 				        MapList.target[0][1] = pos[1];
 
-				        if (loggin.GetLogStatus()) {
-				            if (XMPPSetting.IS_SERVER) {
-                                _XMPPSet.XMPPSendText("william1", "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-				            } else {
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-				            }
-				        }
+				        if (loggin.GetLogStatus())
+				            _XMPPSet.XMPPSendText("target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+
 				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
 				        String action;
 
 				        if (trackIndex == -1) {     //Add this new target in track list
-				            RobotOperationMode.nextTargetQueue.offer(tempTarget);
-				            //Log.i(TAG, "Offer nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+				            RobotOperationMode.targetQueue.offer(tempTarget);
+				            //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
 				            action = "add";
 				        }else {
-				            RobotOperationMode.nextTargetQueue.remove(trackIndex);
-				            //Log.i(TAG, "Remove nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+				            RobotOperationMode.targetQueue.remove(trackIndex);
+				            //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
 				            action = "remove";
 				        }
 
-				        if (loggin.GetLogStatus()) {
-				            if (XMPPSetting.IS_SERVER) {
-				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-				            } else {
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
-				            }
-				        }
+				        if (loggin.GetLogStatus())
+				            _XMPPSet.XMPPSendText("track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
 				    }
 
 					zoomout = true;

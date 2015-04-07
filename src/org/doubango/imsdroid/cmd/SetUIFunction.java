@@ -482,6 +482,9 @@ public class SetUIFunction {
             auto.setImageResource(R.drawable.auto0);
             layout_joystick.setVisibility(View.GONE);
             currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
+
+            // Clear targetQueue
+            RobotOperationMode.targetQueue.clear();
         }else if (mode == RobotOperationMode.AUTO_MODE) {
             manual.setImageResource(R.drawable.manual0);
             semiauto.setImageResource(R.drawable.semiauto0);
@@ -490,13 +493,8 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 
-        if (XMPPSendIsNeed && loggin.GetLogStatus()) {
-            if (XMPPSetting.IS_SERVER) {
-                XMPPSet.XMPPSendText("william1", "mode "+ currRobotMode);
-            } else {
-                XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "mode "+ currRobotMode);
-            }
-        }
+        if (XMPPSendIsNeed && loggin.GetLogStatus())
+            XMPPSet.XMPPSendText("mode "+ currRobotMode);
 	}
 
 	/* Control Robot panel position */
@@ -557,16 +555,16 @@ public class SetUIFunction {
 
 	/* XMPP Sendfunction */
 	public void SendToBoard(String inStr) throws IOException {
-		 Log.i(TAG," loggin status = " + loggin.GetLogStatus());
+	    //Log.i(TAG," loggin status = " + loggin.GetLogStatus());
 
-		if (loggin.GetLogStatus())
-			XMPPSet.XMPPSendText("james1", inStr);
-		else {
-			String[] inM = inStr.split("\\s+");
-			byte[] cmdByte = uartCmd.GetAllByte(inM);
-//			 String decoded = new String(cmdByte, "ISO-8859-1");
-			UartCmd.SendMsgUart(1, cmdByte);
-		}
+	    if (!XMPPSetting.IS_SERVER && loggin.GetLogStatus())
+	        XMPPSet.XMPPSendText("james1", inStr);
+	    else {
+	        String[] inM = inStr.split("\\s+");
+	        byte[] cmdByte = uartCmd.GetAllByte(inM);
+	        //String decoded = new String(cmdByte, "ISO-8859-1");
+	        UartCmd.SendMsgUart(1, cmdByte);
+	    }
 	}
 
 	/* Use thread pool for XMPP communication */
@@ -609,9 +607,9 @@ public class SetUIFunction {
 		        game.source[0] = game.source[0] + 1;
 		        game.source[1] = game.source[1] + 1;
 
-		        if (loggin.GetLogStatus()) {
+		        if (loggin.GetLogStatus())
 		            XMPPSet.XMPPSendText("william1", "source " + game.source[0] +" " + game.source[1]);
-		        }
+
 		        gameView.postInvalidate();
 		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
 		    }

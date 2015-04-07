@@ -119,12 +119,12 @@ public class XMPPSetting {
 		                    int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
 
 		                    if (inM[1].equals("add")) {
-		                        RobotOperationMode.nextTargetQueue.offer(tempTarget);
-		                        //Log.i(TAG, "Offer nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+		                        RobotOperationMode.targetQueue.offer(tempTarget);
+		                        //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
 		                    }else if (inM[1].equals("remove")) {
 		                        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
-		                        if (trackIndex != -1) RobotOperationMode.nextTargetQueue.remove(trackIndex);
-		                        //Log.i(TAG, "Remove nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+		                        if (trackIndex != -1) RobotOperationMode.targetQueue.remove(trackIndex);
+		                        //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
 		                    }
 
 		                    _gameView.postInvalidate();
@@ -160,17 +160,25 @@ public class XMPPSetting {
 		}
     }
 
-	public void XMPPSendText(String to,String istr)
-    {
-		//Server name , can't be removed here.
-		String Reci = to+"@james-pc/Smack";
-        String text = istr;
+	public void XMPPSendText(String xmppText)
+	{
+	    if (IS_SERVER) {
+	        XMPPSendText("william1", xmppText);
+	    } else {
+	        XMPPSendText(SERVER_NAME, xmppText);
+	    }
+	}
 
-        Log.i(TAG, "Sending text [" + text + "] to [" + Reci + "]");
-        Message msg = new Message(Reci, Message.Type.chat);
-        msg.setBody(text);
-        connection.sendPacket(msg);
-    }
+	public void XMPPSendText(String to, String xmppText)
+	{
+	    //Server name , can't be removed here.
+	    String Reci = to+"@james-pc/Smack";
+
+	    Log.i(TAG, "Sending text [" + xmppText + "] to [" + Reci + "]");
+	    Message msg = new Message(Reci, Message.Type.chat);
+	    msg.setBody(xmppText);
+	    connection.sendPacket(msg);
+	}
 
 	public XMPPConnection GetConnection()
 	{

@@ -25,70 +25,9 @@ public class SendCmdToBoardAlgorithm {
 	//GameView gameView;
 	
 	public void SendCommand(XMPPSetting inXMPPSet, String inString) {
-		// TODO Auto-generated method stub
-		int loopcount = 0;
-		String correctStr = null;
-		Log.i(TAG, " Send command = " + inString);
 
-		if (inString.equals("left")) {
-			loopcount = 90;
-			correctStr = inString;
-		}
-		else if (inString.equals("right")) {
-			loopcount = 90;
-			correctStr = inString;
-		} else if (inString.equals("backward")) {
-			loopcount = 13;
-			correctStr = inString;
-		} else if (inString.equals("direction forward")) {
-			loopcount = 32;
-			correctStr = inString;
-		}
-		// for 45 , 135 , 225 , 315 angle 
-		else {
-			loopcount = 45;
-			if (inString.equals("bacRig") || inString.equals("bacLeft"))
-				correctStr = "backward";
-		}
-	
-		////////////////////////////////////
-		// Send command here .            //
-		///////////////////////////////////
-		for (int i=0;i< loopcount ; i++)
-		{
-			if (!arduinoDebug) {
-	
-				synchronized (inXMPPSet) {
-					try {
-						inXMPPSet.XMPPSendText("james1", "direction "
-								+ inString);
-	
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	
-				}
-			}
-			else
-			{
-				//UartMsg.SendMsgUartNano(inString + "\n");
-				inXMPPSet.XMPPSendText("james1", inString + "\n");
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	}
-	
+
 	public static void SetCompass()
 	{
 
