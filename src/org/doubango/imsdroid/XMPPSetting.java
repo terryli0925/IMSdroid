@@ -3,11 +3,11 @@ package org.doubango.imsdroid;
 import java.io.IOException;
 
 import org.doubango.imsdroid.cmd.SetUIFunction;
-import org.doubango.imsdroid.cmd.SetUIFunction.Axis_thread;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
-import org.doubango.imsdroid.map.SendCmdToBoardAlgorithm;
+import org.doubango.imsdroid.map.RobotOperationMode;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -18,6 +18,8 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
+
+import android.os.Handler;
 import android.util.Log;
 
 public class XMPPSetting {
@@ -32,6 +34,7 @@ public class XMPPSetting {
 	
 	public Game game = new Game();
 	public static GameView _gameView;
+	public static SetUIFunction setUIfunction;
 
 	//public XMPPSetting(ScreenAV xmppClient)
 	public XMPPSetting()
@@ -84,8 +87,7 @@ public class XMPPSetting {
 	     }
 	     return LogSuc;
 	}
-	
-	
+
 	public void setConnection(XMPPConnection connection) {
 		if (connection != null) {
 		    // Add a packet listener to get messages sent to us
@@ -97,9 +99,9 @@ public class XMPPSetting {
 		                String fromName = StringUtils.parseBareAddress(message.getFrom());
 		                String[] inM = message.getBody().split("\\s+");
 
+		                Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
 		                if (inM[0].equals("source"))
-		                { 
-		                    Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
+		                {
 		                    MapList.source[0] = Integer.parseInt(inM[1]);
 		                    MapList.source[1] = Integer.parseInt(inM[2]);
 
@@ -107,9 +109,32 @@ public class XMPPSetting {
 		                }
 		                else if (inM[0].equals("target"))
 		                {
-		                    Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
 		                    MapList.target[0][0] = Integer.parseInt(inM[1]);
 		                    MapList.target[0][1] = Integer.parseInt(inM[2]);
+
+		                    _gameView.postInvalidate();
+		                }
+		                else if (inM[0].equals("track"))
+		                {
+		                    int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
+
+		                    if (inM[1].equals("add")) {
+		                        RobotOperationMode.nextTargetQueue.offer(tempTarget);
+		                        //Log.i(TAG, "Offer nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+		                    }else if (inM[1].equals("remove")) {
+		                        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
+		                        if (trackIndex != -1) RobotOperationMode.nextTargetQueue.remove(trackIndex);
+		                        //Log.i(TAG, "Remove nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+		                    }
+
+		                    _gameView.postInvalidate();
+		                }
+		                else if (inM[0].equals("mode"))
+		                {
+		                    android.os.Message message1;  //For handler
+
+		                    message1 = modeButtonHandler.obtainMessage(1, inM[1]);
+		                    modeButtonHandler.sendMessage(message1);
 
 		                    _gameView.postInvalidate();
 		                }
@@ -117,13 +142,10 @@ public class XMPPSetting {
 		                {
 							try {
 								byte[] cmdByte = UCmd.GetAllByte(inM);
-								Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" + " Func num = " + cmdByte[1] + " Direc = " + cmdByte[2]);
+								//Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" + " Func num = " + cmdByte[1] + " Direc = " + cmdByte[2]);
 								//Do JNI here , We got correct data format here.
 								//String decoded = new String(cmdByte, "ISO-8859-1");
 								UCmd.SendMsgUart(1,cmdByte);
-	
-								
-								
 							} catch (IOException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
@@ -148,11 +170,18 @@ public class XMPPSetting {
         Message msg = new Message(Reci, Message.Type.chat);
         msg.setBody(text);
         connection.sendPacket(msg);
-
     }
-	
+
 	public XMPPConnection GetConnection()
 	{
 		return this.connection;
 	}
+
+	// Update ImageButton Handler
+	private Handler modeButtonHandler = new Handler(){
+	    public void handleMessage(android.os.Message msg){
+	        setUIfunction.updateRobotMode(Integer.valueOf((String)msg.obj), false);
+	        super.handleMessage(msg);
+	    }
+	};
 }

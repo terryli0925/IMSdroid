@@ -10,35 +10,31 @@ import java.util.concurrent.Executors;
 import android.util.Log;
 import android.widget.Button;//�ޤJ�������O
 import android.widget.TextView;//�ޤJ�������O
-public class Game {//�t��k���O
-	public int algorithmId=0;//�t��k�N�� 0--�`���u��
-	int mapId = 0;//�a�Ͻs��
+public class Game {
+	public int algorithmId=0;
+	int mapId = 0;
 	static int[][] map;// = MapList.customized_map2[mapId];
-	public int[] source = MapList.source;//�X�o�I
-	public int[] target = MapList.target[0];//�ؼ��I
-	public GameView gameView;//gameView���ޥ�
+	public int[] source = MapList.source;
+	public int[] target = MapList.target[0];
+	public GameView gameView;
 	public Button runButton;
-	public TextView BSTextView;//BSTextView���ޥ�
-	private static ArrayList<int[][]> searchProcess=new ArrayList<int[][]>();//�j���L�{
-	Stack<int[][]> stack=new Stack<int[][]>();//�`���u��ҥΰ��|
-	HashMap<String,int[][]> hm=new HashMap<String,int[][]>();//���G���|�O��
-	LinkedList<int[][]> queue=new LinkedList<int[][]>();//�s���u��ҥΦ�C
-	//A*���u��Ǧ�C
+	public TextView BSTextView;
+	private static ArrayList<int[][]> searchProcess=new ArrayList<int[][]>();
+	Stack<int[][]> stack=new Stack<int[][]>();
+	HashMap<String,int[][]> hm=new HashMap<String,int[][]>();
+	LinkedList<int[][]> queue=new LinkedList<int[][]>();
 	PriorityQueue<int[][]> astarQueue=new PriorityQueue<int[][]>(100,new AStarComparator(this));
-	//�O���C���I���̵u���| for Dijkstra
 	HashMap<String,ArrayList<int[][]>> hmPath=new HashMap<String,ArrayList<int[][]>>();
-	//�O����|��� for Dijkstra
 	int[][] length=new int[MapList.map[mapId].length][MapList.map[mapId][0].length];
-	int[][] visited=new int[MapList.map[0].length][MapList.map[0][0].length];//0 ���h�L 1 �h�L
+	int[][] visited=new int[MapList.map[0].length][MapList.map[0][0].length];
 	int[][] sequence={
 		{0,1},{0,-1},
 		{-1,0},{1,0}//,
 //		{-1,1},{-1,-1},
 //		{1,-1},{1,1}
 	};
-	private static boolean pathFlag=false;//true ���F���|
-	int timeSpan=10;//�ɶ����j
-
+	private static boolean pathFlag=false;
+	int timeSpan=10;
 	private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 	
 	public void reloadMap(int number , GameView gv)
@@ -71,15 +67,11 @@ public class Game {//�t��k���O
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 			}
 		}
-		
-		
-		
 	}
 	
-	public void clearState(){//�M�ũҦ����A�P�M��
+	public void clearState(){
 		gameView.algorithmDone = false;
 		gameView.PathQueueClear();
 		setPathFlag(false);	
@@ -92,12 +84,12 @@ public class Game {//�t��k���O
 		hmPath.clear();
 		for(int i=0;i<length.length;i++){
 			for(int j=0;j<length[0].length;j++){
-				length[i][j]=9999;//��l���|��׬��̤j�Z�������i�઺����j	
+				length[i][j]=9999;
 			}
 		}
 	}
 
-	public void runAlgorithm() {// �B��t��k
+	public void runAlgorithm() {
 		clearState();
 		if (map != null) {
 		}

@@ -1,13 +1,12 @@
-package org.doubango.imsdroid.map;										//�ŧi�M��y�y
-public class MapList {									//�����O���a�����O
-//	public static int[] source={8,1};
-//	public static int[] source={5,1};					//�X�o�I�y�� 
+package org.doubango.imsdroid.map;
+
+public class MapList {
 	public static int[] source={1,1};
-	public static int[][] target={								//�ؼ��I�y�а}�C
+	public static int[][] target={
 		{9,8},{4,22},{0,11},{9,10},{21,22}
 	};
 
-	static int[][][] map = new int[][][]				//�a�ϰ}�C
+	static int[][][] map = new int[][][]
 	{
 		{
 			{1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -39,7 +38,7 @@ public class MapList {									//�����O���a�����O
 	
 /* to use for CES demo */
 	
-	static int[][][] customized_map2 = new int[][][]			//�a�ϰ}�C
+	static int[][][] customized_map2 = new int[][][]
 			{
 				{
 					{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -66,7 +65,7 @@ public class MapList {									//�����O���a�����O
 				},
 			};
 	
-	static int[][][] customized_map3 = new int[][][]			//�a�ϰ}�C
+	static int[][][] customized_map3 = new int[][][]
 			{
 				{
 					{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},

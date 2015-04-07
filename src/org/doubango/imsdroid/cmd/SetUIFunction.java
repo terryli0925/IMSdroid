@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.Inflater;
 
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.UartCmd;
@@ -16,33 +15,25 @@ import org.doubango.imsdroid.Screens.ScreenDraw;
 import org.doubango.imsdroid.Screens.ScreenUIJoyStick;
 import org.doubango.imsdroid.Screens.ScreenUISildeMenu;
 import org.doubango.imsdroid.Screens.ScreenUIVerticalSeekBar;
-import org.doubango.imsdroid.UartReceive.EncoderWriteThread;
 import org.doubango.imsdroid.Utils.NetworkStatus;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
+import org.doubango.imsdroid.map.RobotOperationMode;
 import org.doubango.imsdroid.map.SendCmdToBoardAlgorithm;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
-import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.DragShadowBuilder;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -61,6 +52,7 @@ import android.widget.Toast;
 import com.capricorn.ArcMenu;
 
 public class SetUIFunction {
+	public static int currRobotMode = RobotOperationMode.NONE;
 
 	static Activity globalActivity;
 	Context mContext;
@@ -154,7 +146,6 @@ public class SetUIFunction {
 
 	/* Temporary declare */
 
-
 	private static SetUIFunction instance;
 	
 	public SetUIFunction(Activity activity) {
@@ -191,6 +182,7 @@ public class SetUIFunction {
 		game = new Game();
 		
 		XMPPSet = new XMPPSetting();
+		XMPPSetting.setUIfunction = this;
 		gameView.setXMPPSetting(XMPPSet);
 
 		SendAlgo = new SendCmdToBoardAlgorithm();
@@ -211,12 +203,23 @@ public class SetUIFunction {
 
 		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
 		btHang.setOnClickListener(onClickListener);
-		
 
 		delareRobot();
 		declareSlideRobotMenu();
 		declareImageButton();
 		
+		// SlideRobot Menu
+		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
+		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
+		arrow.setOnClickListener(onClickListener);
+		
+		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
+		param.width = 0;
+		slideLayout.setLayoutParams(param);
+		
+		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
+		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
+
 		/*--------------------------------------------------*/
 		/* Temporary */
 		Button getAxisBtn = (Button) globalActivity
@@ -404,23 +407,25 @@ public class SetUIFunction {
 					isMenuOpen = true;
 				}
 				break;
-			
 				
 			case R.id.img_manual:
-				revertImageButton();
-				layout_joystick.setVisibility(View.VISIBLE);
-				manual.setImageResource(R.drawable.manual1);
-				break;
+			    if (currRobotMode != RobotOperationMode.MANUAL_MODE) {
+			        updateRobotMode(RobotOperationMode.MANUAL_MODE, true);
+			        gameView.postInvalidate();
+			    }
+			    break;
 			case R.id.img_semiauto:
-				revertImageButton();
-				layout_joystick.setVisibility(View.GONE);
-				semiauto.setImageResource(R.drawable.semiauto1);
-				break;
+			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
+			        updateRobotMode(RobotOperationMode.SEMI_AUTO_MODE, true);
+			        gameView.postInvalidate();
+			    }
+			    break;
 			case R.id.img_auto:
-				revertImageButton();
-				layout_joystick.setVisibility(View.GONE);
-				auto.setImageResource(R.drawable.auto1);
-				break;
+			    if (currRobotMode != RobotOperationMode.AUTO_MODE) {
+			        updateRobotMode(RobotOperationMode.AUTO_MODE, true);
+			        gameView.postInvalidate();
+			    }
+			    break;
 			case R.id.img_navi:
 				Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
 				break;
@@ -430,7 +435,6 @@ public class SetUIFunction {
 			case R.id.img_setup:
 				Toast.makeText(mContext, "Setup", Toast.LENGTH_LONG).show();
 				break;
-				
 			default:
 				break;
 
@@ -463,6 +467,36 @@ public class SetUIFunction {
 				}
 			});
 		}
+	}
+
+	public void updateRobotMode(int mode, boolean XMPPSendIsNeed) {
+        if (mode == RobotOperationMode.MANUAL_MODE) {
+            manual.setImageResource(R.drawable.manual1);
+            semiauto.setImageResource(R.drawable.semiauto0);
+            auto.setImageResource(R.drawable.auto0);
+            layout_joystick.setVisibility(View.VISIBLE);
+            currRobotMode = RobotOperationMode.MANUAL_MODE;
+        }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
+            manual.setImageResource(R.drawable.manual0);
+            semiauto.setImageResource(R.drawable.semiauto1);
+            auto.setImageResource(R.drawable.auto0);
+            layout_joystick.setVisibility(View.GONE);
+            currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
+        }else if (mode == RobotOperationMode.AUTO_MODE) {
+            manual.setImageResource(R.drawable.manual0);
+            semiauto.setImageResource(R.drawable.semiauto0);
+            auto.setImageResource(R.drawable.auto1);
+            layout_joystick.setVisibility(View.GONE);
+            currRobotMode = RobotOperationMode.AUTO_MODE;
+        }
+
+        if (XMPPSendIsNeed && loggin.GetLogStatus()) {
+            if (XMPPSetting.IS_SERVER) {
+                XMPPSet.XMPPSendText("william1", "mode "+ currRobotMode);
+            } else {
+                XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "mode "+ currRobotMode);
+            }
+        }
 	}
 
 	/* Control Robot panel position */
@@ -575,12 +609,10 @@ public class SetUIFunction {
 		        game.source[0] = game.source[0] + 1;
 		        game.source[1] = game.source[1] + 1;
 
-		        gameView.postInvalidate();
-
 		        if (loggin.GetLogStatus()) {
 		            XMPPSet.XMPPSendText("william1", "source " + game.source[0] +" " + game.source[1]);
 		        }
-
+		        gameView.postInvalidate();
 		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
 		    }
 		}

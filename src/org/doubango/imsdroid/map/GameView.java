@@ -1,15 +1,13 @@
-   package org.doubango.imsdroid.map;
+package org.doubango.imsdroid.map;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.doubango.imsdroid.R;
-
 import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.Utils.NetworkStatus;
-
+import org.doubango.imsdroid.cmd.SetUIFunction;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,8 +19,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -58,6 +54,10 @@ public class GameView extends View {
 			R.drawable.source);
 	Bitmap target = BitmapFactory.decodeResource(getResources(),
 			R.drawable.target);
+	Bitmap redBall = BitmapFactory.decodeResource(getResources(),
+            R.drawable.bullet_ball_glass_red_16);
+	Bitmap greenBall = BitmapFactory.decodeResource(getResources(),
+	        R.drawable.bullet_ball_glass_green_16);
 	Paint paint = new Paint();
 
 	// William Added
@@ -103,10 +103,8 @@ public class GameView extends View {
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
 	
-	
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
-	
 
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
@@ -116,7 +114,6 @@ public class GameView extends View {
 		mContext = context;
 		st = new ShowThread();
 		getScreenSize();
-
 
 		loggin = NetworkStatus.getInstance();
 	}
@@ -218,20 +215,34 @@ public class GameView extends View {
 			}
 		}
 
+		// Canvas drawBitmap: Track point
+		if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+		    for (int i = 0; i < RobotOperationMode.nextTargetQueue.size(); i++) {
+		        int[][] tempTarget = RobotOperationMode.nextTargetQueue.get(i);
+		        if (i == RobotOperationMode.nextTargetQueue.size() -1) {
+		            canvas.drawBitmap(redBall,
+		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                    + tempTarget[0][1] * (span + 1), paint);
+		        } else {
+		            canvas.drawBitmap(greenBall,
+		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                    + tempTarget[0][1] * (span + 1), paint);
+		        }
+		    }
+		}
 		// Canvas drawBitmap: Source
 		canvas.drawBitmap(source,
 				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
 						+ game.source[1] * (span + 1), paint);
 		// Canvas drawBitmap: Target
-		canvas.drawBitmap(target,
-				fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
-						+ game.target[1] * (span + 1), paint);
-
+		/*canvas.drawBitmap(target,
+		        fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
+		        + game.target[1] * (span + 1), paint);*/
 
 		// William Added
 		//onDrawText(canvas);
 
-		 Log.i(TAG,"drawcircleflag = " + drawCircleFlag );
+		//Log.i(TAG,"drawcircleflag = " + drawCircleFlag );
 		if (drawCircleFlag == true) {
 			DrawRobotPosition(canvas);
 		}
@@ -314,19 +325,44 @@ public class GameView extends View {
 				// Draw Grid position on canvas
 				gridX = pos[0];
 				gridY = pos[1];
-				Log.i("jamesdebug","touch target draw before");
+				//Log.i(TAG, "touch target draw before");
 
 				if ( pos[0] != -1 && pos[1] != -1) {
-					MapList.target[0][0] = pos[0];
-					MapList.target[0][1] = pos[1];
+				    if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
+				        MapList.target[0][0] = pos[0];
+				        MapList.target[0][1] = pos[1];
 
-					if (loggin.GetLogStatus()) {
-					    if (XMPPSetting.IS_SERVER) {
-					        _XMPPSet.XMPPSendText("william1", "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-					    } else {
-					        _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-					    }
-					}
+				        if (loggin.GetLogStatus()) {
+				            if (XMPPSetting.IS_SERVER) {
+                                _XMPPSet.XMPPSendText("william1", "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+				            } else {
+				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+				            }
+				        }
+				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+				        int[][] tempTarget = {{pos[0], pos[1]}};
+				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
+				        String action;
+
+				        if (trackIndex == -1) {     //Add this new target in track list
+				            RobotOperationMode.nextTargetQueue.offer(tempTarget);
+				            //Log.i(TAG, "Offer nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+				            action = "add";
+				        }else {
+				            RobotOperationMode.nextTargetQueue.remove(trackIndex);
+				            //Log.i(TAG, "Remove nextTargetQueue, size= "+MapList.nextTargetQueue.size());
+				            action = "remove";
+				        }
+
+				        if (loggin.GetLogStatus()) {
+				            if (XMPPSetting.IS_SERVER) {
+				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				            } else {
+				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
+				            }
+				        }
+				    }
+
 					zoomout = true;
 				}
 
@@ -499,7 +535,6 @@ public class GameView extends View {
 		}
 
 	}
-	
 
 	public static int getVIEW_WIDTH() {
 		return VIEW_WIDTH;
