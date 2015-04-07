@@ -10,6 +10,7 @@ import org.doubango.ngn.services.INgnSipService;
 import org.doubango.ngn.sip.NgnSipSession.ConnectionState;
 import org.doubango.ngn.utils.NgnConfigurationEntry;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,6 +46,7 @@ public class ScreenXYZLogin extends BaseScreen {
 	
 	private NetworkStatus loggin;
 
+	public boolean notEnterLoginPage = true;
 	
 	private String xmppUsername, xmppPassword; 	//For XMPP thread user name & password
 	private XMPPSetting XMPPSet;
@@ -120,7 +122,7 @@ public class ScreenXYZLogin extends BaseScreen {
 			public void onReceive(Context context, Intent intent) {
 				// TODO Auto-generated method stub
 				final String action = intent.getAction();
-				Log.i("william","enter broadcase");
+				//Log.i("william","enter broadcase");
 				// Registration Event
 				if(NgnRegistrationEventArgs.ACTION_REGISTRATION_EVENT.equals(action)){
 					NgnRegistrationEventArgs args = intent.getParcelableExtra(NgnEventArgs.EXTRA_EMBEDDED);
@@ -139,7 +141,11 @@ public class ScreenXYZLogin extends BaseScreen {
 						case UNREGISTRATION_NOK:
 						default:
 							Log.i(TAG,"Show main view here");
-							mScreenService.show(ScreenFuncTest.class, "FuncTest");
+							if (notEnterLoginPage)
+							{
+							    mScreenService.show(ScreenFuncTest.class, "FuncTest");
+							    notEnterLoginPage = false;
+							}
 							//mScreenService.show(ScreenDirectionJS.class, "ScreenDirectionJS");
 							
 							break;
@@ -159,7 +165,7 @@ public class ScreenXYZLogin extends BaseScreen {
 		v.setBackgroundResource(R.drawable.xyzbackground);
 	}
 	
-	private void getScreenSize(){
+	@SuppressLint("NewApi") private void getScreenSize(){
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
