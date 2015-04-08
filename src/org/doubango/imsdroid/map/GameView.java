@@ -222,7 +222,7 @@ public class GameView extends View {
 		if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
-		        if (i == RobotOperationMode.targetQueue.size() -1) {
+		        /*if (i == RobotOperationMode.targetQueue.size() -1) {
 		            canvas.drawBitmap(redBall,
 		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
 		                    + tempTarget[0][1] * (span + 1), paint);
@@ -230,6 +230,11 @@ public class GameView extends View {
 		            canvas.drawBitmap(greenBall,
 		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
 		                    + tempTarget[0][1] * (span + 1), paint);
+		        }*/
+		        if (i == RobotOperationMode.targetQueue.size() -1) {
+		            canvas.drawBitmap(redBall, tempTarget[0][0], tempTarget[0][1], paint);
+		        } else {
+		            canvas.drawBitmap(greenBall, tempTarget[0][0], tempTarget[0][1], paint);
 		        }
 		    }
 		}
@@ -331,15 +336,16 @@ public class GameView extends View {
 				//Log.i(TAG, "touch target draw before");
 
 				if ( pos[0] != -1 && pos[1] != -1) {
-				    if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
+				    /*if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
 				        MapList.target[0][0] = pos[0];
 				        MapList.target[0][1] = pos[1];
 
 				        if (loggin.GetLogStatus())
 				            _XMPPSet.XMPPSendText("target " + MapList.target[0][0] +" " + MapList.target[0][1]);
 
-				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
-				        int[][] tempTarget = {{pos[0], pos[1]}};
+				    } else*/ 
+				    if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+				        int[][] tempTarget = {{touchX, touchY}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
 				        String action;
 
@@ -355,11 +361,13 @@ public class GameView extends View {
 
 				        if (loggin.GetLogStatus()) {
 				            if (XMPPSetting.IS_SERVER) {
-				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-				                _XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
+				                //_XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				                //_XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
+				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ event.getX() +" "+ event.getY());
 				            } else {
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
+				                //_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
+				                //_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
+				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ event.getX() +" "+ event.getY());
 				            }
 				        }
 				    }
