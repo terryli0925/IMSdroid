@@ -346,11 +346,11 @@ public class GameView extends View {
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            RobotOperationMode.targetQueue.offer(tempTarget);
 				            //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
-				            action = "add";
+				            action = RobotOperationMode.ACTION_TARGET_ADD;
 				        }else {
 				            RobotOperationMode.targetQueue.remove(trackIndex);
 				            //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
-				            action = "remove";
+				            action = RobotOperationMode.ACTION_TARGET_REMOVE;
 				        }
 
 				        if (loggin.GetLogStatus()) {

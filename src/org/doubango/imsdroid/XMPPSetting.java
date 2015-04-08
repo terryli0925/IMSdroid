@@ -103,40 +103,22 @@ public class XMPPSetting {
 		                Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
 		                if (inM[0].equals("source"))
 		                {
-		                    MapList.source[0] = Integer.parseInt(inM[1]);
-		                    MapList.source[1] = Integer.parseInt(inM[2]);
-
+		                    updateSource(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("target"))
 		                {
-		                    MapList.target[0][0] = Integer.parseInt(inM[1]);
-		                    MapList.target[0][1] = Integer.parseInt(inM[2]);
-
+		                    updateTarget(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("track"))
 		                {
-		                    int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
-
-		                    if (inM[1].equals("add")) {
-		                        RobotOperationMode.targetQueue.offer(tempTarget);
-		                        //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
-		                    }else if (inM[1].equals("remove")) {
-		                        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
-		                        if (trackIndex != -1) RobotOperationMode.targetQueue.remove(trackIndex);
-		                        //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
-		                    }
-
+		                    updateTrackPos(inM[1], inM[2], inM[3]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("mode"))
 		                {
-		                    android.os.Message message1;  //For handler
-
-		                    message1 = modeButtonHandler.obtainMessage(1, inM[1]);
-		                    modeButtonHandler.sendMessage(message1);
-
+		                    updateRobotMode(inM[1]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("ScreenSize")){
@@ -194,7 +176,35 @@ public class XMPPSetting {
 		return this.connection;
 	}
 
-	// Update ImageButton Handler
+	private void updateSource(String x, String y) {
+        MapList.source[0] = Integer.parseInt(x);
+        MapList.source[1] = Integer.parseInt(y);
+	}
+
+	private void updateTarget(String x, String y) {
+	    MapList.target[0][0] = Integer.parseInt(x);
+	    MapList.target[0][1] = Integer.parseInt(y);
+	}
+
+	private void updateTrackPos(String action, String x, String y) {
+	    int tempTarget[][] = {{Integer.parseInt(x), Integer.parseInt(y)}};
+
+	    if (action.equals(RobotOperationMode.ACTION_TARGET_ADD)) {
+	        RobotOperationMode.targetQueue.offer(tempTarget);
+	        //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
+	    }else if (action.equals(RobotOperationMode.ACTION_TARGET_REMOVE)) {
+	        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
+	        if (trackIndex != -1) RobotOperationMode.targetQueue.remove(trackIndex);
+	        //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
+	    }
+	}
+
+	private void updateRobotMode(String mode) {
+	    //Using handler to update ImageButton
+	    android.os.Message message1 = modeButtonHandler.obtainMessage(1, mode);
+	    modeButtonHandler.sendMessage(message1);
+	}
+
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
 	        setUIfunction.updateRobotMode(Integer.valueOf((String)msg.obj), false);
