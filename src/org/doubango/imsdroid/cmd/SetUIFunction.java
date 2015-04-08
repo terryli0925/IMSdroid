@@ -189,13 +189,6 @@ public class SetUIFunction {
 
 		getScreenSize(globalActivity);
 
-		/* Joy Stick */
-		layout_joystick = (RelativeLayout) globalActivity
-				.findViewById(R.id.layout_joystick);
-		setJoyStickParameter(globalActivity);
-		layout_joystick.setOnTouchListener(joystickListener);
-		
-		layout_joystick.setVisibility(View.GONE);
 
 		/* Button declare */
 		jsRunBtn = (Button) globalActivity.findViewById(R.id.runjs);
@@ -204,7 +197,8 @@ public class SetUIFunction {
 		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
 		btHang.setOnClickListener(onClickListener);
 
-		delareRobot();
+		declarJoyStick();
+		declareRobot();
 		declareSlideRobotMenu();
 		declareImageButton();
 		
@@ -222,8 +216,7 @@ public class SetUIFunction {
 
 		/*--------------------------------------------------*/
 		/* Temporary */
-		Button getAxisBtn = (Button) globalActivity
-				.findViewById(R.id.getAxisBtn);
+		Button getAxisBtn = (Button) globalActivity.findViewById(R.id.getAxisBtn);
 		getAxisBtn.setOnClickListener(onClickListener);
 		
 		/* Temporary - Wifi */		
@@ -240,8 +233,26 @@ public class SetUIFunction {
 		display.getSize(size);
 		width = size.x;
 		height = size.y;
+		Log.i("shinhua","Print Screen" + width + ", " + height);
+		
+        if (loggin.GetLogStatus()) {
+            if (XMPPSetting.IS_SERVER) {
+                XMPPSet.XMPPSendText("william1", "ScreenSize "+ width + " " + height);
+            } else {
+                XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "ScreenSize "+ width + " " + height);
+            }
+        }
+		
 	}
 
+	private void declarJoyStick(){
+		layout_joystick = (RelativeLayout) globalActivity.findViewById(R.id.layout_joystick);
+		setJoyStickParameter(globalActivity);
+		layout_joystick.setOnTouchListener(joystickListener);
+		
+		layout_joystick.setVisibility(View.GONE);
+	}
+	
 	private void setJoyStickParameter(Activity v) {
 		js = new ScreenUIJoyStick(v.getApplicationContext(), layout_joystick,
 				R.drawable.joystick);
@@ -256,7 +267,7 @@ public class SetUIFunction {
 		js.drawStickDefault(); /* Draw JoyStick function */
 	}
 
-	private void delareRobot(){
+	private void declareRobot(){
 		
 		/* Arc Menu */
 		/* Set layout size & position */
@@ -313,14 +324,13 @@ public class SetUIFunction {
 	private void declareImageButton(){
 	   
 		/* Declare manual, semiauto, auto, navistart, reset, setup */
-		manual   = (ImageButton) globalActivity.findViewById(R.id.img_manual);
-		semiauto = (ImageButton) globalActivity.findViewById(R.id.img_semiauto);
-		auto     = (ImageButton) globalActivity.findViewById(R.id.img_auto);
+		manual    = (ImageButton) globalActivity.findViewById(R.id.img_manual);
+		semiauto  = (ImageButton) globalActivity.findViewById(R.id.img_semiauto);
+		auto      = (ImageButton) globalActivity.findViewById(R.id.img_auto);
 		navistart = (ImageButton) globalActivity.findViewById(R.id.img_navi);
-		reset = (ImageButton) globalActivity.findViewById(R.id.img_reset);
-		setup = (ImageButton) globalActivity.findViewById(R.id.img_setup);
+		reset 	  = (ImageButton) globalActivity.findViewById(R.id.img_reset);
+		setup 	  = (ImageButton) globalActivity.findViewById(R.id.img_setup);
 		
-
 		
 		manual.setOnClickListener(onClickListener);
 		semiauto.setOnClickListener(onClickListener);

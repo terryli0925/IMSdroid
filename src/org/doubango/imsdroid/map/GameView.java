@@ -99,9 +99,12 @@ public class GameView extends View {
 
 	/* shinhua add */
 	Context mContext;
-	int width, height, screenWidth, screenHeight, mapWidth, mapHeight;
+    int width, height, screenWidth, screenHeight, mapWidth, mapHeight;
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
+	
+	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
+	
 	
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
@@ -350,8 +353,15 @@ public class GameView extends View {
 				            action = "remove";
 				        }
 
-				        if (loggin.GetLogStatus())
-				            _XMPPSet.XMPPSendText("track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				        if (loggin.GetLogStatus()) {
+				            if (XMPPSetting.IS_SERVER) {
+				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				                _XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
+				            } else {
+				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
+				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
+				            }
+				        }
 				    }
 
 					zoomout = true;
@@ -494,6 +504,7 @@ public class GameView extends View {
 		display.getSize(size);
 		screenWidth = size.x;
 		screenHeight = size.y;
+		Log.i("shinhua","Current Size: "+  screenWidth + " "+  screenHeight);
 	}
 
 	public void getMapSize() {
@@ -558,4 +569,18 @@ public class GameView extends View {
 	public void setXMPPSetting(XMPPSetting xmppSetting) {
 	    _XMPPSet = xmppSetting;
 	}
+	
+	public void transRemoteCoord(double CoordX, double CoordY){
+		this.remoteCoordX = (int)((CoordX / remoteScreenWidth) * screenWidth);
+		this.remoteCoordY = (int)((CoordY / remoteScreenHeight) * screenHeight);
+		Log.i("shinhua", "transRemoteCoord: "+remoteCoordX+" "+ remoteCoordY);
+	}
+
+	public void setRemoteScreenSize(int width, int height){
+		this.remoteScreenWidth = width;
+		this.remoteScreenHeight = height;
+		Log.i("shinhua", "RemoteScreenSize: "+ remoteScreenWidth + " " + remoteScreenHeight);
+	}
+	
+	
 }

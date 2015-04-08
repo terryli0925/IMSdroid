@@ -231,5 +231,5 @@
         android:layout_above="@+id/getAxisBtn"
         android:layout_toRightOf="@+id/img_auto"
         android:text="Axis_show_Y" />
-    
+   
 </RelativeLayout>

@@ -7,7 +7,6 @@ import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.RobotOperationMode;
-
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -19,13 +18,15 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 
+import android.R.integer;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static boolean IS_SERVER = true; // Server: true, Client: false
+    public static boolean IS_SERVER = false; // Server: true, Client: false
     public static String SERVER_NAME = "james1";
 
 	private static XMPPConnection connection;
@@ -137,6 +138,14 @@ public class XMPPSetting {
 		                    modeButtonHandler.sendMessage(message1);
 
 		                    _gameView.postInvalidate();
+		                }
+		                else if (inM[0].equals("ScreenSize")){
+		                	
+		                	_gameView.setRemoteScreenSize(Integer.valueOf(inM[1]), Integer.valueOf(inM[2]));
+		                }
+		                else if (inM[0].equals("coord")){
+		                	
+		                	_gameView.transRemoteCoord(Double.valueOf(inM[1]), Double.valueOf(inM[2]));
 		                }
 		                else
 		                {
