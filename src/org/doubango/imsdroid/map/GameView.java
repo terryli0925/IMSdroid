@@ -367,7 +367,7 @@ public class GameView extends View {
 				            } else {
 				                //_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
 				                //_XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ event.getX() +" "+ event.getY());
+				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ event.getX() +" "+ event.getY());
 				            }
 				        }
 				    }
