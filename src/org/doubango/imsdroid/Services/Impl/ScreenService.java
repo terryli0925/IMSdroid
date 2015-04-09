@@ -127,7 +127,7 @@ public class ScreenService extends NgnBaseService implements IScreenService {
 		String screen_id = (id == null) ? cls.getCanonicalName() : id;
 		Intent intent = new Intent(mainActivity, cls);
 		intent.putExtra("id", screen_id);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		final Window window = mainActivity.getLocalActivityManager().startActivity(screen_id, intent);
 		if(window != null){
 			View view = mainActivity.getLocalActivityManager().startActivity(screen_id, intent).getDecorView();
