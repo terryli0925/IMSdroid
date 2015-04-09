@@ -106,15 +106,14 @@ public class XMPPSetting {
 		                    updateSource(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
-		                /*else if (inM[0].equals("target"))
+		                else if (inM[0].equals("target"))
 		                {
 		                    updateTarget(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
-		                }*/
+		                }
 		                else if (inM[0].equals("track"))
 		                {
-		                    _gameView.transRemoteCoord(Double.valueOf(inM[2]), Double.valueOf(inM[3]));
-		                    updateTrackPos(inM[1], _gameView.remoteCoordX, _gameView.remoteCoordY);
+		                    updateTrackPos(inM[1], inM[2], inM[3]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("mode"))
@@ -182,13 +181,13 @@ public class XMPPSetting {
         MapList.source[1] = Integer.parseInt(y);
 	}
 
-	/*private void updateTarget(String x, String y) {
+	private void updateTarget(String x, String y) {
 	    MapList.target[0][0] = Integer.parseInt(x);
 	    MapList.target[0][1] = Integer.parseInt(y);
-	}*/
+	}
 
-	private void updateTrackPos(String action, int x, int y) {
-	    int tempTarget[][] = {{x, y}};
+	private void updateTrackPos(String action, String x, String y) {
+	    int tempTarget[][] = {{Integer.parseInt(x), Integer.parseInt(y)}};
 
 	    if (action.equals(RobotOperationMode.ACTION_TARGET_ADD)) {
 	        RobotOperationMode.targetQueue.offer(tempTarget);
