@@ -251,7 +251,7 @@ public class ScreenXYZLogin extends BaseScreen {
 							
             	loggin.SetLogStatus(XMPPSet.XMPPStart(xmppUsername,xmppPassword));
 
-				if (loggin.GetLogStatus()) {
+				if (XMPPSet.isConnected()) {
 					Log.i(TAG, xmppUsername + " Loggin successful");
 					Sendmsg("ok");
 				} else {

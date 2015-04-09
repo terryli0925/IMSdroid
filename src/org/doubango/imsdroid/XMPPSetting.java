@@ -176,6 +176,10 @@ public class XMPPSetting {
 		return this.connection;
 	}
 
+	public boolean isConnected() {
+	    return connection.isConnected();
+	}
+
 	private void updateSource(String x, String y) {
         MapList.source[0] = Integer.parseInt(x);
         MapList.source[1] = Integer.parseInt(y);

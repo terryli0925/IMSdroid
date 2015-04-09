@@ -235,14 +235,13 @@ public class SetUIFunction {
 		height = size.y;
 		Log.i("shinhua","Print Screen" + width + ", " + height);
 		
-        if (loggin.GetLogStatus()) {
+        if (XMPPSet.isConnected()) {
             if (XMPPSetting.IS_SERVER) {
                 XMPPSet.XMPPSendText("william1", "ScreenSize "+ width + " " + height);
             } else {
                 XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "ScreenSize "+ width + " " + height);
             }
-        }
-		
+        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 	}
 
 	private void declarJoyStick(){
@@ -503,8 +502,11 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 
-        if (XMPPSendIsNeed && loggin.GetLogStatus())
-            XMPPSet.XMPPSendText("mode "+ currRobotMode);
+        if (XMPPSendIsNeed) {
+            if (XMPPSet.isConnected())
+                XMPPSet.XMPPSendText("mode "+ currRobotMode);
+            else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+        }
 	}
 
 	/* Control Robot panel position */
@@ -565,11 +567,11 @@ public class SetUIFunction {
 
 	/* XMPP Sendfunction */
 	public void SendToBoard(String inStr) throws IOException {
-	    //Log.i(TAG," loggin status = " + loggin.GetLogStatus());
-
-	    if (!XMPPSetting.IS_SERVER && loggin.GetLogStatus())
-	        XMPPSet.XMPPSendText("james1", inStr);
-	    else {
+	    if (!XMPPSetting.IS_SERVER) {
+	        if (XMPPSet.isConnected())
+	            XMPPSet.XMPPSendText("james1", inStr);
+	        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+	    } else {
 	        String[] inM = inStr.split("\\s+");
 	        byte[] cmdByte = uartCmd.GetAllByte(inM);
 	        //String decoded = new String(cmdByte, "ISO-8859-1");
@@ -614,11 +616,11 @@ public class SetUIFunction {
 		    if (XMPPSetting.IS_SERVER) {
 		        //TODO: Get source position
 		        //For test
-		        game.source[0] = game.source[0] + 1;
-		        game.source[1] = game.source[1] + 1;
-
-		        if (loggin.GetLogStatus())
+		        //game.source[0] = game.source[0] + 1;
+		        //game.source[1] = game.source[1] + 1;
+		        if (XMPPSet.isConnected())
 		            XMPPSet.XMPPSendText("william1", "source " + game.source[0] +" " + game.source[1]);
+		        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 		        gameView.postInvalidate();
 		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);

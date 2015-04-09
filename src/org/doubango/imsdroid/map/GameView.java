@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class GameView extends View {
 
@@ -335,8 +336,9 @@ public class GameView extends View {
 				        MapList.target[0][0] = pos[0];
 				        MapList.target[0][1] = pos[1];
 
-				        if (loggin.GetLogStatus())
+				        if (_XMPPSet.isConnected())
 				            _XMPPSet.XMPPSendText("target " + MapList.target[0][0] +" " + MapList.target[0][1]);
+				        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
@@ -353,7 +355,7 @@ public class GameView extends View {
 				            action = RobotOperationMode.ACTION_TARGET_REMOVE;
 				        }
 
-				        if (loggin.GetLogStatus()) {
+				        if (_XMPPSet.isConnected()) {
 				            if (XMPPSetting.IS_SERVER) {
 				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
 				                _XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
@@ -361,7 +363,7 @@ public class GameView extends View {
 				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
 				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
 				            }
-				        }
+				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 				    }
 
 					zoomout = true;
