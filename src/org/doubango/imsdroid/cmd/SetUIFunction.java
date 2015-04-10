@@ -732,6 +732,11 @@ public class SetUIFunction {
 		rl_local = (RelativeLayout) globalActivity.findViewById(R.id.rl_local);
 		fl_portrait = (FrameLayout) globalActivity.findViewById(R.id.fl_portrait);
 		fl_portrait.setVisibility(View.GONE);
+		
+//		if(XMPPSet.IS_SERVER){
+//			connect.performClick();
+//		}
+		
 	}
 	
 	private Button.OnClickListener videoClickListener = new OnClickListener(){
@@ -740,8 +745,6 @@ public class SetUIFunction {
 		public void onClick(View v) {
 			switch(v.getId()){
 				case R.id.connectbtn:
-					dialog = ProgressDialog.show(globalActivity, "Connection...", "pls wait..",true);
-					mCore = JustekSDKCore.getInstance();
 					
 					if(XMPPSet.IS_SERVER){
 						videoConferenceSignIn(account[0], password[0]);
@@ -761,8 +764,8 @@ public class SetUIFunction {
 	
 	
 	private void videoConferenceSignIn(String account, String password){
-		
-		mCore.signIn(globalActivity.getApplicationContext(),
+		mCore = JustekSDKCore.getInstance();
+		mCore.signIn(mContext,
 				account,      // account 
 				password,   // password 
 				serverURL, //server
@@ -804,18 +807,15 @@ public class SetUIFunction {
 		    		break;
 		    	case mCoreStatusConnected :
 		    		Toast.makeText(globalActivity, "CoreStatusConnected", Toast.LENGTH_SHORT).show();
-		    		dialog.cancel();
 		    		
 		    		comingCallService();
 		    		clientCall();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
-		    		dialog.cancel();
 		    		Toast.makeText(globalActivity, "CoreStatusDisconnecting", Toast.LENGTH_SHORT).show();
 		    		break;
 		    	case mCoreStatusDisconnected :
-		    		dialog.cancel();
 		    		Toast.makeText(globalActivity, "CoreStatusDisconnected", Toast.LENGTH_SHORT).show();
 		    		break;
         	}
@@ -834,13 +834,13 @@ public class SetUIFunction {
 						@Override
 						public void onCallStateChanged(ClientCall arg0, ClientCallStatus clientCallStatus, ExtraInfo arg2) {
 							if(clientCallStatus == ClientCallStatus.CallEnded){
-								dialog.cancel();
 								nowClientCall = null ;
 							}
 						}
 					});
 					
 					if(nowClientCall != null){
+						Log.i("shinhua", "nowClientCall Success!");
 						ComingCallHandler.obtainMessage(mIncomingCall , 0, -1, null).sendToTarget();
 					}
 				}
@@ -849,67 +849,59 @@ public class SetUIFunction {
 	}
 	
 	Handler ComingCallHandler = new Handler(){   
-        public void handleMessage(Message msg) {  
-        	super.handleMessage(msg);
-        	switch(msg.what){
-		    	case mIncomingCall :
-		    		if(nowClientCall != null ){
-		    			
-		    			String ComingUser = nowClientCall.getRemoteUserInfo().getUserName();
-			    		
-			    		dialog = new ProgressDialog(globalActivity);
-			    		
-			    		dialog.setTitle("Incoming Call");
-			    		dialog.setMessage(ComingUser);
-			    		dialog.setCancelable(false);
-			    		
-			    		dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								nowClientCall.end();
-							}
-						});
-			    		
-			    		dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Answer", new DialogInterface.OnClickListener() {
-		                     public void onClick(final DialogInterface dialog, int whichButton) {
-		                    	 fl_portrait.setVisibility(View.VISIBLE);
-		                    	 nowClientCall.answer(MediaType.Video, new ClientCallListener() {
-		     						@Override
-		     						public void onCallStateChanged(ClientCall clientCall, ClientCallStatus clientCallStatus, ExtraInfo arg2) {
-		     							
-		     							switch(clientCallStatus){
-		     								case CallConnected:
-		     									clientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
-		    	     							clientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
-		    	     						break;
-		     								case CallEnded:
-		     									try{
-		     										dialog.cancel();
-		     										rl_local.removeAllViews();
-			     									rl_remote.removeAllViews();
-		     									}catch (Exception e) {
-		     										
-		     									}
-		     									fl_portrait.setVisibility(View.GONE);
-		     									nowClientCall = null ;
-		    	     						break;
-		     							}
-		     							
-		     						}
-		     					});
-		                     }
-	  		            });
-			    		dialog.show();
-		    		}
-		    		
-		    		
-		    		break;
-				case Unanswered :
-					Toast.makeText(globalActivity, " Unanswered pls try agin ", Toast.LENGTH_SHORT).show();
-					dialog.cancel();
-					break;
-		    	
-        	}
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case mIncomingCall:
+				if (nowClientCall != null) {
+					Toast.makeText(globalActivity, "BuildComingCall",Toast.LENGTH_SHORT).show();
+					fl_portrait.setVisibility(View.VISIBLE);
+					nowClientCall.answer(MediaType.Video,
+							new ClientCallListener() {
+								@Override
+								public void onCallStateChanged(
+										ClientCall clientCall,
+										ClientCallStatus clientCallStatus,
+										ExtraInfo arg2) {
+
+									switch (clientCallStatus) {
+									case CallConnected:
+										Log.i("shinhua",
+												"CallConnected Success!");
+										clientCall.setLocalVideoView(
+												globalActivity, rl_local,
+												new Point(rl_local.getWidth(),
+														rl_local.getHeight()));
+										clientCall.setRemoteVideoView(
+												globalActivity,
+												rl_remote,
+												new Point(fl_portrait
+														.getWidth(),
+														fl_portrait.getHeight()));
+										break;
+									case CallEnded:
+										try {
+											rl_local.removeAllViews();
+											rl_remote.removeAllViews();
+										} catch (Exception e) {
+
+										}
+										fl_portrait.setVisibility(View.GONE);
+										nowClientCall = null;
+										break;
+									}
+
+								}
+							});
+				}
+
+				break;
+			case Unanswered:
+				Toast.makeText(globalActivity, " Unanswered pls try agin ",
+						Toast.LENGTH_SHORT).show();
+				break;
+
+			}
 		}
 	};
 	
