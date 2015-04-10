@@ -14,12 +14,16 @@
             android:id="@+id/rl_remote"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
-        </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_local"
-            android:layout_width="200dp"
-            android:layout_height="300dp" >
+            <RelativeLayout
+                android:id="@+id/rl_local"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="341dp" >
+            </RelativeLayout>
+
         </RelativeLayout>
 
     </FrameLayout>
@@ -259,6 +263,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/hangupbtn"
-        android:text="hangup" />
+        android:text="connect" />
+
    
 </RelativeLayout>

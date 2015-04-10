@@ -26,10 +26,17 @@ import us.justek.sdk.core.CoreStatus;
 import us.justek.sdk.core.CoreStatusListener;
 import us.justek.sdk.core.ExtraInfo;
 import us.justek.sdk.core.JustekSDKCore;
+import us.justek.sdk.core.PhoneService;
+import us.justek.sdk.core.phone.ClientCall;
+import us.justek.sdk.core.phone.ClientCallListener;
+import us.justek.sdk.core.phone.ClientCallStatus;
+import us.justek.sdk.core.phone.IncomingCallListener;
+import us.justek.sdk.core.phone.MediaType;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.net.wifi.WifiManager;
@@ -57,7 +64,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capricorn.ArcMenu;
-import com.example.testcsdk.SecondActivity;
 
 public class SetUIFunction {
 	public static int currRobotMode = RobotOperationMode.NONE;
@@ -155,7 +161,7 @@ public class SetUIFunction {
 	private String[] account = {"40023", "40024"};
 	private String[] password = {"Oh5xLN6m", "Kiu72Reo"};
 	private String serverURL = "https://58.248.15.221:8443/justek_auth/authentication";
-	private Button connect;
+	private Button connect, call;
 	private ProgressDialog dialog; 
 	
 	private final int mCoreStatusIdle = 0;
@@ -166,8 +172,12 @@ public class SetUIFunction {
 	
 	private RelativeLayout rl_remote, rl_local ;
 	private FrameLayout fl_portrait ;
+	private PhoneService mPhoneService;
 	
-	
+	private ClientCall nowClientCall ;
+	private ClientCallStatus nowClientCallStatus ;
+	private final int mIncomingCall = 0;
+	private final int Unanswered = 1;
 	
 	
 	private static SetUIFunction instance;
@@ -225,20 +235,9 @@ public class SetUIFunction {
 		declareRobot();
 		declareSlideRobotMenu();
 		declareImageButton();
+		
 		delcareViedoConferenceFunction();
-		
-		
-		// SlideRobot Menu
-		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
-		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
-		arrow.setOnClickListener(onClickListener);
-		
-		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
-		param.width = 0;
-		slideLayout.setLayoutParams(param);
-		
-		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
-		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
+
 
 		/*--------------------------------------------------*/
 		/* Temporary */
@@ -725,6 +724,9 @@ public class SetUIFunction {
 		connect = (Button)globalActivity.findViewById(R.id.connectbtn);
 		connect.setOnClickListener(videoClickListener);
 		
+		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
+		btHang.setOnClickListener(videoClickListener);
+		
 		
 		rl_remote = (RelativeLayout) globalActivity.findViewById(R.id.rl_remote);
 		rl_local = (RelativeLayout) globalActivity.findViewById(R.id.rl_local);
@@ -736,14 +738,23 @@ public class SetUIFunction {
 
 		@Override
 		public void onClick(View v) {
-			dialog = ProgressDialog.show(globalActivity, "Connection...", "pls wait..",true);
-			mCore = JustekSDKCore.getInstance();
+			switch(v.getId()){
+				case R.id.connectbtn:
+					dialog = ProgressDialog.show(globalActivity, "Connection...", "pls wait..",true);
+					mCore = JustekSDKCore.getInstance();
+					
+					if(XMPPSet.IS_SERVER){
+						videoConferenceSignIn(account[0], password[0]);
+					} else {
+						videoConferenceSignIn(account[1], password[1]);
+					}			
+				break;
+				
+				case R.id.hangupbtn:
+					hangupComingCall();
+					break;
+			}
 			
-			if(XMPPSet.IS_SERVER){
-				videoConferenceSignIn(account[0], password[0]);
-			} else {
-				videoConferenceSignIn(account[1], password[1]);
-			}			
 		}
 		
 	};
@@ -794,14 +805,9 @@ public class SetUIFunction {
 		    	case mCoreStatusConnected :
 		    		Toast.makeText(globalActivity, "CoreStatusConnected", Toast.LENGTH_SHORT).show();
 		    		dialog.cancel();
-//		    		Intent intent = new Intent(); 
-//					intent.setClass(globalActivity, SecondActivity.class);
-//					startActivity(intent);
 		    		
-//					nowClientCall.setLocalVideoView(SecondActivity.this, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
-//					nowClientCall.setRemoteVideoView(SecondActivity.this, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
-		    		
-		    		
+		    		comingCallService();
+		    		clientCall();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
@@ -815,6 +821,186 @@ public class SetUIFunction {
         	}
 		}
 	};
+	
+	private void comingCallService(){
+		if(mCore != null){
+			Log.i("shinhua", "ComingCallService Success!");
+			mPhoneService = mCore.getPhoneService();
+			mPhoneService.addIncomingCallListener(new IncomingCallListener() {
+				@Override
+				public void onIncomingCall(final ClientCall clientCall) {
+					nowClientCall = clientCall;
+					nowClientCall.addCallStatusListener(new ClientCallListener() {
+						@Override
+						public void onCallStateChanged(ClientCall arg0, ClientCallStatus clientCallStatus, ExtraInfo arg2) {
+							if(clientCallStatus == ClientCallStatus.CallEnded){
+								dialog.cancel();
+								nowClientCall = null ;
+							}
+						}
+					});
+					
+					if(nowClientCall != null){
+						ComingCallHandler.obtainMessage(mIncomingCall , 0, -1, null).sendToTarget();
+					}
+				}
+			});
+		}
+	}
+	
+	Handler ComingCallHandler = new Handler(){   
+        public void handleMessage(Message msg) {  
+        	super.handleMessage(msg);
+        	switch(msg.what){
+		    	case mIncomingCall :
+		    		if(nowClientCall != null ){
+		    			
+		    			String ComingUser = nowClientCall.getRemoteUserInfo().getUserName();
+			    		
+			    		dialog = new ProgressDialog(globalActivity);
+			    		
+			    		dialog.setTitle("Incoming Call");
+			    		dialog.setMessage(ComingUser);
+			    		dialog.setCancelable(false);
+			    		
+			    		dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								nowClientCall.end();
+							}
+						});
+			    		
+			    		dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Answer", new DialogInterface.OnClickListener() {
+		                     public void onClick(final DialogInterface dialog, int whichButton) {
+		                    	 fl_portrait.setVisibility(View.VISIBLE);
+		                    	 nowClientCall.answer(MediaType.Video, new ClientCallListener() {
+		     						@Override
+		     						public void onCallStateChanged(ClientCall clientCall, ClientCallStatus clientCallStatus, ExtraInfo arg2) {
+		     							
+		     							switch(clientCallStatus){
+		     								case CallConnected:
+		     									clientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+		    	     							clientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
+		    	     						break;
+		     								case CallEnded:
+		     									try{
+		     										dialog.cancel();
+		     										rl_local.removeAllViews();
+			     									rl_remote.removeAllViews();
+		     									}catch (Exception e) {
+		     										
+		     									}
+		     									fl_portrait.setVisibility(View.GONE);
+		     									nowClientCall = null ;
+		    	     						break;
+		     							}
+		     							
+		     						}
+		     					});
+		                     }
+	  		            });
+			    		dialog.show();
+		    		}
+		    		
+		    		
+		    		break;
+				case Unanswered :
+					Toast.makeText(globalActivity, " Unanswered pls try agin ", Toast.LENGTH_SHORT).show();
+					dialog.cancel();
+					break;
+		    	
+        	}
+		}
+	};
+	
+	private void clientCall(){
+		if(XMPPSet.IS_SERVER == false){
+			callnumber(account[0]);
+			
+		}
+	}
+	
+	private void callnumber(String number){
+		if(nowClientCall == null){
+			fl_portrait.setVisibility(View.VISIBLE);
+			nowClientCall = mPhoneService.makeCall(number,
+					MediaType.Video, 
+		     		new ClientCallListener() {
+						@Override
+						public void onCallStateChanged(ClientCall ClientCall, ClientCallStatus clientCallStatus, ExtraInfo arg2) {
+							Log.i("info", "clientCallStatus : "+ clientCallStatus );
+							nowClientCallStatus = clientCallStatus ;
+							switch (clientCallStatus) {
+//								case CallOriginating:
+//									nowClientCall.setLocalVideoView(SecondActivity.this, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+//									break;
+								case CallRinging:
+									startTimer();
+									break;
+								case CallConnected:
+									dialog.cancel();
+									nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+									nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
+									break;
+								case CallEnded:
+									Toast.makeText(globalActivity, " CallEnded pls try agin ", Toast.LENGTH_SHORT).show();
+									dialog.cancel();
+									if(nowClientCall != null){
+										nowClientCall = null ;
+										rl_local.removeAllViews();
+     									rl_remote.removeAllViews();
+										fl_portrait.setVisibility(View.GONE);
+									}
+									break;
+							}
+						}
+					});
+			dialog = new ProgressDialog(globalActivity);
+			dialog.setTitle("Dialing");
+    		dialog.setMessage("pls wait");
+    		dialog.setCancelable(false);
+    		dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if(nowClientCall != null){
+						nowClientCall.end();
+						nowClientCall = null ;
+						fl_portrait.setVisibility(View.GONE);
+					}
+				}
+			});
+    		dialog.show();
+		}
+		
+	}
+	
+	private void startTimer(){  
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {   
+                    Thread.sleep(15000);  
+                } catch (InterruptedException e) {  
+                }     
+                if(nowClientCallStatus == ClientCallStatus.CallRinging){
+                	 myHandler.obtainMessage(Unanswered, 0, -1, null).sendToTarget();
+                }     
+			}
+		}).start();
+    }
+	
+	private void hangupComingCall(){
+		
+		if(nowClientCall != null){
+			nowClientCall.end();
+			nowClientCall = null ;
+			rl_local.removeAllViews();
+			rl_remote.removeAllViews();
+			fl_portrait.setVisibility(View.GONE);
+		}
+	}
+	
 	
 	
 }
