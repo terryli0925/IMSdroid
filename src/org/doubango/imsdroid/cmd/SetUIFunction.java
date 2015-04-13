@@ -237,6 +237,13 @@ public class SetUIFunction {
 		declareImageButton();
 		
 		delcareViedoConferenceFunction();
+		
+//		if(XMPPSet.IS_SERVER){
+//			videoConferenceSignIn(account[0], password[0]);
+//		} else {
+//			videoConferenceSignIn(account[1], password[1]);
+//		}	
+		
 
 
 		/*--------------------------------------------------*/
@@ -258,7 +265,6 @@ public class SetUIFunction {
 		display.getSize(size);
 		width = size.x;
 		height = size.y;
-		Log.i("shinhua","Print Screen" + width + ", " + height);
 		
         if (XMPPSet.isConnected()) {
             if (XMPPSetting.IS_SERVER) {
@@ -355,6 +361,8 @@ public class SetUIFunction {
 		reset 	  = (ImageButton) globalActivity.findViewById(R.id.img_reset);
 		setup 	  = (ImageButton) globalActivity.findViewById(R.id.img_setup);
 		
+
+		
 		
 		manual.setOnClickListener(onClickListener);
 		semiauto.setOnClickListener(onClickListener);
@@ -363,6 +371,7 @@ public class SetUIFunction {
 		reset.setOnClickListener(onClickListener);
 		setup.setOnClickListener(onClickListener);
 	}
+	
 	
 	/* The OnTouchListener of Draw JoyStick */
 	OnTouchListener joystickListener = new OnTouchListener() {
@@ -733,10 +742,11 @@ public class SetUIFunction {
 		fl_portrait = (FrameLayout) globalActivity.findViewById(R.id.fl_portrait);
 		fl_portrait.setVisibility(View.GONE);
 		
-//		if(XMPPSet.IS_SERVER){
-//			connect.performClick();
-//		}
-		
+		if(XMPPSet.IS_SERVER){
+			connect.setVisibility(View.INVISIBLE);
+			connect.performClick();
+		}
+				
 	}
 	
 	private Button.OnClickListener videoClickListener = new OnClickListener(){
@@ -745,12 +755,13 @@ public class SetUIFunction {
 		public void onClick(View v) {
 			switch(v.getId()){
 				case R.id.connectbtn:
-					
+
 					if(XMPPSet.IS_SERVER){
 						videoConferenceSignIn(account[0], password[0]);
-					} else {
+					} else if(!XMPPSet.IS_SERVER){
 						videoConferenceSignIn(account[1], password[1]);
-					}			
+					}	
+					
 				break;
 				
 				case R.id.hangupbtn:
@@ -824,7 +835,6 @@ public class SetUIFunction {
 	
 	private void comingCallService(){
 		if(mCore != null){
-			Log.i("shinhua", "ComingCallService Success!");
 			mPhoneService = mCore.getPhoneService();
 			mPhoneService.addIncomingCallListener(new IncomingCallListener() {
 				@Override
@@ -840,7 +850,6 @@ public class SetUIFunction {
 					});
 					
 					if(nowClientCall != null){
-						Log.i("shinhua", "nowClientCall Success!");
 						ComingCallHandler.obtainMessage(mIncomingCall , 0, -1, null).sendToTarget();
 					}
 				}
