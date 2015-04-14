@@ -1,6 +1,12 @@
 package org.doubango.imsdroid.cmd;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,15 +38,20 @@ import us.justek.sdk.core.phone.ClientCallListener;
 import us.justek.sdk.core.phone.ClientCallStatus;
 import us.justek.sdk.core.phone.IncomingCallListener;
 import us.justek.sdk.core.phone.MediaType;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.wifi.WifiManager;
@@ -55,13 +66,15 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -86,7 +99,7 @@ public class SetUIFunction {
 	private UartReceive uartRec;
 
 	// For map use
-	private Button jsRunBtn,btHang;
+	private Button getAxisBtn,jsRunBtn,btHang;
 
 	GameView gameView;
 	TextView Axis_show_X, Axis_show_Y;
@@ -161,6 +174,12 @@ public class SetUIFunction {
 
 	ScreenAV _ScreenAV;
 
+	// Auto mode
+	private ListView listView;
+	private ArrayList<String> list = new ArrayList<String>();
+	private ArrayAdapter<String> listAdapter;
+	private String schedulingTime;
+
 	/* Temporary declare */
 	JustekSDKCore mCore;
 	private String[] account = {"40023", "40024"};
@@ -209,12 +228,6 @@ public class SetUIFunction {
 
 	@SuppressLint("NewApi") 
 	public void StartUIFunction() {
-
-		Axis_show_X = (TextView) globalActivity.findViewById(R.id.Axis_show_X);
-		Axis_show_Y = (TextView) globalActivity.findViewById(R.id.Axis_show_Y);
-		//Axis_TestAxisInput = (EditText) globalActivity
-			//	.findViewById(R.id.Axis_TestInputAxis);
-
 		loggin = NetworkStatus.getInstance();
 
 		gameView = (GameView) globalActivity.findViewById(R.id.gameView1);
@@ -228,33 +241,33 @@ public class SetUIFunction {
 
 		getScreenSize(globalActivity);
 
-
-		/* Button declare */
-		jsRunBtn = (Button) globalActivity.findViewById(R.id.runjs);
-		jsRunBtn.setOnClickListener(onClickListener);
-
-		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
-		btHang.setOnClickListener(onClickListener);
-
 		declarJoyStick();
 		declareRobot();
 		declareSlideRobotMenu();
+		declareTextView();
+		declareButton();
 		declareImageButton();
-		
+		declareListView();
 		delcareViedoConferenceFunction();
 		
+
+//		if(XMPPSet.IS_SERVER){
+//			videoConferenceSignIn(account[0], password[0]);
+//		} else {
+//			videoConferenceSignIn(account[1], password[1]);
+//		}
 
 
 		/*--------------------------------------------------*/
 		/* Temporary */
-		Button getAxisBtn = (Button) globalActivity.findViewById(R.id.getAxisBtn);
-		getAxisBtn.setOnClickListener(onClickListener);
-		
-		/* Temporary - Wifi */		
-		WifiManager wifi = (WifiManager) globalActivity.getSystemService(mContext.WIFI_SERVICE);
 		
 		uartRec = new UartReceive();
 		uartRec.RunRecThread();
+
+		// Broadcast for auto mode triggered
+		IntentFilter intentFilter = new IntentFilter();
+		intentFilter.addAction(RobotOperationMode.ACTION_INTENT_ALARM);
+		globalActivity.registerReceiver(autoTriggerReceiver, intentFilter);
 	}
 
 	@SuppressLint("NewApi")
@@ -349,6 +362,21 @@ public class SetUIFunction {
 		mAinmMenuOpen = new ScreenUISildeMenu(slideLayout, 500, 0, (int)(width/6));
 		mAinmMenuClose = new ScreenUISildeMenu(slideLayout, 500, (int)(width/6), 0);
 	}
+
+	private void declareTextView(){
+	    Axis_show_X = (TextView) globalActivity.findViewById(R.id.Axis_show_X);
+	    Axis_show_Y = (TextView) globalActivity.findViewById(R.id.Axis_show_Y);
+	}
+
+	private void declareButton() {
+	    getAxisBtn = (Button) globalActivity.findViewById(R.id.getAxisBtn);
+	    jsRunBtn = (Button) globalActivity.findViewById(R.id.runjs);
+	    btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
+
+	    getAxisBtn.setOnClickListener(onClickListener);
+	    jsRunBtn.setOnClickListener(onClickListener);
+	    btHang.setOnClickListener(onClickListener);
+	}
 	
 	private void declareImageButton(){
 	   
@@ -407,7 +435,17 @@ public class SetUIFunction {
 	}
 	
 	
-	/* The OnTouchListener of Draw JoyStick */
+
+	private void declareListView() {
+	    listView = (ListView)globalActivity.findViewById(R.id.listView);
+	    //listAdapter = new ArrayAdapter(globalActivity,android.R.layout.simple_list_item_1,list);
+	    listAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, list);
+	    listView.setAdapter(listAdapter);
+	    listView.setOnItemClickListener(onItemClickListener);
+	    listView.setOnItemLongClickListener(onItemLongClickListener);	    
+	}
+
+/* The OnTouchListener of Draw JoyStick */
 	OnTouchListener joystickListener = new OnTouchListener() {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
@@ -447,7 +485,6 @@ public class SetUIFunction {
 
 		@Override
 		public void onClick(View v) {
-			// TODO Auto-generated method stub
 			indicator = v.getId();
 			switch (indicator) {
 			case R.id.hangupbtn:
@@ -487,19 +524,21 @@ public class SetUIFunction {
 				
 			case R.id.img_manual:
 			    if (currRobotMode != RobotOperationMode.MANUAL_MODE) {
-			        updateRobotMode(RobotOperationMode.MANUAL_MODE, true);
+			        updateRobotModeState(RobotOperationMode.MANUAL_MODE, true);
 			        gameView.postInvalidate();
 			    }
 			    break;
 			case R.id.img_semiauto:
 			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
-			        updateRobotMode(RobotOperationMode.SEMI_AUTO_MODE, true);
+			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE, true);
+			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
 			case R.id.img_auto:
 			    if (currRobotMode != RobotOperationMode.AUTO_MODE) {
-			        updateRobotMode(RobotOperationMode.AUTO_MODE, true);
+			        updateRobotModeState(RobotOperationMode.AUTO_MODE, true);
+			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
@@ -507,10 +546,25 @@ public class SetUIFunction {
 				Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
 				break;
 			case R.id.img_reset:
-				Toast.makeText(mContext, "Navi Reset", Toast.LENGTH_LONG).show();
+			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
+			        gameView.postInvalidate();
+			    } else if (currRobotMode == RobotOperationMode.AUTO_MODE) {
+			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+			        gameView.postInvalidate();
+			    }
 				break;
 			case R.id.img_setup:
-				Toast.makeText(mContext, "Setup", Toast.LENGTH_LONG).show();
+			    if (currRobotMode == RobotOperationMode.AUTO_MODE) {
+			        setTriggerAlarm();
+
+			        //Store this schedule to HashMap
+			        LinkedList<int[][]> tempQueue = (LinkedList<int[][]>) RobotOperationMode.autoTargetSettingQueue.clone();
+			        RobotOperationMode.RobotScheduleHashMap.put(schedulingTime, tempQueue);
+
+			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+			        gameView.postInvalidate();
+			    }
 				break;
 			default:
 				break;
@@ -519,6 +573,57 @@ public class SetUIFunction {
 		}
 
 	};
+
+	//TODO: When click show source and target
+	private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+
+	    @Override
+	    public void onItemClick(AdapterView<?> parent, View view, int position,
+	            long id) {
+	        String clickSchedule = (String)listView.getItemAtPosition(position);
+	        Log.i("terry", "Show Schedule "+clickSchedule+" from list");
+
+	        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(clickSchedule);
+	        gameView.isClickSchedule = true;
+	        gameView.postInvalidate();
+	    }
+	};
+
+	private AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
+
+	    @Override
+	    public boolean onItemLongClick(AdapterView<?> parent, View view,
+	            int position, long id) {
+	        list.remove(position);
+	        listAdapter.notifyDataSetChanged();
+
+	        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+	        gameView.postInvalidate();
+
+	        return true;
+	    }
+	};
+
+	private final BroadcastReceiver autoTriggerReceiver	= new BroadcastReceiver() {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        final String action = intent.getAction();
+	        if(RobotOperationMode.ACTION_INTENT_ALARM.equals(action)){
+	            Log.i("terry", "Get intent "+ RobotOperationMode.ACTION_INTENT_ALARM);
+
+	            //For test
+	            game.source[0] = game.source[0] +1;
+	            game.source[1] = game.source[1] +1;
+	            gameView.postInvalidate();
+	        }
+	    }	    
+	};
+
+	private void revertImageButton(){
+		manual.setImageResource(R.drawable.manual0);
+		semiauto.setImageResource(R.drawable.semiauto0);
+		auto.setImageResource(R.drawable.auto0);
+	}
 
 	/* Arc Menu */
 	private void initArcMenu(final ArcMenu menu, int[] itemDrawables, Activity v) {
@@ -540,7 +645,7 @@ public class SetUIFunction {
 		}
 	}
 
-	public void updateRobotMode(int mode, boolean XMPPSendIsNeed) {
+	public void updateRobotModeState(int mode, boolean XMPPSendIsNeed) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
             manual.setImageResource(R.drawable.manual1);
             semiauto.setImageResource(R.drawable.semiauto0);
@@ -553,9 +658,6 @@ public class SetUIFunction {
             auto.setImageResource(R.drawable.auto0);
             layout_joystick.setVisibility(View.GONE);
             currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
-
-            // Clear targetQueue
-            RobotOperationMode.targetQueue.clear();
         }else if (mode == RobotOperationMode.AUTO_MODE) {
             manual.setImageResource(R.drawable.manual0);
             semiauto.setImageResource(R.drawable.semiauto0);
@@ -569,6 +671,38 @@ public class SetUIFunction {
                 XMPPSet.XMPPSendText("mode "+ currRobotMode);
             else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
         }
+	}
+
+	private void setTriggerAlarm() {
+	    //TODO: Get scheduling time
+	    //For test
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.setTime(new Date());
+	    calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+	    calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+	    calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + 10);
+	    Log.i("terry", "Get scheduling time: "+calendar.getTime());
+
+	    //Set alarm to trigger robot
+	    AlarmManager alarmManager = (AlarmManager) globalActivity.getSystemService(Context.ALARM_SERVICE);
+	    PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(RobotOperationMode.ACTION_INTENT_ALARM), PendingIntent.FLAG_UPDATE_CURRENT);
+	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+
+	    //Update List
+	    SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
+	    schedulingTime = timeFormat.format(calendar.getTime());
+	    list.add(schedulingTime);
+	    listAdapter.notifyDataSetChanged();
+	    Log.i("terry", "Show scheduling time: "+schedulingTime);
+	}
+
+	private void revertAutoModeStatus(int mode) {
+	    if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
+	        RobotOperationMode.targetQueue.clear();
+	    } else if (mode == RobotOperationMode.AUTO_MODE) {
+	        RobotOperationMode.autoTargetSettingQueue.clear();
+	        gameView.isClickSchedule = false;
+	    }
 	}
 
 	/* Control Robot panel position */

@@ -106,7 +106,9 @@ public class GameView extends View {
 	
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 	
-	
+	//Auto mode
+	public boolean isClickSchedule = false;
+
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
 
@@ -219,7 +221,7 @@ public class GameView extends View {
 			}
 		}
 
-		// Canvas drawBitmap: Track point
+		// Canvas drawBitmap: Track point for semi-auto mode
 		if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
@@ -234,6 +236,38 @@ public class GameView extends View {
 		        }
 		    }
 		}
+
+		// Canvas drawBitmap: Track point for auto mode
+		if (SetUIFunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+		    if (!isClickSchedule) {
+		        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
+		            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
+		            if (i == RobotOperationMode.autoTargetSettingQueue.size() -1) {
+		                canvas.drawBitmap(redBall,
+		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                        + tempTarget[0][1] * (span + 1), paint);
+		            } else {
+		                canvas.drawBitmap(greenBall,
+		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                        + tempTarget[0][1] * (span + 1), paint);
+		            }
+		        }
+		    }else {
+		        for (int i = 0; i < RobotOperationMode.autoTargetQueue.size(); i++) {
+		            int[][] tempTarget = RobotOperationMode.autoTargetQueue.get(i);
+		            if (i == RobotOperationMode.autoTargetQueue.size() -1) {
+		                canvas.drawBitmap(redBall,
+		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                        + tempTarget[0][1] * (span + 1), paint);
+		            } else {
+		                canvas.drawBitmap(greenBall,
+		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                        + tempTarget[0][1] * (span + 1), paint);
+		            }
+		        }
+		    }
+		}
+
 		// Canvas drawBitmap: Source
 		canvas.drawBitmap(source,
 				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
@@ -332,7 +366,7 @@ public class GameView extends View {
 				//Log.i(TAG, "touch target draw before");
 
 				if ( pos[0] != -1 && pos[1] != -1) {
-				    if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
+				    /*if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
 				        MapList.target[0][0] = pos[0];
 				        MapList.target[0][1] = pos[1];
 
@@ -340,9 +374,10 @@ public class GameView extends View {
 				            _XMPPSet.XMPPSendText("target " + MapList.target[0][0] +" " + MapList.target[0][1]);
 				        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
-				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {*/
+				    if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
-				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
+				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
 				        String action;
 
 				        if (trackIndex == -1) {     //Add this new target in track list
@@ -357,15 +392,31 @@ public class GameView extends View {
 
 				        if (_XMPPSet.isConnected()) {
 				            if (XMPPSetting.IS_SERVER) {
-				                _XMPPSet.XMPPSendText("william1", "track "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				                _XMPPSet.XMPPSendText("william1", "semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
 				                _XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
 				            } else {
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "track "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
+				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "semiauto "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
 				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
 				            }
 				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
-				    }
+				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+				        int[][] tempTarget = {{pos[0], pos[1]}};
+				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
+				        String action;
 
+				        if (trackIndex == -1) {     //Add this new target in track list
+				            RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+				            //Log.i(TAG, "Offer targetQueue, size= "+RobotOperationMode.autoTargetSettingQueue.size());
+				            action = RobotOperationMode.ACTION_TARGET_ADD;
+				        }else {
+				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
+				            //Log.i(TAG, "Remove targetQueue, size= "+RobotOperationMode.autoTargetSettingQueue.size());
+				            action = RobotOperationMode.ACTION_TARGET_REMOVE;
+				        }
+
+				        if (_XMPPSet.isConnected())
+				            _XMPPSet.XMPPSendText("auto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				    }
 					zoomout = true;
 				}
 
