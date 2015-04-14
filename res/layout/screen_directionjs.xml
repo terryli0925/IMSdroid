@@ -265,5 +265,12 @@
         android:layout_toRightOf="@+id/hangupbtn"
         android:text="connect" />
 
-   
+	<ListView
+        android:id="@+id/listView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_toRightOf="@+id/connectbtn"
+        android:layout_alignParentBottom="true"
+        android:scrollbars="vertical"
+    />
 </RelativeLayout>

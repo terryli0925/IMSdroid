@@ -26,7 +26,7 @@ import android.widget.Toast;
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static boolean IS_SERVER = true; // Server: true, Client: false
+    public static boolean IS_SERVER = false; // Server: true, Client: false
     public static String SERVER_NAME = "james1";
 
 	private static XMPPConnection connection;
@@ -111,14 +111,19 @@ public class XMPPSetting {
 		                    updateTarget(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
-		                else if (inM[0].equals("track"))
+		                else if (inM[0].equals("semiauto"))
+		                {
+		                    updateTrackPos(inM[1], inM[2], inM[3]);
+		                    _gameView.postInvalidate();
+		                }
+		                else if (inM[0].equals("auto"))
 		                {
 		                    updateTrackPos(inM[1], inM[2], inM[3]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("mode"))
 		                {
-		                    updateRobotMode(inM[1]);
+		                    updateRobotModeState(inM[1]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("ScreenSize")){
@@ -163,6 +168,7 @@ public class XMPPSetting {
 	public void XMPPSendText(String to, String xmppText)
 	{
 	    //Server name , can't be removed here.
+	    //user@domain/resource
 	    String Reci = to+"@james-pc/Smack";
 
 	    Log.i(TAG, "Sending text [" + xmppText + "] to [" + Reci + "]");
@@ -197,13 +203,13 @@ public class XMPPSetting {
 	        RobotOperationMode.targetQueue.offer(tempTarget);
 	        //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
 	    }else if (action.equals(RobotOperationMode.ACTION_TARGET_REMOVE)) {
-	        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget);
+	        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
 	        if (trackIndex != -1) RobotOperationMode.targetQueue.remove(trackIndex);
 	        //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
 	    }
 	}
 
-	private void updateRobotMode(String mode) {
+	private void updateRobotModeState(String mode) {
 	    //Using handler to update ImageButton
 	    android.os.Message message1 = modeButtonHandler.obtainMessage(1, mode);
 	    modeButtonHandler.sendMessage(message1);
@@ -211,7 +217,7 @@ public class XMPPSetting {
 
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
-	        setUIfunction.updateRobotMode(Integer.valueOf((String)msg.obj), false);
+	        setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj), false);
 	        super.handleMessage(msg);
 	    }
 	};
