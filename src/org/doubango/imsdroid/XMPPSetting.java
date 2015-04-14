@@ -45,9 +45,11 @@ public class XMPPSetting {
 
 	public boolean XMPPStart(String Name , String Pass)
 	{
+		
 		// Hardcode here , we could modify later.
-		 String host = "61.222.245.149";
-	     String port = "5222";
+		 //String host = "61.222.245.149";
+		String host = "ea-xmppserver.cloudapp.net";
+		String port = "5222";
 	     //For Alger1 test machine
 	    // String username = "alger1";
 	     String username = Name;

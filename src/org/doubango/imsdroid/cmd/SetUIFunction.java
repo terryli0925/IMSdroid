@@ -38,7 +38,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
@@ -50,6 +54,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -238,12 +243,6 @@ public class SetUIFunction {
 		
 		delcareViedoConferenceFunction();
 		
-//		if(XMPPSet.IS_SERVER){
-//			videoConferenceSignIn(account[0], password[0]);
-//		} else {
-//			videoConferenceSignIn(account[1], password[1]);
-//		}	
-		
 
 
 		/*--------------------------------------------------*/
@@ -361,8 +360,8 @@ public class SetUIFunction {
 		reset 	  = (ImageButton) globalActivity.findViewById(R.id.img_reset);
 		setup 	  = (ImageButton) globalActivity.findViewById(R.id.img_setup);
 		
-
 		
+		//adjustButtonSize(manual);
 		
 		manual.setOnClickListener(onClickListener);
 		semiauto.setOnClickListener(onClickListener);
@@ -370,6 +369,41 @@ public class SetUIFunction {
 		navistart.setOnClickListener(onClickListener);
 		reset.setOnClickListener(onClickListener);
 		setup.setOnClickListener(onClickListener);
+	}
+	
+	private void adjustButtonSize(ImageButton mButton){
+		
+		
+		Bitmap bitmapOrg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.manual0);
+		
+		int width = bitmapOrg.getWidth();
+		int height = bitmapOrg.getHeight();
+		int newWidth = 200;
+		int newHeight = 200;
+		
+		
+		float scaleWidth = ((float) newWidth) / width;
+		float scaleHeight = ((float) newHeight) / height;
+		
+		Matrix matrix = new Matrix();
+		matrix.postScale(scaleWidth, scaleHeight);
+		
+		Bitmap newBasemap = Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+		
+		BitmapDrawable bmd = new BitmapDrawable(newBasemap);
+		ImageView imageView = new ImageView(mContext);
+		imageView.setImageDrawable(bmd);
+		
+		
+		int buttonWidth = (int)(width / 4.0);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(buttonWidth, 0, 0, 0);
+		mButton.setLayoutParams(params);
+		
+
+		
+		 // add ImageView to the Layout
+		
 	}
 	
 	
@@ -485,16 +519,6 @@ public class SetUIFunction {
 		}
 
 	};
-	
-	
-	
-	
-	
-	private void revertImageButton(){
-		manual.setImageResource(R.drawable.manual0);
-		semiauto.setImageResource(R.drawable.semiauto0);
-		auto.setImageResource(R.drawable.auto0);
-	}
 
 	/* Arc Menu */
 	private void initArcMenu(final ArcMenu menu, int[] itemDrawables, Activity v) {
@@ -742,6 +766,7 @@ public class SetUIFunction {
 		fl_portrait = (FrameLayout) globalActivity.findViewById(R.id.fl_portrait);
 		fl_portrait.setVisibility(View.GONE);
 		
+		/* Login: Server, auto connection */ 
 		if(XMPPSet.IS_SERVER){
 			connect.setVisibility(View.INVISIBLE);
 			connect.performClick();
@@ -820,7 +845,7 @@ public class SetUIFunction {
 		    		Toast.makeText(globalActivity, "CoreStatusConnected", Toast.LENGTH_SHORT).show();
 		    		
 		    		comingCallService();
-		    		clientCall();
+		    		clientNewLetter();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
@@ -906,18 +931,16 @@ public class SetUIFunction {
 
 				break;
 			case Unanswered:
-				Toast.makeText(globalActivity, " Unanswered pls try agin ",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(globalActivity, " Unanswered pls try agin ",Toast.LENGTH_SHORT).show();
 				break;
 
 			}
 		}
 	};
 	
-	private void clientCall(){
+	private void clientNewLetter(){
 		if(XMPPSet.IS_SERVER == false){
 			callnumber(account[0]);
-			
 		}
 	}
 	

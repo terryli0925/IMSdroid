@@ -112,7 +112,6 @@ public class ScreenXYZsignin extends BaseScreen {
 		verticalscope = Screen_height / GAP;		
 		loginLayoutParams.setMargins(horizontalscope * horizontalGAP, verticalscope * 6, 0, 0);
 		btn.setLayoutParams(loginLayoutParams);
-		//Log.i("shinhua","horizontalscope = " + horizontalscope + " verticalscope = " + verticalscope);
 	}
 	
 	private OnClickListener ClickListener = new OnClickListener(){
