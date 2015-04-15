@@ -278,13 +278,9 @@ public class SetUIFunction {
 		width = size.x;
 		height = size.y;
 		
-        if (XMPPSet.isConnected()) {
-            if (XMPPSetting.IS_SERVER) {
-                XMPPSet.XMPPSendText("william1", "ScreenSize "+ width + " " + height);
-            } else {
-                XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "ScreenSize "+ width + " " + height);
-            }
-        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+		if (XMPPSet.isConnected())
+		    XMPPSet.XMPPSendText("ScreenSize "+ width + " " + height);
+		else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 	}
 
 	private void declarJoyStick(){
@@ -765,7 +761,7 @@ public class SetUIFunction {
 	public void SendToBoard(String inStr) throws IOException {
 	    if (!XMPPSetting.IS_SERVER) {
 	        if (XMPPSet.isConnected())
-	            XMPPSet.XMPPSendText("james1", inStr);
+	            XMPPSet.XMPPSendText(inStr);
 	        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 	    } else {
 	        String[] inM = inStr.split("\\s+");
@@ -815,7 +811,7 @@ public class SetUIFunction {
 		        //game.source[0] = game.source[0] + 1;
 		        //game.source[1] = game.source[1] + 1;
 		        if (XMPPSet.isConnected())
-		            XMPPSet.XMPPSendText("william1", "source " + game.source[0] +" " + game.source[1]);
+		            XMPPSet.XMPPSendText("source " + game.source[0] +" " + game.source[1]);
 		        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 		        gameView.postInvalidate();

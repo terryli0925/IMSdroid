@@ -18,16 +18,22 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 
-import android.R.integer;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static boolean IS_SERVER = false; // Server: true, Client: false
-    public static String SERVER_NAME = "james1";
+    public static final boolean IS_SERVER = true; // Server: true, Client: false
+    public static final String SERVER_NAME = "rdc01";
+    public static final String CLIENT_NAME = "rdc02";
+    //public static final String[] CLIENT_LIST = {"rdc02", "rdc03", "rdc04"};
+
+    //private static final String XMPP_SERVER_NAME = "61.222.245.149;
+    private static final String XMPP_SERVER_NAME = "ea-xmppserver.cloudapp.net";
+    private static final String XMPP_PORT = "5222";
+    private static final String XMPP_DOMAIN_NAME = "ea-xmppserver";
+    private static final String XMPP_RESOURCE_NAME = "";
 
 	private static XMPPConnection connection;
 	private UartCmd UCmd = UartCmd.getInstance();
@@ -45,13 +51,9 @@ public class XMPPSetting {
 
 	public boolean XMPPStart(String Name , String Pass)
 	{
-		
-		// Hardcode here , we could modify later.
-		 //String host = "61.222.245.149";
-		String host = "ea-xmppserver.cloudapp.net";
-		String port = "5222";
-	     //For Alger1 test machine
-	    // String username = "alger1";
+	    String host = XMPP_SERVER_NAME;
+	    String port = XMPP_PORT;
+
 	     String username = Name;
 	     String password = Pass;
 	     LogSuc = false;	
@@ -88,6 +90,7 @@ public class XMPPSetting {
 	             //xmppClient.setConnection(null);
 	         setConnection(null);
 	     }
+
 	     return LogSuc;
 	}
 
@@ -161,7 +164,7 @@ public class XMPPSetting {
 	public void XMPPSendText(String xmppText)
 	{
 	    if (IS_SERVER) {
-	        XMPPSendText("william1", xmppText);
+	        XMPPSendText(CLIENT_NAME, xmppText);
 	    } else {
 	        XMPPSendText(SERVER_NAME, xmppText);
 	    }
@@ -171,7 +174,12 @@ public class XMPPSetting {
 	{
 	    //Server name , can't be removed here.
 	    //user@domain/resource
-	    String Reci = to+"@james-pc/Smack";
+	    //String Reci = to+"@james-pc/Smack";
+	    String Reci;
+	    if (XMPP_RESOURCE_NAME.equals(""))
+	        Reci = to+"@"+XMPP_DOMAIN_NAME;
+	    else
+	        Reci = to+"@"+XMPP_DOMAIN_NAME+"/"+XMPP_RESOURCE_NAME;
 
 	    Log.i(TAG, "Sending text [" + xmppText + "] to [" + Reci + "]");
 	    Message msg = new Message(Reci, Message.Type.chat);

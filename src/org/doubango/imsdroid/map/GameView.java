@@ -391,13 +391,8 @@ public class GameView extends View {
 				        }
 
 				        if (_XMPPSet.isConnected()) {
-				            if (XMPPSetting.IS_SERVER) {
-				                _XMPPSet.XMPPSendText("william1", "semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-				                _XMPPSet.XMPPSendText("william1", "coord "+ event.getX() + " " + event.getY());
-				            } else {
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "semiauto "+ action +" "+ tempTarget[0][0] +" " + tempTarget[0][1]);
-				                _XMPPSet.XMPPSendText(XMPPSetting.SERVER_NAME, "coord "+ event.getX() + " " + event.getY());
-				            }
+				            _XMPPSet.XMPPSendText("semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+				            _XMPPSet.XMPPSendText("coord "+ event.getX() + " " + event.getY());
 				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
