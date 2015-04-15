@@ -84,8 +84,6 @@ import android.widget.Toast;
 import com.capricorn.ArcMenu;
 
 public class SetUIFunction {
-	public static int currRobotMode = RobotOperationMode.NONE;
-
 	static Activity globalActivity;
 	Context mContext;
 
@@ -519,39 +517,53 @@ public class SetUIFunction {
 				break;
 				
 			case R.id.img_manual:
-			    if (currRobotMode != RobotOperationMode.MANUAL_MODE) {
-			        updateRobotModeState(RobotOperationMode.MANUAL_MODE, true);
+			    if (RobotOperationMode.currRobotMode != RobotOperationMode.MANUAL_MODE) {
+			        updateRobotModeState(RobotOperationMode.MANUAL_MODE);
+			        sendRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
 			case R.id.img_semiauto:
-			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
-			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE, true);
+			    if (RobotOperationMode.currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
+			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
+			        sendRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
 			case R.id.img_auto:
-			    if (currRobotMode != RobotOperationMode.AUTO_MODE) {
-			        updateRobotModeState(RobotOperationMode.AUTO_MODE, true);
+			    if (RobotOperationMode.currRobotMode != RobotOperationMode.AUTO_MODE) {
+			        updateRobotModeState(RobotOperationMode.AUTO_MODE);
+			        sendRobotModeState(RobotOperationMode.AUTO_MODE);
 			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
 			case R.id.img_navi:
-				Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
-				break;
+			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+			        if (XMPPSet.isConnected()) {
+			            for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
+			                int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
+			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+			            }
+
+			            XMPPSet.XMPPSendText("semiauto start");
+			            RobotOperationMode.isNaviStart = true;
+			            Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
+			        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+			    }
+			    break;
 			case R.id.img_reset:
-			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
 			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			        gameView.postInvalidate();
-			    } else if (currRobotMode == RobotOperationMode.AUTO_MODE) {
+			    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 				break;
 			case R.id.img_setup:
-			    if (currRobotMode == RobotOperationMode.AUTO_MODE) {
+			    if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE && !RobotOperationMode.isClickSchedule) {
 			        setTriggerAlarm();
 
 			        //Store this schedule to HashMap
@@ -580,7 +592,7 @@ public class SetUIFunction {
 	        Log.i("terry", "Show Schedule "+clickSchedule+" from list");
 
 	        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(clickSchedule);
-	        gameView.isClickSchedule = true;
+	        RobotOperationMode.isClickSchedule = true;
 	        gameView.postInvalidate();
 	    }
 	};
@@ -641,32 +653,32 @@ public class SetUIFunction {
 		}
 	}
 
-	public void updateRobotModeState(int mode, boolean XMPPSendIsNeed) {
+	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
             manual.setImageResource(R.drawable.manual1);
             semiauto.setImageResource(R.drawable.semiauto0);
             auto.setImageResource(R.drawable.auto0);
             layout_joystick.setVisibility(View.VISIBLE);
-            currRobotMode = RobotOperationMode.MANUAL_MODE;
+            RobotOperationMode.currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
             manual.setImageResource(R.drawable.manual0);
             semiauto.setImageResource(R.drawable.semiauto1);
             auto.setImageResource(R.drawable.auto0);
             layout_joystick.setVisibility(View.GONE);
-            currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
+            RobotOperationMode.currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
             manual.setImageResource(R.drawable.manual0);
             semiauto.setImageResource(R.drawable.semiauto0);
             auto.setImageResource(R.drawable.auto1);
             layout_joystick.setVisibility(View.GONE);
-            currRobotMode = RobotOperationMode.AUTO_MODE;
+            RobotOperationMode.currRobotMode = RobotOperationMode.AUTO_MODE;
         }
+	}
 
-        if (XMPPSendIsNeed) {
-            if (XMPPSet.isConnected())
-                XMPPSet.XMPPSendText("mode "+ currRobotMode);
-            else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
-        }
+	public void sendRobotModeState(int mode) {
+	    if (XMPPSet.isConnected())
+	        XMPPSet.XMPPSendText("mode "+ RobotOperationMode.currRobotMode);
+	    else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();	    
 	}
 
 	private void setTriggerAlarm() {
@@ -697,7 +709,7 @@ public class SetUIFunction {
 	        RobotOperationMode.targetQueue.clear();
 	    } else if (mode == RobotOperationMode.AUTO_MODE) {
 	        RobotOperationMode.autoTargetSettingQueue.clear();
-	        gameView.isClickSchedule = false;
+	        RobotOperationMode.isClickSchedule = false;
 	    }
 	}
 

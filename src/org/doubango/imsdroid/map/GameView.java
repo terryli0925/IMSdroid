@@ -105,9 +105,6 @@ public class GameView extends View {
 	private boolean touchDown = false, zoomout = false, isZoom = false;
 	
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
-	
-	//Auto mode
-	public boolean isClickSchedule = false;
 
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
@@ -222,7 +219,7 @@ public class GameView extends View {
 		}
 
 		// Canvas drawBitmap: Track point for semi-auto mode
-		if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+		if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
 		        if (i == RobotOperationMode.targetQueue.size() -1) {
@@ -238,8 +235,8 @@ public class GameView extends View {
 		}
 
 		// Canvas drawBitmap: Track point for auto mode
-		if (SetUIFunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
-		    if (!isClickSchedule) {
+		if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
+		    if (!RobotOperationMode.isClickSchedule) {
 		        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 		            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
 		            if (i == RobotOperationMode.autoTargetSettingQueue.size() -1) {
@@ -375,26 +372,26 @@ public class GameView extends View {
 				        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {*/
-				    if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+				    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
-				        String action;
+				        //String action;
 
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            RobotOperationMode.targetQueue.offer(tempTarget);
 				            //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
-				            action = RobotOperationMode.ACTION_TARGET_ADD;
+				            //action = RobotOperationMode.ACTION_TARGET_ADD;
 				        }else {
 				            RobotOperationMode.targetQueue.remove(trackIndex);
 				            //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
-				            action = RobotOperationMode.ACTION_TARGET_REMOVE;
+				            //action = RobotOperationMode.ACTION_TARGET_REMOVE;
 				        }
 
-				        if (_XMPPSet.isConnected()) {
-				            _XMPPSet.XMPPSendText("semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-				            _XMPPSet.XMPPSendText("coord "+ event.getX() + " " + event.getY());
-				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
-				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+//				        if (_XMPPSet.isConnected()) {
+//				            _XMPPSet.XMPPSendText("semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+//				            _XMPPSet.XMPPSendText("coord "+ event.getX() + " " + event.getY());
+//				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+				    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
 				        String action;

@@ -120,7 +120,16 @@ public class XMPPSetting {
 		                }
 		                else if (inM[0].equals("semiauto"))
 		                {
-		                    updateTrackPos(inM[1], inM[2], inM[3]);
+		                    //TODO: When robot start, user also can add/remove target
+		                    if (inM[1].equals("coordinate")) {
+		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
+		                        RobotOperationMode.targetQueue.offer(tempTarget);		                        
+		                    } else if (inM[1].equals("start")) {
+		                        Log.i(TAG, "Navi Start");
+		                        RobotOperationMode.isNaviStart = true;
+		                        //TODO: Robot start
+		                    }
+		                    //updateTrackPos(inM[1], inM[2], inM[3]);
 		                    _gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("auto"))
@@ -229,7 +238,7 @@ public class XMPPSetting {
 
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
-	        setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj), false);
+	        setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
 	        super.handleMessage(msg);
 	    }
 	};
