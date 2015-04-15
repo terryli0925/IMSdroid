@@ -93,14 +93,22 @@ public class ScreenXYZLogin extends BaseScreen {
 		checkBoxEarlyIMS = (CheckBox)findViewById(R.id.checkBox_earlyIMS);
 		/*---------------------------*/
 			
-		editTextUsername.setText(mConfigurationService.getString(
-				NgnConfigurationEntry.IDENTITY_DISPLAY_NAME,
-				NgnConfigurationEntry.DEFAULT_IDENTITY_DISPLAY_NAME));
+//		editTextUsername.setText(mConfigurationService.getString(
+//				NgnConfigurationEntry.IDENTITY_DISPLAY_NAME,
+//				NgnConfigurationEntry.DEFAULT_IDENTITY_DISPLAY_NAME));
+		if (XMPPSetting.IS_SERVER)
+		    editTextUsername.setText(XMPPSetting.SERVER_ACCOUNT);
+		else
+		    editTextUsername.setText(XMPPSetting.CLIENT_ACCOUNT);
 		editTextImpu.setText("sip:"+editTextUsername.getText().toString().trim()+"@61.222.245.149");
 		editTextImpi.setText(editTextUsername.getText().toString().trim());
-		editTextPassword.setText(mConfigurationService.getString(
-				NgnConfigurationEntry.IDENTITY_PASSWORD,
-				NgnConfigurationEntry.DEFAULT_IDENTITY_PASSWORD));
+//		editTextPassword.setText(mConfigurationService.getString(
+//				NgnConfigurationEntry.IDENTITY_PASSWORD,
+//				NgnConfigurationEntry.DEFAULT_IDENTITY_PASSWORD));
+		if (XMPPSetting.IS_SERVER)
+		    editTextPassword.setText(XMPPSetting.SERVER_PASSWORD);
+		else
+		    editTextPassword.setText(XMPPSetting.CLIENT_PASSWORD);
 		editTextRealm.setText("sip:61.222.245.149");
 		checkBoxEarlyIMS.setChecked(false);
 			

@@ -25,11 +25,13 @@ public class XMPPSetting {
     private static String TAG = "william";
 
     public static final boolean IS_SERVER = true; // Server: true, Client: false
-    public static final String SERVER_NAME = "rdc01";
-    public static final String CLIENT_NAME = "rdc02";
+    public static final String SERVER_ACCOUNT = "rdc01";
+    public static final String SERVER_PASSWORD = "rdc01";
+    public static final String CLIENT_ACCOUNT = "rdc02";
+    public static final String CLIENT_PASSWORD = "rdc02";
     //public static final String[] CLIENT_LIST = {"rdc02", "rdc03", "rdc04"};
 
-    //private static final String XMPP_SERVER_NAME = "61.222.245.149;
+    //private static final String XMPP_SERVER_NAME = "61.222.245.149;   //Our Server IP
     private static final String XMPP_SERVER_NAME = "ea-xmppserver.cloudapp.net";
     private static final String XMPP_PORT = "5222";
     private static final String XMPP_DOMAIN_NAME = "ea-xmppserver";
@@ -164,9 +166,9 @@ public class XMPPSetting {
 	public void XMPPSendText(String xmppText)
 	{
 	    if (IS_SERVER) {
-	        XMPPSendText(CLIENT_NAME, xmppText);
+	        XMPPSendText(CLIENT_ACCOUNT, xmppText);
 	    } else {
-	        XMPPSendText(SERVER_NAME, xmppText);
+	        XMPPSendText(SERVER_ACCOUNT, xmppText);
 	    }
 	}
 
