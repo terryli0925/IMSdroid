@@ -192,7 +192,7 @@ public class SetUIFunction {
 	private final int mCoreStatusDisconnecting = 3;
 	private final int mCoreStatusDisconnected = 4;
 	
-	private RelativeLayout rl_remote, rl_local ;
+	public RelativeLayout rl_remote, rl_local ;
 	private FrameLayout fl_portrait ;
 	private PhoneService mPhoneService;
 	
@@ -233,8 +233,10 @@ public class SetUIFunction {
 		
 		XMPPSet = new XMPPSetting();
 		XMPPSetting.setUIfunction = this;
+		
 		gameView.setXMPPSetting(XMPPSet);
-
+		gameView.setUIfunction =this;
+		
 		SendAlgo = new SendCmdToBoardAlgorithm();
 
 		getScreenSize(globalActivity);
@@ -1167,6 +1169,9 @@ public class SetUIFunction {
 		}
 	}
 	
+	public void closeLocalView(){
+		rl_local.removeAllViews();
+	}
 	
 	
 }

@@ -205,28 +205,6 @@ public class ScreenXYZLogin extends BaseScreen {
 						+ " editTextUsername = "
 						+ editTextPassword.getText().toString().trim());
 				
-//				editTextUsername.setText(editTextUsername.getText().toString().trim());
-//				editTextImpu.setText(editTextImpu.getText().toString().trim());
-//				editTextImpi.setText(editTextImpi.getText().toString().trim());
-//				editTextPassword.setText(editTextPassword.getText().toString().trim());
-//				editTextRealm.setText("sip:doubango.org");
-//				checkBoxEarlyIMS.setChecked(false);
-//				
-//				mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_DISPLAY_NAME, 
-//						editTextUsername.getText().toString().trim());
-//				mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPU, 
-//						editTextImpu.getText().toString().trim());
-//				mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPI, 
-//						editTextImpi.getText().toString().trim());
-//				mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_PASSWORD, 
-//						editTextPassword.getText().toString().trim());
-//				mConfigurationService.putString(NgnConfigurationEntry.NETWORK_REALM, 
-//						editTextRealm.getText().toString().trim());
-//				mConfigurationService.putBoolean(
-//						NgnConfigurationEntry.NETWORK_USE_EARLY_IMS, 
-//						checkBoxEarlyIMS.isChecked());
-				
-				
 				editTextUsername.setText(editTextUsername.getText().toString().trim());
 				editTextPassword.setText(editTextPassword.getText().toString().trim());
 				

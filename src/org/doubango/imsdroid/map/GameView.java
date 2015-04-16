@@ -106,6 +106,12 @@ public class GameView extends View {
 	
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 
+	public SetUIFunction setUIfunction;
+	
+	//Auto mode
+	public boolean isClickSchedule = false;
+
+
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
 
@@ -309,6 +315,7 @@ public class GameView extends View {
 			if(event.getX() >= fixWidthMapData && event.getY() <= fixWidthMapData){
 				changeMapZoomIn(true);
 			}
+			setUIfunction.closeLocalView();
 			drawZoomMap(event);
 		}
 			

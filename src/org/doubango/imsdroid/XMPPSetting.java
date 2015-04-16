@@ -24,7 +24,7 @@ import android.util.Log;
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static final boolean IS_SERVER = true; // Server: true, Client: false
+    public static final boolean IS_SERVER = false; // Server: true, Client: false
     public static final String SERVER_ACCOUNT = "rdc01";
     public static final String SERVER_PASSWORD = "rdc01";
     public static final String CLIENT_ACCOUNT = "rdc02";
