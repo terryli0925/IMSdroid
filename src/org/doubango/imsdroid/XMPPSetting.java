@@ -238,7 +238,8 @@ public class XMPPSetting {
 
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
-	        setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
+	        // Workaround for app forced close
+	        if (setUIfunction != null) setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
 	        super.handleMessage(msg);
 	    }
 	};
