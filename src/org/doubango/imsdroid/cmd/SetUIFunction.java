@@ -376,6 +376,18 @@ public class SetUIFunction {
 	
 	private void declareImageButton(){
 	   
+		int[] mID = { R.id.img_manual, R.id.img_semiauto, R.id.img_auto, R.id.img_navi, R.id.img_reset, R.id.img_setup};
+		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi, R.drawable.reset, R.drawable.setup};
+		
+		for(int i=0; i<3; i++){
+			adjustButtonSize(mID[i], mDrawable[i], 300, 300);
+		}
+		
+		for(int i=3; i<mID.length;i++){
+			adjustButtonSize(mID[i], mDrawable[i], 300, 150);
+		}
+		
+		
 		/* Declare manual, semiauto, auto, navistart, reset, setup */
 		manual    = (ImageButton) globalActivity.findViewById(R.id.img_manual);
 		semiauto  = (ImageButton) globalActivity.findViewById(R.id.img_semiauto);
@@ -383,9 +395,6 @@ public class SetUIFunction {
 		navistart = (ImageButton) globalActivity.findViewById(R.id.img_navi);
 		reset 	  = (ImageButton) globalActivity.findViewById(R.id.img_reset);
 		setup 	  = (ImageButton) globalActivity.findViewById(R.id.img_setup);
-		
-		
-		//adjustButtonSize(manual);
 		
 		manual.setOnClickListener(onClickListener);
 		semiauto.setOnClickListener(onClickListener);
@@ -395,16 +404,12 @@ public class SetUIFunction {
 		setup.setOnClickListener(onClickListener);
 	}
 	
-	private void adjustButtonSize(ImageButton mButton){
-		
-		
-		Bitmap bitmapOrg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.manual0);
+	private void adjustButtonSize(int mId, int mDrawable, int newWidth, int newHeight){
+		Bitmap bitmapOrg = BitmapFactory.decodeResource(mContext.getResources(), mDrawable);
 		
 		int width = bitmapOrg.getWidth();
 		int height = bitmapOrg.getHeight();
-		int newWidth = 200;
-		int newHeight = 200;
-		
+
 		
 		float scaleWidth = ((float) newWidth) / width;
 		float scaleHeight = ((float) newHeight) / height;
@@ -412,22 +417,10 @@ public class SetUIFunction {
 		Matrix matrix = new Matrix();
 		matrix.postScale(scaleWidth, scaleHeight);
 		
-		Bitmap newBasemap = Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+		Bitmap resizeBitmap = Bitmap.createBitmap(bitmapOrg, 0, 0, width, height, matrix, true);
+		BitmapDrawable bmd = new BitmapDrawable(resizeBitmap);
 		
-		BitmapDrawable bmd = new BitmapDrawable(newBasemap);
-		ImageView imageView = new ImageView(mContext);
-		imageView.setImageDrawable(bmd);
-		
-		
-		int buttonWidth = (int)(width / 4.0);
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		params.setMargins(buttonWidth, 0, 0, 0);
-		mButton.setLayoutParams(params);
-		
-
-		
-		 // add ImageView to the Layout
-		
+		((ImageButton)globalActivity.findViewById(mId)).setBackground(bmd);
 	}
 	
 	
@@ -629,12 +622,6 @@ public class SetUIFunction {
 	    }	    
 	};
 
-	private void revertImageButton(){
-		manual.setImageResource(R.drawable.manual0);
-		semiauto.setImageResource(R.drawable.semiauto0);
-		auto.setImageResource(R.drawable.auto0);
-	}
-
 	/* Arc Menu */
 	private void initArcMenu(final ArcMenu menu, int[] itemDrawables, Activity v) {
 		final int itemCount = itemDrawables.length;
@@ -657,26 +644,29 @@ public class SetUIFunction {
 
 	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
-            manual.setImageResource(R.drawable.manual1);
-            semiauto.setImageResource(R.drawable.semiauto0);
-            auto.setImageResource(R.drawable.auto0);
+        	revertImageButton();
+        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 300, 300);
             layout_joystick.setVisibility(View.VISIBLE);
             RobotOperationMode.currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
-            manual.setImageResource(R.drawable.manual0);
-            semiauto.setImageResource(R.drawable.semiauto1);
-            auto.setImageResource(R.drawable.auto0);
+        	revertImageButton();
+        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 300, 300);
             layout_joystick.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
-            manual.setImageResource(R.drawable.manual0);
-            semiauto.setImageResource(R.drawable.semiauto0);
-            auto.setImageResource(R.drawable.auto1);
+        	revertImageButton();
+        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 300, 300);
             layout_joystick.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 	}
 
+	private void revertImageButton(){
+		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 300, 300);
+		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 300, 300);
+		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 300, 300);
+	}
+	
 	public void sendRobotModeState(int mode) {
 	    if (XMPPSet.isConnected())
 	        XMPPSet.XMPPSendText("mode "+ RobotOperationMode.currRobotMode);

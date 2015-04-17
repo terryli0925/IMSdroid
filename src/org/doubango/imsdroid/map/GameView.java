@@ -556,7 +556,6 @@ public class GameView extends View {
 		display.getSize(size);
 		screenWidth = size.x;
 		screenHeight = size.y;
-		Log.i("shinhua","Current Size: "+  screenWidth + " "+  screenHeight);
 	}
 
 	public void getMapSize() {

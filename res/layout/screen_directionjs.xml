@@ -163,7 +163,7 @@
 	    android:layout_toRightOf="@+id/img_manual"
 	    android:background="@null"
 	    android:padding="0dp"
-	    android:src="@drawable/semiauto0" />
+	 />
 
 	<ImageButton
 	    android:id="@+id/img_auto"
@@ -173,18 +173,17 @@
 	    android:layout_toRightOf="@+id/img_semiauto"
 	    android:background="@null"
 	    android:padding="0dp"
-	    android:src="@drawable/auto0" />
-
+	 />
 
     <ImageButton
         android:id="@+id/img_navi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/img_semiauto"
+        android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/linearLayout1"
         android:background="@null"
         android:padding="0dp"
-        android:src="@drawable/navi" />
+	 />
     
     <ImageButton
         android:id="@+id/img_reset"
@@ -194,7 +193,7 @@
         android:layout_toRightOf="@+id/img_navi"
         android:background="@null"
         android:padding="0dp"
-        android:src="@drawable/reset" />
+	 />
     
     <ImageButton
 	    android:id="@+id/img_setup"
@@ -204,18 +203,7 @@
 	    android:layout_toRightOf="@+id/img_reset"
 	    android:background="@null"
 	    android:padding="0dp"
-	    android:src="@drawable/setup" />
-
-    <ImageButton
-        android:id="@+id/img_manual"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/img_arrow"
-        android:layout_alignTop="@+id/runjs"
-        android:layout_marginTop="23dp"
-        android:background="@null"
-        android:padding="0dp"
-        android:src="@drawable/manual0" />
+	 />
 
     <Button
         android:id="@+id/hangupbtn"
@@ -273,4 +261,15 @@
         android:layout_alignParentBottom="true"
         android:scrollbars="vertical"
     />
+
+	<ImageButton
+	    android:id="@+id/img_manual"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/img_navi"
+	    android:layout_toRightOf="@+id/linearLayout1"
+	    android:background="@null"
+	    android:padding="0dp"
+	 />
+
 </RelativeLayout>
