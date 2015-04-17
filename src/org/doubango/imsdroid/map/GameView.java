@@ -382,39 +382,23 @@ public class GameView extends View {
 				    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
-				        //String action;
 
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            RobotOperationMode.targetQueue.offer(tempTarget);
 				            //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
-				            //action = RobotOperationMode.ACTION_TARGET_ADD;
 				        }else {
 				            RobotOperationMode.targetQueue.remove(trackIndex);
 				            //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
-				            //action = RobotOperationMode.ACTION_TARGET_REMOVE;
 				        }
-
-//				        if (_XMPPSet.isConnected()) {
-//				            _XMPPSet.XMPPSendText("semiauto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-//				            _XMPPSet.XMPPSendText("coord "+ event.getX() + " " + event.getY());
-//				        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 				    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
-				        String action;
 
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-				            //Log.i(TAG, "Offer targetQueue, size= "+RobotOperationMode.autoTargetSettingQueue.size());
-				            action = RobotOperationMode.ACTION_TARGET_ADD;
-				        }else {
+				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
-				            //Log.i(TAG, "Remove targetQueue, size= "+RobotOperationMode.autoTargetSettingQueue.size());
-				            action = RobotOperationMode.ACTION_TARGET_REMOVE;
 				        }
-
-				        if (_XMPPSet.isConnected())
-				            _XMPPSet.XMPPSendText("auto "+ action +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
 				    }
 					zoomout = true;
 				}

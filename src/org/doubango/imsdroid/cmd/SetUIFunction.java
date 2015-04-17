@@ -173,10 +173,12 @@ public class SetUIFunction {
 	ScreenAV _ScreenAV;
 
 	// Auto mode
+	Calendar calendar;
+	AlarmManager alarmManager;
 	private ListView listView;
 	private ArrayList<String> list = new ArrayList<String>();
 	private ArrayAdapter<String> listAdapter;
-	private String schedulingTime;
+	public String scheduledTime;
 
 	/* Temporary declare */
 	JustekSDKCore mCore;
@@ -227,6 +229,9 @@ public class SetUIFunction {
 	@SuppressLint("NewApi") 
 	public void StartUIFunction() {
 		loggin = NetworkStatus.getInstance();
+
+		calendar = Calendar.getInstance();
+		alarmManager = (AlarmManager) globalActivity.getSystemService(Context.ALARM_SERVICE);
 
 		gameView = (GameView) globalActivity.findViewById(R.id.gameView1);
 		game = new Game();
@@ -522,7 +527,7 @@ public class SetUIFunction {
 			    if (RobotOperationMode.currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
 			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        sendRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
-			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
+			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
@@ -530,7 +535,7 @@ public class SetUIFunction {
 			    if (RobotOperationMode.currRobotMode != RobotOperationMode.AUTO_MODE) {
 			        updateRobotModeState(RobotOperationMode.AUTO_MODE);
 			        sendRobotModeState(RobotOperationMode.AUTO_MODE);
-			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 			    break;
@@ -550,22 +555,18 @@ public class SetUIFunction {
 			    break;
 			case R.id.img_reset:
 			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
-			        revertAutoModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
+			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			        gameView.postInvalidate();
 			    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
-			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 				break;
 			case R.id.img_setup:
 			    if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE && !RobotOperationMode.isClickSchedule) {
-			        setTriggerAlarm();
-
-			        //Store this schedule to HashMap
-			        LinkedList<int[][]> tempQueue = (LinkedList<int[][]>) RobotOperationMode.autoTargetSettingQueue.clone();
-			        RobotOperationMode.RobotScheduleHashMap.put(schedulingTime, tempQueue);
-
-			        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+			        setScheduleAlarm(false);
+			        sendAutoModeSchedule();
+			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 			        gameView.postInvalidate();
 			    }
 				break;
@@ -584,7 +585,7 @@ public class SetUIFunction {
 	    public void onItemClick(AdapterView<?> parent, View view, int position,
 	            long id) {
 	        String clickSchedule = (String)listView.getItemAtPosition(position);
-	        Log.i("terry", "Show Schedule "+clickSchedule+" from list");
+	        Log.i("terry", "Show Schedule "+clickSchedule+" at map");
 
 	        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(clickSchedule);
 	        RobotOperationMode.isClickSchedule = true;
@@ -600,7 +601,7 @@ public class SetUIFunction {
 	        list.remove(position);
 	        listAdapter.notifyDataSetChanged();
 
-	        revertAutoModeStatus(RobotOperationMode.AUTO_MODE);
+	        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 	        gameView.postInvalidate();
 
 	        return true;
@@ -613,6 +614,12 @@ public class SetUIFunction {
 	        final String action = intent.getAction();
 	        if(RobotOperationMode.ACTION_INTENT_ALARM.equals(action)){
 	            Log.i("terry", "Get intent "+ RobotOperationMode.ACTION_INTENT_ALARM);
+
+	            //Update List
+	            Calendar tempCal = Calendar.getInstance();
+	            SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());	            
+	            list.remove(timeFormat.format(tempCal.getTime()));
+	            listAdapter.notifyDataSetChanged();
 
 	            //For test
 	            game.source[0] = game.source[0] +1;
@@ -673,30 +680,52 @@ public class SetUIFunction {
 	    else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();	    
 	}
 
-	private void setTriggerAlarm() {
-	    //TODO: Get scheduling time
-	    //For test
-	    Calendar calendar = Calendar.getInstance();
+	public void setScheduleAlarm(boolean isRemote) {
 	    calendar.setTime(new Date());
-	    calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-	    calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
-	    calendar.set(Calendar.SECOND, calendar.get(Calendar.SECOND) + 10);
-	    Log.i("terry", "Get scheduling time: "+calendar.getTime());
+
+	    if (isRemote) {
+	        String[] time = scheduledTime.split("-| |:");
+	        calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(time[2]));
+	        calendar.set(Calendar.MINUTE, Integer.valueOf(time[3]));
+	        calendar.set(Calendar.SECOND, 0);
+	    } else {
+	        //TODO: Get scheduled time
+	        //For test
+	        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+	        calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
+	        calendar.set(Calendar.SECOND, 0);
+
+	        //SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
+	        SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+	        scheduledTime = timeFormat.format(calendar.getTime());
+	    }
+	    Log.i("terry", "Get scheduled time: "+calendar.getTime()+"\nSet scheduled alarm: "+scheduledTime);
 
 	    //Set alarm to trigger robot
-	    AlarmManager alarmManager = (AlarmManager) globalActivity.getSystemService(Context.ALARM_SERVICE);
 	    PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(RobotOperationMode.ACTION_INTENT_ALARM), PendingIntent.FLAG_UPDATE_CURRENT);
 	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
 	    //Update List
-	    SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
-	    schedulingTime = timeFormat.format(calendar.getTime());
-	    list.add(schedulingTime);
+	    list.add(scheduledTime);
 	    listAdapter.notifyDataSetChanged();
-	    Log.i("terry", "Show scheduling time: "+schedulingTime);
+
+	    //Store this schedule to HashMap
+	    LinkedList<int[][]> tempQueue = (LinkedList<int[][]>) RobotOperationMode.autoTargetSettingQueue.clone();
+	    RobotOperationMode.RobotScheduleHashMap.put(scheduledTime, tempQueue);
 	}
 
-	private void revertAutoModeStatus(int mode) {
+	private void sendAutoModeSchedule() {
+	    if (XMPPSet.isConnected()) {
+	        XMPPSet.XMPPSendText("auto scheduledTime "+ scheduledTime);
+	        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
+	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
+	            XMPPSet.XMPPSendText("auto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+            }
+	        XMPPSet.XMPPSendText("auto end");
+	    } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+	}
+
+	public void revertRobotModeStatus(int mode) {
 	    if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
 	        RobotOperationMode.targetQueue.clear();
 	    } else if (mode == RobotOperationMode.AUTO_MODE) {

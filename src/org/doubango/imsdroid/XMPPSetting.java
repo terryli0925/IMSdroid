@@ -1,7 +1,6 @@
 package org.doubango.imsdroid;
 
 import java.io.IOException;
-
 import org.doubango.imsdroid.cmd.SetUIFunction;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
@@ -103,7 +102,7 @@ public class XMPPSetting {
 		    connection.addPacketListener(new PacketListener() {
 		        public void processPacket(Packet packet) {
 		            Message message = (Message) packet;
-		            if (message.getBody() != null) {
+		            if (message.getBody() != null && setUIfunction != null) {
 		                String fromName = StringUtils.parseBareAddress(message.getFrom());
 		                String[] inM = message.getBody().split("\\s+");
 
@@ -134,13 +133,22 @@ public class XMPPSetting {
 		                }
 		                else if (inM[0].equals("auto"))
 		                {
-		                    updateTrackPos(inM[1], inM[2], inM[3]);
-		                    _gameView.postInvalidate();
+		                    if (inM[1].equals("scheduledTime")) {
+		                        setUIfunction.scheduledTime = inM[2] +" "+ inM[3];
+		                    } else if (inM[1].equals("coordinate")) {
+		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
+		                        RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+		                    } else if (inM[1].equals("end")) {
+		                        //Using handler to set schedule alarm
+		                        android.os.Message message1 = modeButtonHandler.obtainMessage(2);
+		                        modeButtonHandler.sendMessage(message1);
+		                    }
 		                }
 		                else if (inM[0].equals("mode"))
 		                {
-		                    updateRobotModeState(inM[1]);
-		                    _gameView.postInvalidate();
+		                    //Using handler to update ImageButton
+		                    android.os.Message message1 = modeButtonHandler.obtainMessage(1, inM[1]);
+		                    modeButtonHandler.sendMessage(message1);
 		                }
 		                else if (inM[0].equals("ScreenSize")){
 		                	
@@ -230,16 +238,15 @@ public class XMPPSetting {
 	    }
 	}
 
-	private void updateRobotModeState(String mode) {
-	    //Using handler to update ImageButton
-	    android.os.Message message1 = modeButtonHandler.obtainMessage(1, mode);
-	    modeButtonHandler.sendMessage(message1);
-	}
-
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
 	        // Workaround for app forced close
-	        if (setUIfunction != null) setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
+	        if(msg.what == 1) setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
+	        else if (msg.what == 2){
+	            setUIfunction.setScheduleAlarm(true);
+	            setUIfunction.revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
+	        }
+	        _gameView.postInvalidate();
 	        super.handleMessage(msg);
 	    }
 	};
