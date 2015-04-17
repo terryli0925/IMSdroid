@@ -79,11 +79,7 @@ public class ScreenXYZLogin extends BaseScreen {
 		enterBtn.setOnClickListener(ClickListener);
 		cencelBtn.setOnClickListener(ClickListener);
 
-		editTextUsername = (EditText)findViewById(R.id.editText_username);
-		
-		// this function is not good, it needs fix
-//		setComponentPosition(editTextUsername, 2, 1, 1);	// Set screen 
-		
+		editTextUsername = (EditText)findViewById(R.id.editText_username);	
 		editTextPassword = (EditText)findViewById(R.id.editText_password);
 		
 		/* Maybe below can be remove*/ 
@@ -109,8 +105,8 @@ public class ScreenXYZLogin extends BaseScreen {
 		    editTextPassword.setText(XMPPSetting.SERVER_PASSWORD);
 		else
 		    editTextPassword.setText(XMPPSetting.CLIENT_PASSWORD);
-		editTextRealm.setText("sip:61.222.245.149");
-		checkBoxEarlyIMS.setChecked(false);
+			editTextRealm.setText("sip:61.222.245.149");
+			checkBoxEarlyIMS.setChecked(false);
 			
 		super.addConfigurationListener(editTextUsername);
         super.addConfigurationListener(editTextImpu);
@@ -151,7 +147,9 @@ public class ScreenXYZLogin extends BaseScreen {
 							Log.i(TAG,"Show main view here");
 							if (notEnterLoginPage)
 							{
-							    mScreenService.show(ScreenFuncTest.class, "FuncTest");
+							    //mScreenService.show(ScreenFuncTest.class, "FuncTest");
+							    
+								mScreenService.show(ScreenDirection.class, "Direction");
 							    notEnterLoginPage = false;
 							}
 							//mScreenService.show(ScreenDirectionJS.class, "ScreenDirectionJS");
@@ -181,17 +179,6 @@ public class ScreenXYZLogin extends BaseScreen {
 		height = size.y;		
 	}
 	
-	
-	public void setComponentPosition(EditText text, int GAP, int horizontalGAP, int verticalGAP){
-		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		horizontalscope = width / GAP; 
-		verticalscope = height / GAP;		
-		layoutParams.setMargins(horizontalscope * horizontalGAP, verticalscope * verticalGAP, 0, 0);
-		text.setLayoutParams(layoutParams);
-	}
-	
-	
 		
 	private OnClickListener ClickListener = new OnClickListener() {
 		@Override
@@ -200,11 +187,6 @@ public class ScreenXYZLogin extends BaseScreen {
 			switch (v.getId()) {
 			
 			case R.id.loginenter:
-				Log.i("shinhua", "shinhua editTextUsername = "
-						+ editTextUsername.getText().toString().trim()
-						+ " editTextUsername = "
-						+ editTextPassword.getText().toString().trim());
-				
 				editTextUsername.setText(editTextUsername.getText().toString().trim());
 				editTextPassword.setText(editTextPassword.getText().toString().trim());
 				
