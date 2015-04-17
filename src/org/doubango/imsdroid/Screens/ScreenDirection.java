@@ -1,5 +1,6 @@
 package org.doubango.imsdroid.Screens;
 
+import org.doubango.imsdroid.Main;
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.UartReceive;
 import org.doubango.imsdroid.cmd.SetBtnFun;
@@ -35,17 +36,6 @@ public class ScreenDirection extends BaseScreen{
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		/* ScreenDirection function of william's original code */ 
-		//setContentView(R.layout.screen_direction);
-
-//		setBtn = new SetBtnFun();
-//		setBtn.SetBtn(this);
-//		
-//		mapScreen = new MapScreen();
-//		mapScreen.MapScreen(this);
-		
-		
 		
 		/* Screen JayStick function of shinhua's code */
 		setContentView(R.layout.screen_directionjs);
@@ -68,5 +58,10 @@ public class ScreenDirection extends BaseScreen{
 		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
-	
+
+	@Override
+	protected void onPause() {
+	    ((Main)getEngine().getMainActivity()).exit();
+	    super.onPause();
+	}
 }
