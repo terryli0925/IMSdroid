@@ -23,11 +23,11 @@ import android.util.Log;
 public class XMPPSetting {
     private static String TAG = "william";
 
-    public static final boolean IS_SERVER = false; // Server: true, Client: false
-    public static final String SERVER_ACCOUNT = "rdc01";
-    public static final String SERVER_PASSWORD = "rdc01";
-    public static final String CLIENT_ACCOUNT = "rdc02";
-    public static final String CLIENT_PASSWORD = "rdc02";
+    public static final boolean IS_SERVER = true; // Server: true, Client: false
+    public static final String SERVER_ACCOUNT = "rdc03";
+    public static final String SERVER_PASSWORD = "rdc03";
+    public static final String CLIENT_ACCOUNT = "rdc04";
+    public static final String CLIENT_PASSWORD = "rdc04";
     //public static final String[] CLIENT_LIST = {"rdc02", "rdc03", "rdc04"};
 
     //private static final String XMPP_SERVER_NAME = "61.222.245.149;   //Our Server IP
@@ -134,11 +134,11 @@ public class XMPPSetting {
 		                else if (inM[0].equals("auto"))
 		                {
 		                    if (inM[1].equals("scheduledTime")) {
-		                        setUIfunction.scheduledTime = inM[2] +" "+ inM[3];
+		                        setUIfunction.scheduledTime = inM[2];
 		                    } else if (inM[1].equals("coordinate")) {
 		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
 		                        RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-		                    } else if (inM[1].equals("end")) {
+		                    } else if (inM[1].equals("setUpDone")) {
 		                        //Using handler to set schedule alarm
 		                        android.os.Message message1 = modeButtonHandler.obtainMessage(2);
 		                        modeButtonHandler.sendMessage(message1);

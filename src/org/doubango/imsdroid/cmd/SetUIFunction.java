@@ -78,6 +78,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -176,9 +177,13 @@ public class SetUIFunction {
 	Calendar calendar;
 	AlarmManager alarmManager;
 	private ListView listView;
-	private ArrayList<String> list = new ArrayList<String>();
-	private ArrayAdapter<String> listAdapter;
+	private Spinner hourSpinner, minuteSpinner;
+	private ArrayList<String> scheduleList = new ArrayList<String>();
+	private ArrayList<String> hourList = new ArrayList<String>();
+	private ArrayList<String> minuteList = new ArrayList<String>();
+	private ArrayAdapter<String> scheduleListAdapter, hourListAdapter, minuteListAdapter;
 	public String scheduledTime;
+	private int selectedHour, selectedMinute;
 
 	/* Temporary declare */
 	JustekSDKCore mCore;
@@ -252,7 +257,7 @@ public class SetUIFunction {
 		declareTextView();
 		declareButton();
 		declareImageButton();
-		declareListView();
+		declareAutoModeUI();
 		delcareViedoConferenceFunction();
 		
 
@@ -430,13 +435,26 @@ public class SetUIFunction {
 	
 	
 
-	private void declareListView() {
+	private void declareAutoModeUI() {
+	    hourSpinner = (Spinner) globalActivity.findViewById(R.id.hourSpinner);
+	    minuteSpinner = (Spinner) globalActivity.findViewById(R.id.minuteSpinner);
 	    listView = (ListView)globalActivity.findViewById(R.id.listView);
-	    //listAdapter = new ArrayAdapter(globalActivity,android.R.layout.simple_list_item_1,list);
-	    listAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, list);
-	    listView.setAdapter(listAdapter);
+	    for (int i = 0; i < 24; i++) hourList.add(Integer.toString(i));
+	    for (int i = 0; i < 60; i+= RobotOperationMode.MINUTE_INTERVAL) minuteList.add(Integer.toString(i));
+
+	    hourListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_dropdown_item, hourList);
+	    minuteListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_dropdown_item, minuteList);
+	    //scheduleListAdapter = new ArrayAdapter(globalActivity,android.R.layout.simple_list_item_1,list);
+	    scheduleListAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, scheduleList);
+
+	    hourSpinner.setAdapter(hourListAdapter);
+	    minuteSpinner.setAdapter(minuteListAdapter);
+	    listView.setAdapter(scheduleListAdapter);
+
+	    hourSpinner.setOnItemSelectedListener(onItemSelectedListener);
+	    minuteSpinner.setOnItemSelectedListener(onItemSelectedListener);
 	    listView.setOnItemClickListener(onItemClickListener);
-	    listView.setOnItemLongClickListener(onItemLongClickListener);	    
+	    listView.setOnItemLongClickListener(onItemLongClickListener);
 	}
 
 /* The OnTouchListener of Draw JoyStick */
@@ -578,6 +596,23 @@ public class SetUIFunction {
 
 	};
 
+	private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+                long arg3) {
+            if (arg0.getId() == R.id.hourSpinner) {
+                selectedHour = Integer.valueOf(arg0.getSelectedItem().toString());
+            }else if (arg0.getId() == R.id.minuteSpinner) {
+                selectedMinute = Integer.valueOf(arg0.getSelectedItem().toString());
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+        }
+	};
+
 	//TODO: When click show source and target
 	private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
 
@@ -598,8 +633,12 @@ public class SetUIFunction {
 	    @Override
 	    public boolean onItemLongClick(AdapterView<?> parent, View view,
 	            int position, long id) {
-	        list.remove(position);
-	        listAdapter.notifyDataSetChanged();
+	        scheduleList.remove(position);
+	        scheduleListAdapter.notifyDataSetChanged();
+
+	        if (XMPPSet.isConnected())
+	            XMPPSet.XMPPSendText("auto remove "+ position);
+	        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 	        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 	        gameView.postInvalidate();
@@ -617,9 +656,9 @@ public class SetUIFunction {
 
 	            //Update List
 	            Calendar tempCal = Calendar.getInstance();
-	            SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());	            
-	            list.remove(timeFormat.format(tempCal.getTime()));
-	            listAdapter.notifyDataSetChanged();
+	            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
+	            scheduleList.remove(timeFormat.format(tempCal.getTime()));
+	            scheduleListAdapter.notifyDataSetChanged();
 
 	            //For test
 	            game.source[0] = game.source[0] +1;
@@ -654,16 +693,27 @@ public class SetUIFunction {
         	revertImageButton();
         	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 100, 100);
             layout_joystick.setVisibility(View.VISIBLE);
+            hourSpinner.setVisibility(View.GONE);
+            minuteSpinner.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
+            hourSpinner.setVisibility(View.GONE);
+            minuteSpinner.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
+            hourSpinner.setSelection(0);
+            minuteSpinner.setSelection(0);
+            hourSpinner.setVisibility(View.VISIBLE);
+            minuteSpinner.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
             RobotOperationMode.currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 	}
@@ -684,19 +734,16 @@ public class SetUIFunction {
 	    calendar.setTime(new Date());
 
 	    if (isRemote) {
-	        String[] time = scheduledTime.split("-| |:");
-	        calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(time[2]));
-	        calendar.set(Calendar.MINUTE, Integer.valueOf(time[3]));
+	        String[] time = scheduledTime.split(":");
+	        calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(time[0]));
+	        calendar.set(Calendar.MINUTE, Integer.valueOf(time[1]));
 	        calendar.set(Calendar.SECOND, 0);
 	    } else {
-	        //TODO: Get scheduled time
-	        //For test
-	        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-	        calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 1);
+	        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+	        calendar.set(Calendar.MINUTE, selectedMinute);
 	        calendar.set(Calendar.SECOND, 0);
 
-	        //SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault());
-	        SimpleDateFormat timeFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+	        SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
 	        scheduledTime = timeFormat.format(calendar.getTime());
 	    }
 	    Log.i("terry", "Get scheduled time: "+calendar.getTime()+"\nSet scheduled alarm: "+scheduledTime);
@@ -706,8 +753,8 @@ public class SetUIFunction {
 	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
 	    //Update List
-	    list.add(scheduledTime);
-	    listAdapter.notifyDataSetChanged();
+	    scheduleList.add(scheduledTime);
+	    scheduleListAdapter.notifyDataSetChanged();
 
 	    //Store this schedule to HashMap
 	    LinkedList<int[][]> tempQueue = (LinkedList<int[][]>) RobotOperationMode.autoTargetSettingQueue.clone();
@@ -721,7 +768,7 @@ public class SetUIFunction {
 	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
 	            XMPPSet.XMPPSendText("auto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
             }
-	        XMPPSet.XMPPSendText("auto end");
+	        XMPPSet.XMPPSendText("auto setUpDone");
 	    } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 	}
 
@@ -729,6 +776,8 @@ public class SetUIFunction {
 	    if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
 	        RobotOperationMode.targetQueue.clear();
 	    } else if (mode == RobotOperationMode.AUTO_MODE) {
+	        hourSpinner.setSelection(0);
+	        minuteSpinner.setSelection(0);
 	        RobotOperationMode.autoTargetSettingQueue.clear();
 	        RobotOperationMode.isClickSchedule = false;
 	    }

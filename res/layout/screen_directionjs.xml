@@ -253,9 +253,25 @@
         android:layout_toRightOf="@+id/hangupbtn"
         android:text="connect" />
 
+    <Spinner
+        android:id="@+id/hourSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/hangupbtn"
+        android:layout_above="@+id/minuteSpinner"
+        android:visibility="gone" />
+
+    <Spinner
+        android:id="@+id/minuteSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/hangupbtn"
+        android:layout_above="@+id/connectbtn"
+        android:visibility="gone" />
+
 	<ListView
         android:id="@+id/listView"
-        android:layout_width="150dp"
+        android:layout_width="80dp"
         android:layout_height="150dp"
         android:layout_toRightOf="@+id/connectbtn"
         android:layout_alignParentBottom="true"
