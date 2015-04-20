@@ -148,7 +148,6 @@ public class ScreenXYZLogin extends BaseScreen {
 							if (notEnterLoginPage)
 							{
 							    //mScreenService.show(ScreenFuncTest.class, "FuncTest");
-							    
 								mScreenService.show(ScreenDirection.class, "Direction");
 							    notEnterLoginPage = false;
 							}
@@ -217,11 +216,10 @@ public class ScreenXYZLogin extends BaseScreen {
 			// TODO Auto-generated method stub
 			super.run();
 			try {
-				Log.i(TAG, "Username = " + xmppUsername + " Password = "
-						+ xmppPassword);
-							
-            	loggin.SetLogStatus(XMPPSet.XMPPStart(xmppUsername,xmppPassword));
-
+				Log.i(TAG, "Username = " + xmppUsername + " Password = "+ xmppPassword);
+				
+				loggin.SetLogStatus(XMPPSet.XMPPStart(xmppUsername,xmppPassword));
+			
 				if (loggin.GetLogStatus()) {
 					Log.i(TAG, xmppUsername + " Loggin successful");
 					Sendmsg("ok");
@@ -229,6 +227,9 @@ public class ScreenXYZLogin extends BaseScreen {
 					Log.i(TAG, mName + " Loggin Fail");
 					Sendmsg("Loggin Fail");
 				}
+				
+
+				
 
 			} catch (Exception e) {
 				e.printStackTrace();

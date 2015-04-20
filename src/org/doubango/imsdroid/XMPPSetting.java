@@ -74,7 +74,7 @@ public class XMPPSetting {
 	        // xmppClient.setConnection(null);
 	         setConnection(null);
 	     }
-	     
+
 	     try {
 	         connection.login(username, password);
 	         Log.i(TAG, "Logged in as " + connection.getUser());

@@ -385,11 +385,11 @@ public class SetUIFunction {
 		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi, R.drawable.reset, R.drawable.setup};
 		
 		for(int i=0; i<3; i++){
-			adjustButtonSize(mID[i], mDrawable[i], 300, 300);
+			adjustButtonSize(mID[i], mDrawable[i], 100, 100);
 		}
 		
 		for(int i=3; i<mID.length;i++){
-			adjustButtonSize(mID[i], mDrawable[i], 300, 150);
+			adjustButtonSize(mID[i], mDrawable[i], 100, 50);
 		}
 		
 		
@@ -652,26 +652,26 @@ public class SetUIFunction {
 	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 300, 300);
+        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 100, 100);
             layout_joystick.setVisibility(View.VISIBLE);
             RobotOperationMode.currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 300, 300);
+        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 300, 300);
+        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
             RobotOperationMode.currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 	}
 
 	private void revertImageButton(){
-		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 300, 300);
-		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 300, 300);
-		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 300, 300);
+		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 100, 100);
+		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 100, 100);
+		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 100, 100);
 	}
 	
 	public void sendRobotModeState(int mode) {
