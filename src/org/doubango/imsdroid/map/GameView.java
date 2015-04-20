@@ -115,7 +115,7 @@ public class GameView extends View {
 
 
 	/* Drawing BaseMap */
-	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap1);
+	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
 
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
@@ -186,7 +186,7 @@ public class GameView extends View {
 	protected void onMyDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
+		//canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
 
@@ -330,7 +330,7 @@ public class GameView extends View {
 
     public void changeMapZoomIn(boolean zoomIn) {
         if (zoomIn) {
-            span = 18;
+            span = 15;
             getMapSize();
 
             xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
@@ -572,7 +572,6 @@ public class GameView extends View {
 		row = map.length;
 		col = map[0].length;
 		
-		Log.i("shinhua",row + ", " + col);
 		mapWidth = (col * (span + 1));
 		mapHeight = (row * (span + 1));
 	}
