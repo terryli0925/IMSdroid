@@ -112,7 +112,7 @@ public class XMPPSetting {
 		                    updateSource(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
-		                else if (inM[0].equals("target"))
+		                /*else if (inM[0].equals("target"))
 		                {
 		                    updateTarget(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
@@ -170,7 +170,7 @@ public class XMPPSetting {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-		                }
+		                }*/
 		                
 		                //We receive message here.
 		                
