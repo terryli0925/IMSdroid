@@ -41,7 +41,7 @@ public class GameView extends View {
 	private NetworkStatus loggin;
 	public Spinner mySpinner;// Spinner���ޥ�
 	public TextView CDTextView;
-	int span = 16;
+	int span = 5;
 	int theta = 0;
 	public static boolean drawCircleFlag = false, turnToBigMap = false;
 
@@ -104,6 +104,8 @@ public class GameView extends View {
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
 	
+
+
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 
 	public SetUIFunction setUIfunction;
@@ -113,7 +115,7 @@ public class GameView extends View {
 
 
 	/* Drawing BaseMap */
-	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
+	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap1);
 
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
@@ -184,7 +186,7 @@ public class GameView extends View {
 	protected void onMyDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		//canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
+		canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
 
@@ -207,15 +209,15 @@ public class GameView extends View {
 					//paint.setStyle(Style.FILL);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
-//					canvas.drawRect(fixWidthMapData + j * (span + 1),
-//							fixHeightMapData + i * (span + 1), fixWidthMapData
-//									+ j * (span + 1) + span, fixHeightMapData
-//									+ i * (span + 1) + span, paint);
+					canvas.drawRect(fixWidthMapData + j * (span + 1),
+							fixHeightMapData + i * (span + 1), fixWidthMapData
+									+ j * (span + 1) + span, fixHeightMapData
+									+ i * (span + 1) + span, paint);
 				}else if (map[i][j] == 2) {// �¦�
-					paint.setColor(Color.LTGRAY);
-					//paint.setStyle(Style.FILL);
-					paint.setStyle(Style.FILL_AND_STROKE);
-					paint.setStrokeWidth(5); 
+//					paint.setColor(Color.LTGRAY);
+//					//paint.setStyle(Style.FILL);
+//					paint.setStyle(Style.FILL_AND_STROKE);
+//					paint.setStrokeWidth(5); 
 //					canvas.drawRect(fixWidthMapData + j * (span + 1),
 //							fixHeightMapData + i * (span + 1), fixWidthMapData
 //									+ j * (span + 1) + span, fixHeightMapData
@@ -275,6 +277,7 @@ public class GameView extends View {
 		canvas.drawBitmap(source,
 				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
 						+ game.source[1] * (span + 1), paint);
+					
 		// Canvas drawBitmap: Target
 		/*canvas.drawBitmap(target,
 		        fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
@@ -315,6 +318,8 @@ public class GameView extends View {
 			if(event.getX() >= fixWidthMapData && event.getY() <= fixWidthMapData){
 				changeMapZoomIn(true);
 			}
+			
+			/* Close WebRTC local view */
 			setUIfunction.closeLocalView();
 			drawZoomMap(event);
 		}
@@ -325,25 +330,24 @@ public class GameView extends View {
 
     public void changeMapZoomIn(boolean zoomIn) {
         if (zoomIn) {
-            span = 30;
+            span = 18;
             getMapSize();
 
             xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
             ycoordinate = (int) ((screenHeight / 2) - (mapHeight / 2));
 
-            //fixWidthMapData = xcoordinate;    // ZoomIn Screen in the right
-            fixWidthMapData = 0;            // ZoomIn Screen in the middle
+            fixWidthMapData = xcoordinate;    // ZoomIn Screen in the right
+            //fixWidthMapData = 0;            // ZoomIn Screen in the middle
             fixHeightMapData = ycoordinate;
 
             isZoom = true;
         }else {
-            // Let map screen change back into small size
-            isZoom = !isZoom;
-
-            span = 15;
+            span = 5;
             xcoordinate = ycoordinate = 5;
             fixWidthMapData = fixHeightMapData = 5;
             
+            // Let map screen change back into small size
+            isZoom = false;
         }
         requestLayout();
     }
@@ -515,6 +519,7 @@ public class GameView extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		Log.i("shinhua","requestLayout");
 		if (game.map != null) {
 			setGridSize();
 		} else {
@@ -523,13 +528,6 @@ public class GameView extends View {
 		}
 		setMeasuredDimension(VIEW_WIDTH, VIEW_HEIGHT);
 	}
-
-	/*
-	 * @Override protected void onLayout(boolean changed, int left, int top, int
-	 * right, int bottom) { // TODO Auto-generated method stub
-	 * 
-	 * }
-	 */
 
 	@SuppressLint("NewApi") 
 	public void getScreenSize() {
@@ -542,24 +540,20 @@ public class GameView extends View {
 		screenHeight = size.y;
 	}
 
-	public void getMapSize() {
-		map = game.map;
-		row = map.length;
-		col = map[0].length;
-		mapWidth = (col * (span + 1));
-		mapHeight = (row * (span + 1));
-	}
-
 	public void setGridSize(){
 		/* The setGridSize */
 		getMapSize();
 		
 		/* Draw Map position on the upper left */
 		if(isZoom){
+			
 			width = (col * (span + 1)) + xcoordinate;
 			height = (row * (span + 1)) + ycoordinate;
+			Log.i("shinhua","coordinate " + xcoordinate + " "+ ycoordinate);
+			Log.i("shinhua","GridSize " + width + " "+ height);
 			setVIEW_WIDTH(width);
 			setVIEW_HEIGHT(height);
+			
 		}	
 		/* Draw Map position on the upper right */
 		else{ 
@@ -571,6 +565,16 @@ public class GameView extends View {
 			setVIEW_HEIGHT(height);
 		}
 
+	}
+	
+	public void getMapSize() {
+		map = game.map;
+		row = map.length;
+		col = map[0].length;
+		
+		Log.i("shinhua",row + ", " + col);
+		mapWidth = (col * (span + 1));
+		mapHeight = (row * (span + 1));
 	}
 
 	public static int getVIEW_WIDTH() {
@@ -616,6 +620,5 @@ public class GameView extends View {
 		this.remoteScreenHeight = height;
 		Log.i("shinhua", "RemoteScreenSize: "+ remoteScreenWidth + " " + remoteScreenHeight);
 	}
-	
 	
 }

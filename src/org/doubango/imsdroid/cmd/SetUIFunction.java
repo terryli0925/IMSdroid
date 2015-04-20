@@ -538,6 +538,7 @@ public class SetUIFunction {
 			    if (RobotOperationMode.currRobotMode != RobotOperationMode.MANUAL_MODE) {
 			        updateRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        sendRobotModeState(RobotOperationMode.MANUAL_MODE);
+			        gameView.changeMapZoomIn(false);
 			        gameView.postInvalidate();
 			    }
 			    break;
@@ -574,11 +575,11 @@ public class SetUIFunction {
 			case R.id.img_reset:
 			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
-			        gameView.postInvalidate();
 			    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
-			        gameView.postInvalidate();
 			    }
+			    gameView.changeMapZoomIn(false);
+			    gameView.postInvalidate();
 				break;
 			case R.id.img_setup:
 			    if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE && !RobotOperationMode.isClickSchedule) {

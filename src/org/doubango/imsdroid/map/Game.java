@@ -43,15 +43,17 @@ public class Game {
 		
 		if (map == null) {
 			mapId = 0;
-			// map = MapList.customized_map3[0];
-			map = MapList.customized_map2[mapId];
+			//map = MapList.customized_map3[mapId];
+			//map = MapList.customized_map2[mapId];
+			map = MapList.nkg_lobby[mapId];
 			gv.postInvalidate();
 		} else {
 			synchronized (map) {
 				try {
 					mapId = 0;
-					// map = MapList.customized_map3[0];
-					map = MapList.customized_map2[mapId];
+					//map = MapList.customized_map3[mapId];
+					//map = MapList.customized_map2[mapId];
+					map = MapList.nkg_lobby[mapId];
 					gv.setVIEW_WIDTH(640);
 					gv.setVIEW_HEIGHT(640);
 					gv.requestLayout();
