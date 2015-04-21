@@ -15,8 +15,11 @@ public class RobotOperationMode {
     public static final String ACTION_INTENT_ALARM = "imsdroid.intent.action.ALARM";
 
     //Semi-Auto mode
+    public static final int NAVI_SETTING = 0;
+    public static final int NAVI_SETUP_DONE = 1;
+    public static final int NAVI_START = 2;
     public static LinkedList<int[][]> targetQueue=new LinkedList<int[][]>();
-    public static boolean isNaviStart = false;
+    public static int naviStartPhase = NAVI_SETTING;
 
     //Auto mode
     public static final int MINUTE_INTERVAL = 5;

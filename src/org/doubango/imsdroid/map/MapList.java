@@ -2,9 +2,7 @@ package org.doubango.imsdroid.map;
 
 public class MapList {
 	public static int[] source={1,1};
-	public static int[][] target={
-		{9,8},{4,22},{0,11},{9,10},{21,22}
-	};
+	public static int[] target={0,0};
 
 	static int[][][] map = new int[][][]
 	{

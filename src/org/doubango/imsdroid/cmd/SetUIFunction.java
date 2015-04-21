@@ -176,6 +176,7 @@ public class SetUIFunction {
 	// Auto mode
 	Calendar calendar;
 	AlarmManager alarmManager;
+	private TextView hourText, minuteText;
 	private ListView listView;
 	private Spinner hourSpinner, minuteSpinner;
 	private ArrayList<String> scheduleList = new ArrayList<String>();
@@ -436,6 +437,9 @@ public class SetUIFunction {
 	
 
 	private void declareAutoModeUI() {
+	    hourText = (TextView) globalActivity.findViewById(R.id.hourText);
+	    minuteText = (TextView) globalActivity.findViewById(R.id.minuteText);
+
 	    hourSpinner = (Spinner) globalActivity.findViewById(R.id.hourSpinner);
 	    minuteSpinner = (Spinner) globalActivity.findViewById(R.id.minuteSpinner);
 	    listView = (ListView)globalActivity.findViewById(R.id.listView);
@@ -561,19 +565,29 @@ public class SetUIFunction {
 			case R.id.img_navi:
 			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 			        if (XMPPSet.isConnected()) {
-			            for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
-			                int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
-			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
-			            }
+//			            for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
+//			                int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
+//			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+//			            }
+			            int[][] tempTarget = RobotOperationMode.targetQueue.poll();
+			            MapList.target[0] = tempTarget[0][0];
+			            MapList.target[1] = tempTarget[0][1];
+			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
 
 			            XMPPSet.XMPPSendText("semiauto start");
-			            RobotOperationMode.isNaviStart = true;
+			            RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
 			            Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
+			            //For test
+//			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner 10 10");
+//			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner end");
+
+			            gameView.postInvalidate();
 			        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 			    }
 			    break;
 			case R.id.img_reset:
-			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
+			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+			            && RobotOperationMode.naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
 			    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
@@ -694,6 +708,11 @@ public class SetUIFunction {
         	revertImageButton();
         	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 100, 100);
             layout_joystick.setVisibility(View.VISIBLE);
+            navistart.setVisibility(View.INVISIBLE);
+            reset.setVisibility(View.INVISIBLE);
+            setup.setVisibility(View.INVISIBLE);
+            hourText.setVisibility(View.GONE);
+            minuteText.setVisibility(View.GONE);
             hourSpinner.setVisibility(View.GONE);
             minuteSpinner.setVisibility(View.GONE);
             listView.setVisibility(View.GONE);
@@ -702,6 +721,11 @@ public class SetUIFunction {
         	revertImageButton();
         	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
+            navistart.setVisibility(View.VISIBLE);
+            reset.setVisibility(View.VISIBLE);
+            setup.setVisibility(View.INVISIBLE);
+            hourText.setVisibility(View.GONE);
+            minuteText.setVisibility(View.GONE);
             hourSpinner.setVisibility(View.GONE);
             minuteSpinner.setVisibility(View.GONE);
             listView.setVisibility(View.GONE);
@@ -710,6 +734,11 @@ public class SetUIFunction {
         	revertImageButton();
         	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 100, 100);
             layout_joystick.setVisibility(View.GONE);
+            navistart.setVisibility(View.INVISIBLE);
+            reset.setVisibility(View.VISIBLE);
+            setup.setVisibility(View.VISIBLE);
+            hourText.setVisibility(View.VISIBLE);
+            minuteText.setVisibility(View.VISIBLE);
             hourSpinner.setSelection(0);
             minuteSpinner.setSelection(0);
             hourSpinner.setVisibility(View.VISIBLE);

@@ -209,7 +209,7 @@
         android:id="@+id/hangupbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/runjs"
+        android:layout_toRightOf="@+id/img_setup"
         android:layout_alignParentBottom="true"
         android:text="hangup" />
 
@@ -219,7 +219,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/hangupbtn"
         android:layout_toRightOf="@+id/img_auto"
-        android:text="run" />
+        android:text="run"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/getAxisBtn"
@@ -227,7 +228,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/runjs"
         android:layout_alignLeft="@+id/runjs"
-        android:text="GetAxis" />
+        android:text="GetAxis"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/Axis_show_Y"
@@ -235,7 +237,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/Axis_show_X"
         android:layout_alignLeft="@+id/getAxisBtn"
-        android:text="Axis_show_X" />
+        android:text="Axis_show_X"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/Axis_show_X"
@@ -243,7 +246,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/getAxisBtn"
         android:layout_toRightOf="@+id/img_auto"
-        android:text="Axis_show_Y" />
+        android:text="Axis_show_Y"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/connectbtn"
@@ -253,27 +257,45 @@
         android:layout_toRightOf="@+id/hangupbtn"
         android:text="connect" />
 
-    <Spinner
-        android:id="@+id/hourSpinner"
+    <TextView
+        android:id="@+id/hourText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/hangupbtn"
-        android:layout_above="@+id/minuteSpinner"
+        android:layout_above="@+id/hourSpinner"
+        android:text="Hour"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/minuteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/hourSpinner"
+        android:layout_above="@+id/hourSpinner"
+        android:text="Minute"
         android:visibility="gone" />
 
     <Spinner
-        android:id="@+id/minuteSpinner"
+        android:id="@+id/hourSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/hangupbtn"
         android:layout_above="@+id/connectbtn"
         android:visibility="gone" />
 
+    <Spinner
+        android:id="@+id/minuteSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/hourSpinner"
+        android:layout_above="@+id/connectbtn"
+        android:visibility="gone" />
+
 	<ListView
         android:id="@+id/listView"
-        android:layout_width="80dp"
+        android:layout_width="60dp"
         android:layout_height="150dp"
-        android:layout_toRightOf="@+id/connectbtn"
+        android:layout_toRightOf="@+id/minuteSpinner"
         android:layout_alignParentBottom="true"
         android:scrollbars="vertical"
     />

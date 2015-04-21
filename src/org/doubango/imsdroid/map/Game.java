@@ -15,7 +15,7 @@ public class Game {
 	int mapId = 0;
 	static int[][] map;// = MapList.customized_map2[mapId];
 	public int[] source = MapList.source;
-	public int[] target = MapList.target[0];
+	public int[] target = MapList.target;
 	public GameView gameView;
 	public Button runButton;
 	public TextView BSTextView;

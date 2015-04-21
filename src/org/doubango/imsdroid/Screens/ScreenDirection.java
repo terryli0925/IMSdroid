@@ -2,10 +2,7 @@ package org.doubango.imsdroid.Screens;
 
 import org.doubango.imsdroid.Main;
 import org.doubango.imsdroid.R;
-import org.doubango.imsdroid.UartReceive;
-import org.doubango.imsdroid.cmd.SetBtnFun;
 import org.doubango.imsdroid.cmd.SetUIFunction;
-import org.doubango.imsdroid.map.MapScreen;
 import org.doubango.imsdroid.map.MapScreenView;
 import org.doubango.ngn.services.INgnSipService;
 
@@ -13,16 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 public class ScreenDirection extends BaseScreen{
-
-	
 	private final INgnSipService mSipService;
 	private static String TAG = ScreenDirection.class.getCanonicalName();
-	
-	//private XMPPSetting XMPPSet;
-	private UartReceive uartRec;
-	private SetBtnFun setBtn;
-	private MapScreen mapScreen;
-
 
 	private SetUIFunction setUI;
 	private MapScreenView mapScreenView;

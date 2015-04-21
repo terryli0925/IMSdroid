@@ -21,7 +21,7 @@ import android.os.Handler;
 import android.util.Log;
 
 public class XMPPSetting {
-    private static String TAG = "william";
+    private static String TAG = "xmpp";
 
     public static final boolean IS_SERVER = true; // Server: true, Client: false
     public static final String SERVER_ACCOUNT = "rdc03";
@@ -116,22 +116,39 @@ public class XMPPSetting {
 		                {
 		                    updateTarget(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
-		                }
+		                }*/
 		                else if (inM[0].equals("semiauto"))
 		                {
 		                    //TODO: When robot start, user also can add/remove target
-		                    if (inM[1].equals("coordinate")) {
+		                    /*if (inM[1].equals("coordinate")) {
 		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
 		                        RobotOperationMode.targetQueue.offer(tempTarget);		                        
 		                    } else if (inM[1].equals("start")) {
 		                        Log.i(TAG, "Navi Start");
 		                        RobotOperationMode.isNaviStart = true;
 		                        //TODO: Robot start
+		                    }*/
+		                    if (inM[1].equals("end")) {
+		                        //Log.i(TAG, "Robot already move to target. Navication end");
+		                        MapList.target[0] = 0;
+		                        MapList.target[0] = 0;
+		                        RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_SETTING;
+		                    } else if (inM[1].equals("corner")) {
+		                        if (inM[2].equals("start")) {}
+		                        else if (inM[2].equals("end")) {
+		                            RobotOperationMode.targetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
+		                            RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_START;
+		                            _gameView.postInvalidate();
+		                        }
+		                        else {
+		                            int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
+		                            RobotOperationMode.targetQueue.offer(tempTarget);
+		                        }
 		                    }
 		                    //updateTrackPos(inM[1], inM[2], inM[3]);
-		                    _gameView.postInvalidate();
+		                    //_gameView.postInvalidate();
 		                }
-		                else if (inM[0].equals("auto"))
+		                /*else if (inM[0].equals("auto"))
 		                {
 		                    if (inM[1].equals("scheduledTime")) {
 		                        setUIfunction.scheduledTime = inM[2];
@@ -216,13 +233,13 @@ public class XMPPSetting {
 	}
 
 	private void updateSource(String x, String y) {
-        MapList.source[0] = Integer.parseInt(x);
-        MapList.source[1] = Integer.parseInt(y);
+	    MapList.source[0] = Integer.parseInt(x);
+	    MapList.source[1] = Integer.parseInt(y);
 	}
 
 	private void updateTarget(String x, String y) {
-	    MapList.target[0][0] = Integer.parseInt(x);
-	    MapList.target[0][1] = Integer.parseInt(y);
+	    MapList.target[0] = Integer.parseInt(x);
+	    MapList.target[1] = Integer.parseInt(y);
 	}
 
 	private void updateTrackPos(String action, String x, String y) {

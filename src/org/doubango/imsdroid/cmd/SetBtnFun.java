@@ -231,8 +231,8 @@ public class SetBtnFun {
 				
 			case R.id.stswatBtn:
 				
-				MapList.target[0][0] = 8;
-				MapList.target[0][1] = 1;
+				MapList.target[0] = 8;
+				MapList.target[1] = 1;
 
 				break;
 			case R.id.runBtn:
@@ -255,8 +255,8 @@ public class SetBtnFun {
        
 				Log.i(TAG,"rest btn");
 				
-				MapList.target[0][0] = 8;
-				MapList.target[0][1] = 8;
+				MapList.target[0] = 8;
+				MapList.target[1] = 8;
 			
 				game.source[0] = 8;
 				game.source[1] = 1;

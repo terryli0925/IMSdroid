@@ -226,24 +226,43 @@ public class GameView extends View {
 			}
 		}
 
-		// Canvas drawBitmap: Track point for semi-auto mode
-		if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+		// Canvas drawLine: Navigation path
+		if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+		        && RobotOperationMode.naviStartPhase == RobotOperationMode.NAVI_START) {
+		    paint.setColor(Color.BLACK);
+		    paint.setStyle(Style.STROKE);
+		    paint.setStrokeWidth(2);
+
+		    int[] lastTarget = {MapList.source[0], MapList.source[1]};
 		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
-		        if (i == RobotOperationMode.targetQueue.size() -1) {
-		            canvas.drawBitmap(redBall,
-		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                    + tempTarget[0][1] * (span + 1), paint);
-		        } else {
-		            canvas.drawBitmap(greenBall,
-		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                    + tempTarget[0][1] * (span + 1), paint);
-		        }
+ 
+		        canvas.drawLine(fixWidthMapData + lastTarget[0] * (span + 1) + span / 2,
+		                fixHeightMapData + lastTarget[1] * (span + 1) + span / 2,
+		                fixWidthMapData + tempTarget[0][0] * (span + 1) + span / 2,
+		                fixHeightMapData + tempTarget[0][1] * (span + 1) + span / 2, paint);
+
+		        lastTarget[0] = tempTarget[0][0];
+		        lastTarget[1] = tempTarget[0][1];
 		    }
 		}
 
-		// Canvas drawBitmap: Track point for auto mode
-		if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
+		// Canvas drawBitmap: Track point
+		if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+		        && RobotOperationMode.naviStartPhase != RobotOperationMode.NAVI_SETUP_DONE) {
+		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
+		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
+//		        if (i == RobotOperationMode.targetQueue.size() -1) {
+//		            canvas.drawBitmap(redBall,
+//		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+//		                    + tempTarget[0][1] * (span + 1), paint);
+//		        } else {
+		        canvas.drawBitmap(greenBall,
+		                fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                + tempTarget[0][1] * (span + 1), paint);
+//		        }
+		    }
+		} else	if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
 		    if (!RobotOperationMode.isClickSchedule) {
 		        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 		            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
@@ -279,9 +298,12 @@ public class GameView extends View {
 						+ game.source[1] * (span + 1), paint);
 					
 		// Canvas drawBitmap: Target
-		/*canvas.drawBitmap(target,
-		        fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
-		        + game.target[1] * (span + 1), paint);*/
+		if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+		        && game.target[0] != 0 && game.target[1] != 0) {
+		    canvas.drawBitmap(target,
+		            fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
+		            + game.target[1] * (span + 1), paint);
+		}
 
 		// William Added
 		//onDrawText(canvas);
@@ -383,12 +405,17 @@ public class GameView extends View {
 				        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 
 				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {*/
-				    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && !RobotOperationMode.isNaviStart) {
+				    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+				            && RobotOperationMode.naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
 
 				        if (trackIndex == -1) {     //Add this new target in track list
-				            RobotOperationMode.targetQueue.offer(tempTarget);
+				            // Only one target
+				            if (RobotOperationMode.targetQueue.isEmpty())
+				                RobotOperationMode.targetQueue.offer(tempTarget);
+				            else
+				                RobotOperationMode.targetQueue.set(0, tempTarget);
 				            //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
 				        }else {
 				            RobotOperationMode.targetQueue.remove(trackIndex);
@@ -399,7 +426,13 @@ public class GameView extends View {
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
 
 				        if (trackIndex == -1) {     //Add this new target in track list
-				            RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+				            // Only one target
+				            if (RobotOperationMode.autoTargetSettingQueue.size() < 2)
+				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+				            else {
+				                RobotOperationMode.autoTargetSettingQueue.poll();
+				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+				            }
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
 				        }
