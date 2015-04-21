@@ -70,6 +70,7 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.xmlpull.v1.XmlPullParser;
 
 public class Main extends ActivityGroup {
+    private static final String MainUIScreen = "org.doubango.imsdroid.Screens.ScreenDirection";
 	private static String TAG = Main.class.getCanonicalName();
 	
 	public static final int ACTION_NONE = 0;
@@ -207,7 +208,9 @@ public class Main extends ActivityGroup {
     
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-    	if(!BaseScreen.processKeyDown(keyCode, event)){
+        if (keyCode == KeyEvent.KEYCODE_BACK && MainUIScreen.equals(mScreenService.getCurrentScreen().getId())) {
+            exit();
+        } else if(!BaseScreen.processKeyDown(keyCode, event)){
     		return super.onKeyDown(keyCode, event);
     	}
     	return true;

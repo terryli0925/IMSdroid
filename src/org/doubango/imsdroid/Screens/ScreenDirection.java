@@ -50,11 +50,8 @@ public class ScreenDirection extends BaseScreen{
 
 	@Override
 	protected void onPause() {
-
-		// TODO Auto-generated method stub
-	
 		super.onPause();
-		((Main)getEngine().getMainActivity()).exit();
+//		((Main)getEngine().getMainActivity()).exit();
 //		System.runFinalizersOnExit(true);
 //		System.exit(0);
 	}
