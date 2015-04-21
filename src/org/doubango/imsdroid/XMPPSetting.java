@@ -23,7 +23,7 @@ import android.util.Log;
 public class XMPPSetting {
     private static String TAG = "xmpp";
 
-    public static final boolean IS_SERVER = true; // Server: true, Client: false
+    public static final boolean IS_SERVER = false; // Server: true, Client: false
     public static final String SERVER_ACCOUNT = "rdc03";
     public static final String SERVER_PASSWORD = "rdc03";
     public static final String CLIENT_ACCOUNT = "rdc04";
@@ -133,6 +133,7 @@ public class XMPPSetting {
 		                        MapList.target[0] = 0;
 		                        MapList.target[0] = 0;
 		                        RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_SETTING;
+		                        _gameView.postInvalidate();
 		                    } else if (inM[1].equals("corner")) {
 		                        if (inM[2].equals("start")) {}
 		                        else if (inM[2].equals("end")) {
@@ -235,6 +236,12 @@ public class XMPPSetting {
 	private void updateSource(String x, String y) {
 	    MapList.source[0] = Integer.parseInt(x);
 	    MapList.source[1] = Integer.parseInt(y);
+
+	    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+	        int[][] tempTarget = RobotOperationMode.targetQueue.getFirst();
+	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
+	            RobotOperationMode.targetQueue.remove();
+	    }
 	}
 
 	private void updateTarget(String x, String y) {
