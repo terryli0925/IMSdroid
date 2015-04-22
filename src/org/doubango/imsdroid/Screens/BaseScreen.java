@@ -19,6 +19,7 @@
 */
 package org.doubango.imsdroid.Screens;
 
+import org.doubango.imsdroid.Main;
 import org.doubango.imsdroid.CustomDialog;
 import org.doubango.imsdroid.Engine;
 import org.doubango.imsdroid.R;
@@ -52,6 +53,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public abstract class BaseScreen extends Activity implements IBaseScreen {
 	private static final String TAG = BaseScreen.class.getCanonicalName();
+	private static final String MainUIScreen = "org.doubango.imsdroid.Screens.ScreenDirection";
 	public static enum SCREEN_TYPE {
 		// Well-Known
 		ABOUT_T,
@@ -117,10 +119,10 @@ public abstract class BaseScreen extends Activity implements IBaseScreen {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (!processKeyDown(keyCode, event)) {
-			return super.onKeyDown(keyCode, event);
-		}
-		return true;
+	    if (!processKeyDown(keyCode, event)) {
+	        return super.onKeyDown(keyCode, event);
+	    }
+	    return true;
 	}
 
 	@Override
@@ -304,7 +306,12 @@ public abstract class BaseScreen extends Activity implements IBaseScreen {
 		final IScreenService screenService = ((Engine)Engine.getInstance()).getScreenService();
 		final IBaseScreen currentScreen = screenService.getCurrentScreen();
 		if (currentScreen != null) {
-			if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0
+		    if (keyCode == KeyEvent.KEYCODE_BACK && MainUIScreen.equals(currentScreen.getId())) {
+		        Log.i("terry", "Press BACK key, close app");
+		        ((Main)((Engine)Engine.getInstance()).getMainActivity()).exit();
+		        return true;
+		    }
+		    else if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0
 					&& currentScreen.getType() != SCREEN_TYPE.HOME_T) {
 				if (currentScreen.hasBack()) {
 					if (!currentScreen.back()) {
