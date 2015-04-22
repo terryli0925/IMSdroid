@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.doubango.imsdroid.BLE.BLEDeviceControlActivity;
+import org.doubango.imsdroid.Utils.NetworkStatus;
 import org.doubango.imsdroid.cmd.AngleCmd;
 import org.doubango.imsdroid.cmd.AskCmd;
 import org.doubango.imsdroid.cmd.AxisCmd;
@@ -14,7 +15,6 @@ import org.doubango.imsdroid.cmd.HealthCmd;
 import org.doubango.imsdroid.cmd.RotateAngleCmd;
 import org.doubango.imsdroid.cmd.StopCmd;
 import org.doubango.imsdroid.cmd.StretchCmd;
-import org.doubango.imsdroid.map.NetworkStatus;
 
 
 import android.util.Log;
