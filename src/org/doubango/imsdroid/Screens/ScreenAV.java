@@ -32,9 +32,7 @@ import org.doubango.imsdroid.Main;
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.Services.IScreenService;
 import org.doubango.imsdroid.Utils.DialerUtils;
-import org.doubango.imsdroid.cmd.SetBtnFun;
 import org.doubango.imsdroid.cmd.SetUIFunction;
-import org.doubango.imsdroid.map.MapScreen;
 import org.doubango.imsdroid.map.MapScreenView;
 import org.doubango.ngn.events.NgnInviteEventArgs;
 import org.doubango.ngn.events.NgnInviteEventTypes;
@@ -156,10 +154,6 @@ public class ScreenAV extends BaseScreen{
 	
 	//private XMPPConnection connection;
 	//private XMPPSetting XMPPSet;
-	private SetBtnFun setBtn;
-	private MapScreen mapScreen;
-	
-
 	private SetUIFunction setUI;
 	private MapScreenView mapScreenView;
 
@@ -202,9 +196,6 @@ public class ScreenAV extends BaseScreen{
         // William Added , for XMPP connection
         //XMPPSet.XMPPStart();
 		//XMPPSet = new XMPPSetting();
-		setBtn = new SetBtnFun();
-		mapScreen = new MapScreen();
-
 		setUI = new SetUIFunction(this);
 		//setUI.StartUIFunction();
 		

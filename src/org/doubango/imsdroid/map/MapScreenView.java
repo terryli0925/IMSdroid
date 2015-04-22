@@ -1,9 +1,9 @@
 package org.doubango.imsdroid.map;
 
 import org.doubango.imsdroid.XMPPSetting;
+import org.doubango.imsdroid.Utils.NetworkStatus;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
-import org.doubango.imsdroid.map.NetworkStatus;
 
 
 import android.app.Activity;
