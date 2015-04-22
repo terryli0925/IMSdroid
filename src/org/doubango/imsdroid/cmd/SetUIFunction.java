@@ -395,11 +395,11 @@ public class SetUIFunction {
 		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi, R.drawable.reset, R.drawable.setup};
 		
 		for(int i=0; i<3; i++){
-			adjustButtonSize(mID[i], mDrawable[i], 100, 100);
+			adjustButtonSize(mID[i], mDrawable[i], 300, 300);
 		}
 		
 		for(int i=3; i<mID.length;i++){
-			adjustButtonSize(mID[i], mDrawable[i], 100, 50);
+			adjustButtonSize(mID[i], mDrawable[i], 300, 150);
 		}
 		
 		
@@ -578,8 +578,15 @@ public class SetUIFunction {
 			            int[][] tempTarget = RobotOperationMode.targetQueue.poll();
 			            MapList.target[0] = tempTarget[0][0];
 			            MapList.target[1] = tempTarget[0][1];
-			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
-
+			            
+			            transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
+			            Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
+			            Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
+			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getXaxis());
+			            obj = null;
+				        
+			           // XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
+			   
 			            XMPPSet.XMPPSendText("semiauto start");
 			            naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
 			            Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
@@ -614,6 +621,27 @@ public class SetUIFunction {
 			}
 		}
 
+	};
+	
+	private class transform2ScreenAxis{
+		private int x_axis;
+		private int y_axis;
+		private int scale = 20;
+		private int half = scale / 2;
+		
+		public transform2ScreenAxis(int index_x, int index_y){
+			this.x_axis = index_x * scale - half;
+			this.y_axis = index_y * scale - half;
+		}
+		
+		public int getXaxis(){
+			return x_axis;
+		}
+		
+		public int getYaxis(){
+			return y_axis;
+		}
+				
 	};
 
 	private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
@@ -711,7 +739,7 @@ public class SetUIFunction {
 	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 100, 100);
+        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 300, 300);
             layout_joystick.setVisibility(View.VISIBLE);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.INVISIBLE);
@@ -724,7 +752,7 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 100, 100);
+        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 300, 300);
             layout_joystick.setVisibility(View.GONE);
             navistart.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
@@ -737,7 +765,7 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 100, 100);
+        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 300, 300);
             layout_joystick.setVisibility(View.GONE);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.VISIBLE);
@@ -754,9 +782,9 @@ public class SetUIFunction {
 	}
 
 	private void revertImageButton(){
-		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 100, 100);
-		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 100, 100);
-		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 100, 100);
+		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 300, 300);
+		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 300, 300);
+		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 300, 300);
 	}
 	
 	public void sendRobotModeState(int mode) {

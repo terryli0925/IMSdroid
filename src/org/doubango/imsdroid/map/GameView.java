@@ -50,7 +50,7 @@ public class GameView extends View {
 	}
 
 	public static int mL = 0, mR = 0, mT = 0, mB = 0;
-
+	
 	Bitmap source = BitmapFactory.decodeResource(getResources(),
 			R.drawable.source);
 	Bitmap target = BitmapFactory.decodeResource(getResources(),
@@ -191,6 +191,7 @@ public class GameView extends View {
 		paint.setStyle(Style.STROKE);
 
 		/* Draw BaseMap */
+		Log.i("shinhua" , "Map" + mapWidth + ", " + mapHeight);
 		reDrawBitmapSize(canvas, paint, baseMap, fixWidthMapData, fixHeightMapData, mapWidth, mapHeight);
 		
 		
@@ -352,7 +353,7 @@ public class GameView extends View {
 
     public void changeMapZoomIn(boolean zoomIn) {
         if (zoomIn) {
-            span = 15;
+            span = 30;
             getMapSize();
 
             xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
@@ -364,7 +365,7 @@ public class GameView extends View {
 
             isZoom = true;
         }else {
-            span = 5;
+            span = 10;
             xcoordinate = ycoordinate = 5;
             fixWidthMapData = fixHeightMapData = 5;
             
@@ -552,7 +553,6 @@ public class GameView extends View {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		Log.i("shinhua","requestLayout");
 		if (game.map != null) {
 			setGridSize();
 		} else {
@@ -579,11 +579,8 @@ public class GameView extends View {
 		
 		/* Draw Map position on the upper left */
 		if(isZoom){
-			
 			width = (col * (span + 1)) + xcoordinate;
 			height = (row * (span + 1)) + ycoordinate;
-			Log.i("shinhua","coordinate " + xcoordinate + " "+ ycoordinate);
-			Log.i("shinhua","GridSize " + width + " "+ height);
 			setVIEW_WIDTH(width);
 			setVIEW_HEIGHT(height);
 			
