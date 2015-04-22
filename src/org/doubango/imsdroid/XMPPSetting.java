@@ -132,13 +132,13 @@ public class XMPPSetting {
 		                        //Log.i(TAG, "Robot already move to target. Navication end");
 		                        MapList.target[0] = 0;
 		                        MapList.target[0] = 0;
-		                        RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_SETTING;
+		                        setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETTING;
 		                        _gameView.postInvalidate();
 		                    } else if (inM[1].equals("corner")) {
 		                        if (inM[2].equals("start")) {}
 		                        else if (inM[2].equals("end")) {
 		                            RobotOperationMode.targetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
-		                            RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_START;
+		                            setUIfunction.naviStartPhase = RobotOperationMode.NAVI_START;
 		                            _gameView.postInvalidate();
 		                        }
 		                        else {
@@ -237,7 +237,7 @@ public class XMPPSetting {
 	    MapList.source[0] = Integer.parseInt(x);
 	    MapList.source[1] = Integer.parseInt(y);
 
-	    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+	    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 	        int[][] tempTarget = RobotOperationMode.targetQueue.getFirst();
 	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
 	            RobotOperationMode.targetQueue.remove();

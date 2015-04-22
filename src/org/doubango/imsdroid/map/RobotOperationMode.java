@@ -8,7 +8,6 @@ public class RobotOperationMode {
     public static final int MANUAL_MODE = 1;
     public static final int SEMI_AUTO_MODE = 2;
     public static final int AUTO_MODE = 3;
-    public static int currRobotMode = NONE;
 
     public static final String ACTION_TARGET_ADD = "TARGET_ADD";
     public static final String ACTION_TARGET_REMOVE = "TARGET_REMOVE";
@@ -19,7 +18,6 @@ public class RobotOperationMode {
     public static final int NAVI_SETUP_DONE = 1;
     public static final int NAVI_START = 2;
     public static LinkedList<int[][]> targetQueue=new LinkedList<int[][]>();
-    public static int naviStartPhase = NAVI_SETTING;
 
     //Auto mode
     public static final int MINUTE_INTERVAL = 5;
@@ -27,7 +25,6 @@ public class RobotOperationMode {
     public static LinkedList<int[][]> autoTargetSettingQueue=new LinkedList<int[][]>();
     public static LinkedList<int[][]> autoTargetQueue=new LinkedList<int[][]>();
     public static HashMap<String,LinkedList<int[][]>> RobotScheduleHashMap = new HashMap<String,LinkedList<int[][]>>();
-    public static boolean isClickSchedule = false;
 
     public static int getIndexInTrackList(int[][] target, LinkedList<int[][]> queue) {
         int index = -1;

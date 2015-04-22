@@ -173,7 +173,11 @@ public class SetUIFunction {
 
 	ScreenAV _ScreenAV;
 
-	// Auto mode
+	// Mode
+	public int currRobotMode = RobotOperationMode.NONE;
+	public int naviStartPhase = RobotOperationMode.NAVI_SETTING;
+	public boolean isClickSchedule = false;
+
 	Calendar calendar;
 	AlarmManager alarmManager;
 	private TextView hourText, minuteText;
@@ -539,7 +543,8 @@ public class SetUIFunction {
 				break;
 				
 			case R.id.img_manual:
-			    if (RobotOperationMode.currRobotMode != RobotOperationMode.MANUAL_MODE) {
+			    if (currRobotMode != RobotOperationMode.MANUAL_MODE
+			            && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        updateRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        sendRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        gameView.changeMapZoomIn(false);
@@ -547,7 +552,7 @@ public class SetUIFunction {
 			    }
 			    break;
 			case R.id.img_semiauto:
-			    if (RobotOperationMode.currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
+			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
 			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        sendRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
@@ -555,7 +560,8 @@ public class SetUIFunction {
 			    }
 			    break;
 			case R.id.img_auto:
-			    if (RobotOperationMode.currRobotMode != RobotOperationMode.AUTO_MODE) {
+			    if (currRobotMode != RobotOperationMode.AUTO_MODE
+			            && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        updateRobotModeState(RobotOperationMode.AUTO_MODE);
 			        sendRobotModeState(RobotOperationMode.AUTO_MODE);
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
@@ -563,7 +569,7 @@ public class SetUIFunction {
 			    }
 			    break;
 			case R.id.img_navi:
-			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 			        if (XMPPSet.isConnected()) {
 //			            for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 //			                int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
@@ -575,28 +581,27 @@ public class SetUIFunction {
 			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
 
 			            XMPPSet.XMPPSendText("semiauto start");
-			            RobotOperationMode.naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
+			            naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
 			            Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
 			            //For test
 //			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner 10 10");
 //			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner end");
-
 			            gameView.postInvalidate();
 			        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
 			    }
 			    break;
 			case R.id.img_reset:
-			    if (RobotOperationMode.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
-			            && RobotOperationMode.naviStartPhase == RobotOperationMode.NAVI_SETTING) {
+			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+			            && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
-			    } else if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE) {
+			    } else if (currRobotMode == RobotOperationMode.AUTO_MODE) {
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 			    }
 			    gameView.changeMapZoomIn(false);
 			    gameView.postInvalidate();
 				break;
 			case R.id.img_setup:
-			    if (RobotOperationMode.currRobotMode == RobotOperationMode.AUTO_MODE && !RobotOperationMode.isClickSchedule) {
+			    if (currRobotMode == RobotOperationMode.AUTO_MODE && !isClickSchedule) {
 			        setScheduleAlarm(false);
 			        sendAutoModeSchedule();
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
@@ -638,7 +643,7 @@ public class SetUIFunction {
 	        Log.i("terry", "Show Schedule "+clickSchedule+" at map");
 
 	        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(clickSchedule);
-	        RobotOperationMode.isClickSchedule = true;
+	        isClickSchedule = true;
 	        gameView.postInvalidate();
 	    }
 	};
@@ -711,12 +716,12 @@ public class SetUIFunction {
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.INVISIBLE);
             setup.setVisibility(View.INVISIBLE);
-            hourText.setVisibility(View.GONE);
-            minuteText.setVisibility(View.GONE);
-            hourSpinner.setVisibility(View.GONE);
-            minuteSpinner.setVisibility(View.GONE);
-            listView.setVisibility(View.GONE);
-            RobotOperationMode.currRobotMode = RobotOperationMode.MANUAL_MODE;
+            hourText.setVisibility(View.INVISIBLE);
+            minuteText.setVisibility(View.INVISIBLE);
+            hourSpinner.setVisibility(View.INVISIBLE);
+            minuteSpinner.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 100, 100);
@@ -724,12 +729,12 @@ public class SetUIFunction {
             navistart.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
             setup.setVisibility(View.INVISIBLE);
-            hourText.setVisibility(View.GONE);
-            minuteText.setVisibility(View.GONE);
-            hourSpinner.setVisibility(View.GONE);
-            minuteSpinner.setVisibility(View.GONE);
-            listView.setVisibility(View.GONE);
-            RobotOperationMode.currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
+            hourText.setVisibility(View.INVISIBLE);
+            minuteText.setVisibility(View.INVISIBLE);
+            hourSpinner.setVisibility(View.INVISIBLE);
+            minuteSpinner.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.INVISIBLE);
+            currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 100, 100);
@@ -744,7 +749,7 @@ public class SetUIFunction {
             hourSpinner.setVisibility(View.VISIBLE);
             minuteSpinner.setVisibility(View.VISIBLE);
             listView.setVisibility(View.VISIBLE);
-            RobotOperationMode.currRobotMode = RobotOperationMode.AUTO_MODE;
+            currRobotMode = RobotOperationMode.AUTO_MODE;
         }
 	}
 
@@ -756,7 +761,7 @@ public class SetUIFunction {
 	
 	public void sendRobotModeState(int mode) {
 	    if (XMPPSet.isConnected())
-	        XMPPSet.XMPPSendText("mode "+ RobotOperationMode.currRobotMode);
+	        XMPPSet.XMPPSendText("mode "+ currRobotMode);
 	    else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();	    
 	}
 
@@ -809,7 +814,7 @@ public class SetUIFunction {
 	        hourSpinner.setSelection(0);
 	        minuteSpinner.setSelection(0);
 	        RobotOperationMode.autoTargetSettingQueue.clear();
-	        RobotOperationMode.isClickSchedule = false;
+	        isClickSchedule = false;
 	    }
 	}
 
@@ -1270,6 +1275,4 @@ public class SetUIFunction {
 	public void closeLocalView(){
 		rl_local.removeAllViews();
 	}
-	
-	
 }
