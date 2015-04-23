@@ -24,8 +24,8 @@ public class XMPPSetting {
     private static String TAG = "xmpp";
 
     public static final boolean IS_SERVER = false; // Server: true, Client: false
-    public static final String SERVER_ACCOUNT = "rdc01";
-    public static final String SERVER_PASSWORD = "rdc01";
+    public static final String SERVER_ACCOUNT = "rdc03";
+    public static final String SERVER_PASSWORD = "rdc03";
     public static final String CLIENT_ACCOUNT = "rdc04";
     public static final String CLIENT_PASSWORD = "rdc04";
     //public static final String[] CLIENT_LIST = {"rdc02", "rdc03", "rdc04"};

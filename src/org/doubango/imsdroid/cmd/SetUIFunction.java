@@ -1058,10 +1058,12 @@ public class SetUIFunction {
 		public void onClick(View v) {
 			switch(v.getId()){
 				case R.id.connectbtn:
-
+					
 					if(XMPPSet.IS_SERVER){
 						videoConferenceSignIn(account[0], password[0]);
 					} else if(!XMPPSet.IS_SERVER){
+						Log.i("shinhua", "Call Key Pressed");
+						connect.setVisibility(View.INVISIBLE);
 						videoConferenceSignIn(account[1], password[1]);
 					}	
 					
@@ -1094,7 +1096,8 @@ public class SetUIFunction {
 							case CoreStatusConnecting : 
 									myHandler.obtainMessage(mCoreStatusConnecting , 0, -1, null).sendToTarget();
 								break;
-							case CoreStatusConnected : 
+							case CoreStatusConnected :
+									Log.i("shinhua", "Call Key videoConferenceSignIn");
 									myHandler.obtainMessage(mCoreStatusConnected , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusDisconnecting : 
@@ -1121,13 +1124,13 @@ public class SetUIFunction {
 		    		break;
 		    	case mCoreStatusConnected :
 		    		Toast.makeText(globalActivity, "CoreStatusConnected", Toast.LENGTH_SHORT).show();
-		    		
+		    		Log.i("shinhua", "mCoreStatusConnected!!!");
 		    		comingCallService();
 		    		clientNewLetter();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
-		    		Toast.makeText(globalActivity, "CoreStatusDisconnecting", Toast.LENGTH_SHORT).show();
+		    		Toast.makeText(globalActivity, "Disconnecting... If you want recall again, it will display < Recall message >", Toast.LENGTH_SHORT).show();
 		    		break;
 		    	case mCoreStatusDisconnected :
 		    		Toast.makeText(globalActivity, "CoreStatusDisconnected", Toast.LENGTH_SHORT).show();
@@ -1240,13 +1243,15 @@ public class SetUIFunction {
 									startTimer();
 									break;
 								case CallConnected:
+									Log.i("shinhua", "CallCallCall!");
 									dialog.cancel();
 									nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
 									nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
 									break;
 								case CallEnded:
-									Toast.makeText(globalActivity, " CallEnded pls try agin ", Toast.LENGTH_SHORT).show();
+									Toast.makeText(globalActivity, " You can recall Robot again ", Toast.LENGTH_SHORT).show();
 									dialog.cancel();
+									connect.setVisibility(View.VISIBLE);
 									if(nowClientCall != null){
 										nowClientCall = null ;
 										rl_local.removeAllViews();
@@ -1269,6 +1274,7 @@ public class SetUIFunction {
 						nowClientCall = null ;
 						fl_portrait.setVisibility(View.GONE);
 					}
+					connect.setVisibility(View.VISIBLE);
 				}
 			});
     		dialog.show();
@@ -1300,6 +1306,11 @@ public class SetUIFunction {
 			rl_local.removeAllViews();
 			rl_remote.removeAllViews();
 			fl_portrait.setVisibility(View.GONE);
+			
+			if(XMPPSet.IS_SERVER == false){
+				mCore.signOut();
+			}
+		
 		}
 	}
 	

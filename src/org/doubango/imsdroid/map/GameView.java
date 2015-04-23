@@ -341,9 +341,6 @@ public class GameView extends View {
 			if(event.getX() >= fixWidthMapData && event.getY() <= fixWidthMapData){
 				changeMapZoomIn(true);
 			}
-			
-			/* Close WebRTC local view */
-			setUIfunction.closeLocalView();
 			drawZoomMap(event);
 		}
 			
