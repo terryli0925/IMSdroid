@@ -194,7 +194,8 @@ public class SetUIFunction {
 	JustekSDKCore mCore;
 	private String[] account = {"40023", "40024"};
 	private String[] password = {"Oh5xLN6m", "Kiu72Reo"};
-	private String serverURL = "https://58.248.15.221:8443/justek_auth/authentication";
+	//private String serverURL = "https://58.248.15.221:8443/justek_auth/authentication";
+	private String serverURL = "https://202.153.169.114:8443/justek_auth/authentication";
 	private Button connect, call;
 	private ProgressDialog dialog; 
 	
@@ -582,7 +583,7 @@ public class SetUIFunction {
 			            transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
 			            Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
 			            Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
-			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getXaxis());
+			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
 			            obj = null;
 				        
 			           // XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
@@ -626,12 +627,14 @@ public class SetUIFunction {
 	private class transform2ScreenAxis{
 		private int x_axis;
 		private int y_axis;
-		private int scale = 20;
-		private int half = scale / 2;
+		private double scalex = 16.84;
+		private double scaley = 16.36;
+		private double halfx = scalex / 2;
+		private double halfy = scaley / 2;
 		
 		public transform2ScreenAxis(int index_x, int index_y){
-			this.x_axis = index_x * scale - half;
-			this.y_axis = index_y * scale - half;
+			this.x_axis = (int)(index_x * scalex - halfx);
+			this.y_axis = (int)(index_y * scaley - halfy);
 		}
 		
 		public int getXaxis(){

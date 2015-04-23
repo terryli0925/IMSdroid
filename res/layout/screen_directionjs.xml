@@ -6,8 +6,8 @@
 
         <FrameLayout
         android:id="@+id/fl_portrait"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="600dp"
+        android:layout_height="400dp"
         android:layout_weight="1" >
         
         <RelativeLayout

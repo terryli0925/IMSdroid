@@ -41,7 +41,7 @@ public class GameView extends View {
 	private NetworkStatus loggin;
 	public Spinner mySpinner;// Spinner���ޥ�
 	public TextView CDTextView;
-	int span = 5;
+	int span = 10;
 	int theta = 0;
 	public static boolean drawCircleFlag = false, turnToBigMap = false;
 
