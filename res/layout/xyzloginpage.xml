@@ -59,7 +59,6 @@
         android:ems="10"
         android:gravity="fill_horizontal"
         android:inputType="textPersonName"
-        android:text="Your username"
         android:textColor="#000000"/>
 
     <TextView
@@ -69,9 +68,46 @@
         android:layout_alignLeft="@+id/editText_username"
         android:layout_below="@+id/logincencel"
         android:layout_marginTop="31dp"
-        android:text="User name"
         android:textColor="#000000"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<TextView
+        android:id="@+id/chooseAccount"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/accountSpinner"
+        android:layout_marginTop="400dp"
+        android:gravity="right"
+        android:textColor="#000000"
+        android:text="Choose User Account : "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Spinner
+        android:id="@+id/accountSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="400dp" />
+
+	<TextView
+        android:id="@+id/chooseRobot"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/robotSpinner"
+        android:layout_below="@+id/accountSpinner"
+        android:layout_marginTop="10dp"
+        android:gravity="right"
+        android:textColor="#000000"
+        android:text="Choose Robot : "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Spinner
+        android:id="@+id/robotSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/accountSpinner"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true" />
 
 	<CheckBox
 	    android:id="@+id/checkBox_earlyIMS"

@@ -24,10 +24,14 @@ import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ScreenXYZLogin extends BaseScreen {
@@ -41,7 +45,10 @@ public class ScreenXYZLogin extends BaseScreen {
 	private Button enterBtn, cencelBtn;
 	
 	/* Add new layout declare */
+	private TextView textViewUsername, chooseAccount;
 	private EditText editTextUsername, editTextPassword;
+	private Spinner accountSpinner, robotSpinner;
+	private ArrayAdapter<String> accountListAdapter, robotListAdapter;
 	private int width, height;
 	
 	private NetworkStatus loggin;
@@ -79,9 +86,21 @@ public class ScreenXYZLogin extends BaseScreen {
 		enterBtn.setOnClickListener(ClickListener);
 		cencelBtn.setOnClickListener(ClickListener);
 
-		editTextUsername = (EditText)findViewById(R.id.editText_username);	
+		textViewUsername = (TextView)findViewById(R.id.textView_username);
+		chooseAccount = (TextView)findViewById(R.id.chooseAccount);
+		editTextUsername = (EditText)findViewById(R.id.editText_username);
 		editTextPassword = (EditText)findViewById(R.id.editText_password);
-		
+		accountSpinner = (Spinner)findViewById(R.id.accountSpinner);
+		robotSpinner = (Spinner)findViewById(R.id.robotSpinner);
+
+		accountListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, XMPPSetting.USER_ACCOUNT);
+		robotListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, XMPPSetting.ROBOT_ACCOUNT);
+		accountSpinner.setAdapter(accountListAdapter);
+		robotSpinner.setAdapter(robotListAdapter);
+
+		accountSpinner.setOnItemSelectedListener(onItemSelectedListener);
+		robotSpinner.setOnItemSelectedListener(onItemSelectedListener);
+
 		/* Maybe below can be remove*/ 
 		editTextRealm = (EditText)findViewById(R.id.editText_realm);
 		editTextImpi  = (EditText)findViewById(R.id.editText_impi);
@@ -92,21 +111,24 @@ public class ScreenXYZLogin extends BaseScreen {
 //		editTextUsername.setText(mConfigurationService.getString(
 //				NgnConfigurationEntry.IDENTITY_DISPLAY_NAME,
 //				NgnConfigurationEntry.DEFAULT_IDENTITY_DISPLAY_NAME));
-		if (XMPPSetting.IS_SERVER)
-		    editTextUsername.setText(XMPPSetting.SERVER_ACCOUNT);
-		else
-		    editTextUsername.setText(XMPPSetting.CLIENT_ACCOUNT);
+		if (XMPPSetting.IS_SERVER) {
+		    textViewUsername.setText("Robot Name");
+		    editTextUsername.setText(XMPPSetting.ROBOT_ACCOUNT[0]);
+		    editTextPassword.setText(XMPPSetting.ROBOT_PASSWORD[0]);
+		    chooseAccount.setVisibility(View.INVISIBLE);
+		    accountSpinner.setVisibility(View.INVISIBLE);
+		} else {
+		    textViewUsername.setText("User Name");
+		    editTextUsername.setText(XMPPSetting.USER_ACCOUNT[0]);
+		    editTextPassword.setText(XMPPSetting.USER_PASSWORD[0]);
+		}
 		editTextImpu.setText("sip:"+editTextUsername.getText().toString().trim()+"@61.222.245.149");
 		editTextImpi.setText(editTextUsername.getText().toString().trim());
 //		editTextPassword.setText(mConfigurationService.getString(
 //				NgnConfigurationEntry.IDENTITY_PASSWORD,
 //				NgnConfigurationEntry.DEFAULT_IDENTITY_PASSWORD));
-		if (XMPPSetting.IS_SERVER)
-		    editTextPassword.setText(XMPPSetting.SERVER_PASSWORD);
-		else
-		    editTextPassword.setText(XMPPSetting.CLIENT_PASSWORD);
-			editTextRealm.setText("sip:61.222.245.149");
-			checkBoxEarlyIMS.setChecked(false);
+		editTextRealm.setText("sip:61.222.245.149");
+		checkBoxEarlyIMS.setChecked(false);
 			
 		super.addConfigurationListener(editTextUsername);
         super.addConfigurationListener(editTextImpu);
@@ -204,6 +226,30 @@ public class ScreenXYZLogin extends BaseScreen {
 			}
 		}
 	};
+
+    private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long arg3) {
+            if (arg0.getId() == R.id.accountSpinner) {
+                    editTextUsername.setText(XMPPSetting.USER_ACCOUNT[position]);
+                    editTextPassword.setText(XMPPSetting.USER_PASSWORD[position]);
+                    XMPPSetting.userID = position;
+            } else if (arg0.getId() == R.id.robotSpinner) {
+                if (XMPPSetting.IS_SERVER) {
+                    editTextUsername.setText(XMPPSetting.ROBOT_ACCOUNT[position]);
+                    editTextPassword.setText(XMPPSetting.ROBOT_PASSWORD[position]);
+                } else {
+                    XMPPSetting.robotID = position;
+                }
+            }
+
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> arg0) {
+        }
+    };
 	
 	private void setXmpploggin(EditText Username, EditText Password){
 		xmppUsername = Username.getText().toString().trim();

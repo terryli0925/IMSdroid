@@ -255,6 +255,11 @@ public class SetUIFunction {
 		
 		SendAlgo = new SendCmdToBoardAlgorithm();
 
+		// Client side need to deliver their userID to robot which user control
+		if (XMPPSet.isConnected()) {
+		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSetting.userID);
+		} else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+
 		getScreenSize(globalActivity);
 
 		declarJoyStick();
@@ -584,6 +589,7 @@ public class SetUIFunction {
 			            Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
 			            Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
 			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
+			            //XMPPSet.XMPPSendText(obj.getXaxis()  +" "+ obj.getYaxis());  //For Brain test
 			            obj = null;
 				        
 			           // XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);

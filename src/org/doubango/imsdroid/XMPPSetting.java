@@ -24,11 +24,10 @@ public class XMPPSetting {
     private static String TAG = "xmpp";
 
     public static final boolean IS_SERVER = false; // Server: true, Client: false
-    public static final String SERVER_ACCOUNT = "rdc03";
-    public static final String SERVER_PASSWORD = "rdc03";
-    public static final String CLIENT_ACCOUNT = "rdc04";
-    public static final String CLIENT_PASSWORD = "rdc04";
-    //public static final String[] CLIENT_LIST = {"rdc02", "rdc03", "rdc04"};
+    public static final String[] ROBOT_ACCOUNT = {"rdc01", "rdc02", "rdc03"};
+    public static final String[] ROBOT_PASSWORD = {"rdc01", "rdc02", "rdc03"};
+    public static final String[] USER_ACCOUNT = {"rdc04", "rdc05", "rdc06"};
+    public static final String[] USER_PASSWORD = {"rdc04", "rdc05", "rdc06"};
 
     //private static final String XMPP_SERVER_NAME = "61.222.245.149;   //Our Server IP
     private static final String XMPP_SERVER_NAME = "ea-xmppserver.cloudapp.net";
@@ -43,6 +42,9 @@ public class XMPPSetting {
 	public Game game = new Game();
 	public static GameView _gameView;
 	public static SetUIFunction setUIfunction;
+
+	public static int robotID = 0;
+	public static int userID = 0;
 
 	//public XMPPSetting(ScreenAV xmppClient)
 	public XMPPSetting()
@@ -107,7 +109,11 @@ public class XMPPSetting {
 		                String[] inM = message.getBody().split("\\s+");
 
 		                Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
-		                if (inM[0].equals("source"))
+		                if (inM[0].equals("userID"))
+		                {
+		                    userID = Integer.parseInt(inM[1]);
+		                }
+		                else if (inM[0].equals("source"))
 		                {
 		                    updateSource(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
@@ -201,9 +207,9 @@ public class XMPPSetting {
 	public void XMPPSendText(String xmppText)
 	{
 	    if (IS_SERVER) {
-	        XMPPSendText(CLIENT_ACCOUNT, xmppText);
+	        XMPPSendText(USER_ACCOUNT[userID], xmppText);
 	    } else {
-	        XMPPSendText(SERVER_ACCOUNT, xmppText);
+	        XMPPSendText(ROBOT_ACCOUNT[robotID], xmppText);
 	    }
 	}
 
