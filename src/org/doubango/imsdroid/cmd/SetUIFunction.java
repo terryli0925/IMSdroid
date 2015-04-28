@@ -214,8 +214,8 @@ public class SetUIFunction {
 	private final int mIncomingCall = 0;
 	private final int Unanswered = 1;
 	
-	
 	private static SetUIFunction instance;
+	private Toast toast;
 	
 	public SetUIFunction(Activity activity) {
 		globalActivity = activity;
@@ -258,7 +258,7 @@ public class SetUIFunction {
 		// Client side need to deliver their userID to robot which user control
 		if (XMPPSet.isConnected()) {
 		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSetting.userID);
-		} else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+		} else showToastMessage("Lost XMPP Connection");
 
 		getScreenSize(globalActivity);
 
@@ -301,7 +301,7 @@ public class SetUIFunction {
 		
 		if (XMPPSet.isConnected())
 		    XMPPSet.XMPPSendText("ScreenSize "+ width + " " + height);
-		else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+		else showToastMessage("Lost XMPP Connection");
 	}
 
 	private void declarJoyStick(){
@@ -588,20 +588,21 @@ public class SetUIFunction {
 			            transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
 			            Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
 			            Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
+						XMPPSet.XMPPSendText("semiauto start");
 			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
 			            //XMPPSet.XMPPSendText(obj.getXaxis()  +" "+ obj.getYaxis());  //For Brain test
 			            obj = null;
 				        
 			           // XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
 			   
-			            XMPPSet.XMPPSendText("semiauto start");
+						//XMPPSet.XMPPSendText("semiauto start");
 			            naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
-			            Toast.makeText(mContext, "Navi Start", Toast.LENGTH_LONG).show();
+						showToastMessage("Navi Start");
 			            //For test
 //			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner 10 10");
 //			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner end");
 			            gameView.postInvalidate();
-			        } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+			        } else showToastMessage("Lost XMPP Connection");
 			    }
 			    break;
 			case R.id.img_reset:
@@ -695,7 +696,7 @@ public class SetUIFunction {
 
 	        if (XMPPSet.isConnected())
 	            XMPPSet.XMPPSendText("auto remove "+ position);
-	        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+	        else showToastMessage("Lost XMPP Connection");
 
 	        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 	        gameView.postInvalidate();
@@ -799,7 +800,7 @@ public class SetUIFunction {
 	public void sendRobotModeState(int mode) {
 	    if (XMPPSet.isConnected())
 	        XMPPSet.XMPPSendText("mode "+ currRobotMode);
-	    else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();	    
+	    else showToastMessage("Lost XMPP Connection");
 	}
 
 	public void setScheduleAlarm(boolean isRemote) {
@@ -841,7 +842,7 @@ public class SetUIFunction {
 	            XMPPSet.XMPPSendText("auto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
             }
 	        XMPPSet.XMPPSendText("auto setUpDone");
-	    } else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+	    } else showToastMessage("Lost XMPP Connection");
 	}
 
 	public void revertRobotModeStatus(int mode) {
@@ -916,7 +917,7 @@ public class SetUIFunction {
 	    if (!XMPPSetting.IS_SERVER) {
 	        if (XMPPSet.isConnected())
 	            XMPPSet.XMPPSendText(inStr);
-	        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+	        else showToastMessage("Lost XMPP Connection");
 	    } else {
 	        String[] inM = inStr.split("\\s+");
 	        byte[] cmdByte = uartCmd.GetAllByte(inM);
@@ -966,7 +967,7 @@ public class SetUIFunction {
 		        //game.source[1] = game.source[1] + 1;
 		        if (XMPPSet.isConnected())
 		            XMPPSet.XMPPSendText("source " + game.source[0] +" " + game.source[1]);
-		        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
+		        else showToastMessage("Lost XMPP Connection");
 
 		        gameView.postInvalidate();
 		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
@@ -1097,20 +1098,20 @@ public class SetUIFunction {
 					public void onCoreStatusChanged(CoreStatus coreStatus, ExtraInfo extraInfo) {
 						switch(coreStatus){
 							case CoreStatusIdle : 
-									myHandler.obtainMessage(mCoreStatusIdle , 0, -1, null).sendToTarget();
+							    myHandler.obtainMessage(mCoreStatusIdle , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusConnecting : 
-									myHandler.obtainMessage(mCoreStatusConnecting , 0, -1, null).sendToTarget();
+							    myHandler.obtainMessage(mCoreStatusConnecting , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusConnected :
-									Log.i("shinhua", "Call Key videoConferenceSignIn");
-									myHandler.obtainMessage(mCoreStatusConnected , 0, -1, null).sendToTarget();
+							    Log.i("shinhua", "Call Key videoConferenceSignIn");
+							    myHandler.obtainMessage(mCoreStatusConnected , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusDisconnecting : 
-									myHandler.obtainMessage(mCoreStatusDisconnecting , 0, -1, null).sendToTarget();
+							    myHandler.obtainMessage(mCoreStatusDisconnecting , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusDisconnected : 
-									myHandler.obtainMessage(mCoreStatusDisconnected , 0, -1, null).sendToTarget();
+							    myHandler.obtainMessage(mCoreStatusDisconnected , 0, -1, null).sendToTarget();
 								break;
 						}
 					}
@@ -1123,23 +1124,23 @@ public class SetUIFunction {
         	super.handleMessage(msg);
         	switch(msg.what){
 		    	case mCoreStatusIdle :
-		    		Toast.makeText(globalActivity, "CoreStatusIdle", Toast.LENGTH_SHORT).show();
+		    	    showToastMessage("CoreStatusIdle");
 		    		break;
 		    	case mCoreStatusConnecting :
-		    		Toast.makeText(globalActivity, "CoreStatusConnecting", Toast.LENGTH_SHORT).show();
+		    	    showToastMessage("CoreStatusConnecting");
 		    		break;
 		    	case mCoreStatusConnected :
-		    		Toast.makeText(globalActivity, "CoreStatusConnected", Toast.LENGTH_SHORT).show();
+		    	    showToastMessage("CoreStatusConnected");
 		    		Log.i("shinhua", "mCoreStatusConnected!!!");
 		    		comingCallService();
 		    		clientNewLetter();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
-		    		Toast.makeText(globalActivity, "Disconnecting... If you want recall again, it will display < Recall message >", Toast.LENGTH_SHORT).show();
+		    	    showToastMessage("Disconnecting... If you want recall again, it will display < Recall message >");
 		    		break;
 		    	case mCoreStatusDisconnected :
-		    		Toast.makeText(globalActivity, "CoreStatusDisconnected", Toast.LENGTH_SHORT).show();
+		    	    showToastMessage("CoreStatusDisconnected");
 		    		break;
         	}
 		}
@@ -1175,7 +1176,7 @@ public class SetUIFunction {
 			switch (msg.what) {
 			case mIncomingCall:
 				if (nowClientCall != null) {
-					Toast.makeText(globalActivity, "BuildComingCall",Toast.LENGTH_SHORT).show();
+				    showToastMessage("BuildComingCall");
 					fl_portrait.setVisibility(View.VISIBLE);
 					nowClientCall.answer(MediaType.Video,
 							new ClientCallListener() {
@@ -1218,7 +1219,7 @@ public class SetUIFunction {
 
 				break;
 			case Unanswered:
-				Toast.makeText(globalActivity, " Unanswered pls try agin ",Toast.LENGTH_SHORT).show();
+			    showToastMessage(" Unanswered pls try agin ");
 				break;
 
 			}
@@ -1255,7 +1256,7 @@ public class SetUIFunction {
 									nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
 									break;
 								case CallEnded:
-									Toast.makeText(globalActivity, " You can recall Robot again ", Toast.LENGTH_SHORT).show();
+								    showToastMessage(" You can recall Robot again ");
 									dialog.cancel();
 									connect.setVisibility(View.VISIBLE);
 									if(nowClientCall != null){
@@ -1322,5 +1323,15 @@ public class SetUIFunction {
 	
 	public void closeLocalView(){
 		rl_local.removeAllViews();
+	}
+
+	public void showToastMessage(String message) {
+	    if (toast == null) {
+	        toast = Toast.makeText(mContext, message, Toast.LENGTH_SHORT);
+	    } else {
+	        toast.setText(message);
+	        toast.setDuration(Toast.LENGTH_SHORT);
+	    }
+	    toast.show();
 	}
 }

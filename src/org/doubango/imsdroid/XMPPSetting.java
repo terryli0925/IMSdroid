@@ -134,12 +134,14 @@ public class XMPPSetting {
 		                        RobotOperationMode.isNaviStart = true;
 		                        //TODO: Robot start
 		                    }*/
-		                    if (inM[1].equals("end")) {
-		                        //Log.i(TAG, "Robot already move to target. Navication end");
-		                        MapList.target[0] = 0;
-		                        MapList.target[0] = 0;
-		                        setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETTING;
-		                        _gameView.postInvalidate();
+		                    if (inM[1].equals("walkable")) {
+		                        if (inM[2].equals("0")) {
+		                            cleanSemiAutoSetting();
+
+		                            //Using handler to show toast message
+		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3);
+		                            modeButtonHandler.sendMessage(message1);
+		                        }
 		                    } else if (inM[1].equals("corner")) {
 		                        if (inM[2].equals("start")) {}
 		                        else if (inM[2].equals("end")) {
@@ -151,6 +153,11 @@ public class XMPPSetting {
 		                            int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
 		                            RobotOperationMode.targetQueue.offer(tempTarget);
 		                        }
+		                    }
+		                    else if (inM[1].equals("end")) {
+		                        //Log.i(TAG, "Robot already move to target. Navication end");
+		                        cleanSemiAutoSetting();
+		                        _gameView.postInvalidate();
 		                    }
 		                    //updateTrackPos(inM[1], inM[2], inM[3]);
 		                    //_gameView.postInvalidate();
@@ -255,6 +262,12 @@ public class XMPPSetting {
 	    MapList.target[1] = Integer.parseInt(y);
 	}
 
+	private void cleanSemiAutoSetting() {
+	    MapList.target[0] = 0;
+	    MapList.target[0] = 0;
+	    setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETTING;
+	}
+
 	private void updateTrackPos(String action, String x, String y) {
 	    int tempTarget[][] = {{Integer.parseInt(x), Integer.parseInt(y)}};
 
@@ -271,10 +284,13 @@ public class XMPPSetting {
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
 	        // Workaround for app forced close
-	        if(msg.what == 1) setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
-	        else if (msg.what == 2){
+	        if(msg.what == 1) {
+	            setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
+	        } else if (msg.what == 2) {
 	            setUIfunction.setScheduleAlarm(true);
 	            setUIfunction.revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
+	        } else if (msg.what == 3) {
+	            setUIfunction.showToastMessage("The target is not walkable.\n Please try again.");
 	        }
 	        _gameView.postInvalidate();
 	        super.handleMessage(msg);
