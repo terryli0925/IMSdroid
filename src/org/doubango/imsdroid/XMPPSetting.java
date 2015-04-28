@@ -1,7 +1,9 @@
 package org.doubango.imsdroid;
 
 import java.io.IOException;
+
 import org.doubango.imsdroid.cmd.SetUIFunction;
+import org.doubango.imsdroid.cmd.SetUIFunction.transformScreenFormula;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
@@ -46,6 +48,8 @@ public class XMPPSetting {
 
 	public static int robotID = 0;
 	public static int userID = 0;
+	
+    transformScreenFormula obj = transformScreenFormula.getInstance();
 
 	public static XMPPSetting getInstance() {
 //         if (instance == null){
@@ -159,7 +163,9 @@ public class XMPPSetting {
 		                            _gameView.postInvalidate();
 		                        }
 		                        else {
-		                            int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
+		                        	 obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
+		                        	
+		                            int tempTarget[][] = {{obj.getXaxis(), obj.getY_grid()}};
 		                            RobotOperationMode.targetQueue.offer(tempTarget);
 		                        }
 		                    }
@@ -256,9 +262,12 @@ public class XMPPSetting {
 	}
 
 	private void updateSource(String x, String y) {
-	    MapList.source[0] = Integer.parseInt(x);
-	    MapList.source[1] = Integer.parseInt(y);
 
+	    obj.transform2ScreenGird(Integer.parseInt(x),Integer.parseInt(y));
+	    
+	    MapList.source[0] = obj.getX_grid();
+	    MapList.source[1] = obj.getY_grid();
+	    
 	    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
 	        int[][] tempTarget = RobotOperationMode.targetQueue.getFirst();
 	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])

@@ -587,18 +587,18 @@ public class SetUIFunction {
 			                MapList.target[0] = tempTarget[0][0];
 			                MapList.target[1] = tempTarget[0][1];
 
-			                transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
-			                Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
-			                Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
-			                XMPPSet.XMPPSendText("semiauto start");
+				            transformScreenFormula obj = transformScreenFormula.getInstance();
+				            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
+			            
 			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
-			                obj = null;
-
+			                XMPPSet.XMPPSendText("semiauto start");
+			                
 			                naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
 			                showToastMessage("Navi Start");
 			                gameView.postInvalidate();
 			            }
 			        } else showToastMessage("Lost XMPP Connection");
+
 			    }
 			    break;
 			case R.id.img_reset:
@@ -627,15 +627,29 @@ public class SetUIFunction {
 
 	};
 	
-	private class transform2ScreenAxis{
+	public static class transformScreenFormula{
 		private int x_axis;
 		private int y_axis;
+		private int x_grid;
+		private int y_grid;
 		private double scalex = 16.84;
 		private double scaley = 16.36;
 		private double halfx = scalex / 2;
 		private double halfy = scaley / 2;
 		
-		public transform2ScreenAxis(int index_x, int index_y){
+		public transformScreenFormula(){	
+		}
+		
+		private static transformScreenFormula mInstance;
+		
+		public static transformScreenFormula getInstance(){
+			if(mInstance == null){
+				mInstance = new transformScreenFormula();
+			}
+			return mInstance;
+		}
+		
+		public void transform2ScreenAxis(int index_x, int index_y){
 			this.x_axis = (int)(index_x * scalex - halfx);
 			this.y_axis = (int)(index_y * scaley - halfy);
 		}
@@ -647,7 +661,21 @@ public class SetUIFunction {
 		public int getYaxis(){
 			return y_axis;
 		}
-				
+		
+		public void transform2ScreenGird(int x_axis, int y_axis){
+	
+			this.x_grid = (int)(x_axis / this.scalex);
+			this.y_grid = (int)(y_axis / this.scaley);
+			Log.i("shinhua", "transform2ScreenGird: "+ x_grid + " " + y_grid);
+		}
+
+		public int getX_grid() {
+			return x_grid;
+		}
+
+		public int getY_grid() {
+			return y_grid;
+		}
 	};
 
 	private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
@@ -1065,7 +1093,6 @@ public class SetUIFunction {
 					if(XMPPSet.IS_SERVER){
 						videoConferenceSignIn(account[0], password[0]);
 					} else if(!XMPPSet.IS_SERVER){
-						Log.i("shinhua", "Call Key Pressed");
 						connect.setVisibility(View.INVISIBLE);
 						videoConferenceSignIn(account[1], password[1]);
 					}	
@@ -1100,8 +1127,8 @@ public class SetUIFunction {
 							    myHandler.obtainMessage(mCoreStatusConnecting , 0, -1, null).sendToTarget();
 								break;
 							case CoreStatusConnected :
-							    Log.i("shinhua", "Call Key videoConferenceSignIn");
-							    myHandler.obtainMessage(mCoreStatusConnected , 0, -1, null).sendToTarget();
+								myHandler.obtainMessage(mCoreStatusConnected , 0, -1, null).sendToTarget();
+
 								break;
 							case CoreStatusDisconnecting : 
 							    myHandler.obtainMessage(mCoreStatusDisconnecting , 0, -1, null).sendToTarget();
@@ -1127,7 +1154,6 @@ public class SetUIFunction {
 		    		break;
 		    	case mCoreStatusConnected :
 		    	    showToastMessage("CoreStatusConnected");
-		    		Log.i("shinhua", "mCoreStatusConnected!!!");
 		    		comingCallService();
 		    		clientNewLetter();
 		    		
