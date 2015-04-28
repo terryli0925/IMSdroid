@@ -35,21 +35,30 @@ public class XMPPSetting {
     private static final String XMPP_DOMAIN_NAME = "ea-xmppserver";
     private static final String XMPP_RESOURCE_NAME = "";
 
+    private static XMPPSetting instance;
 	private static XMPPConnection connection;
 	private UartCmd UCmd = UartCmd.getInstance();
 	private boolean LogSuc = false;
 	
-	public Game game = new Game();
+	//public Game game = new Game();
 	public static GameView _gameView;
 	public static SetUIFunction setUIfunction;
 
 	public static int robotID = 0;
 	public static int userID = 0;
 
+	public static XMPPSetting getInstance() {
+//         if (instance == null){
+//             instance = new XMPPSetting();
+//         }
+	    return instance;
+	}
+
 	//public XMPPSetting(ScreenAV xmppClient)
 	public XMPPSetting()
 	{
 		//this.xmppClient = xmppClient;
+	    instance = this;
 	}
 
 	public boolean XMPPStart(String Name , String Pass)

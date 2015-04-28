@@ -127,6 +127,7 @@ public class GameView extends View {
 		getScreenSize();
 
 		loggin = NetworkStatus.getInstance();
+		_XMPPSet = XMPPSetting.getInstance();
 	}
 
 	protected void onDraw(Canvas canvas) {
@@ -629,10 +630,6 @@ public class GameView extends View {
 
 	public void PathQueueClear() {
 		this.pathQueue.clear();
-	}
-
-	public void setXMPPSetting(XMPPSetting xmppSetting) {
-	    _XMPPSet = xmppSetting;
 	}
 	
 	public void transRemoteCoord(double CoordX, double CoordY){

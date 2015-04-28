@@ -247,10 +247,11 @@ public class SetUIFunction {
 		gameView = (GameView) globalActivity.findViewById(R.id.gameView1);
 		game = new Game();
 		
-		XMPPSet = new XMPPSetting();
+//		XMPPSet = new XMPPSetting();
+		XMPPSet = XMPPSetting.getInstance();
 		XMPPSetting.setUIfunction = this;
 		
-		gameView.setXMPPSetting(XMPPSet);
+		//gameView.setXMPPSetting(XMPPSet);
 		gameView.setUIfunction =this;
 		
 		SendAlgo = new SendCmdToBoardAlgorithm();
@@ -575,33 +576,28 @@ public class SetUIFunction {
 			    }
 			    break;
 			case R.id.img_navi:
-			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        if (XMPPSet.isConnected()) {
 //			            for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 //			                int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
 //			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
 //			            }
-			            int[][] tempTarget = RobotOperationMode.targetQueue.poll();
-			            MapList.target[0] = tempTarget[0][0];
-			            MapList.target[1] = tempTarget[0][1];
-			            
-			            transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
-			            Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
-			            Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
-						XMPPSet.XMPPSendText("semiauto start");
-			            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
-			            //XMPPSet.XMPPSendText(obj.getXaxis()  +" "+ obj.getYaxis());  //For Brain test
-			            obj = null;
-				        
-			           // XMPPSet.XMPPSendText("semiauto coordinate" +" "+ MapList.target[0] +" "+ MapList.target[1]);
-			   
-						//XMPPSet.XMPPSendText("semiauto start");
-			            naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
-						showToastMessage("Navi Start");
-			            //For test
-//			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner 10 10");
-//			            XMPPSet.XMPPSendText(XMPPSetting.SERVER_ACCOUNT, "semiauto corner end");
-			            gameView.postInvalidate();
+			            if (!RobotOperationMode.targetQueue.isEmpty()) {
+			                int[][] tempTarget = RobotOperationMode.targetQueue.poll();
+			                MapList.target[0] = tempTarget[0][0];
+			                MapList.target[1] = tempTarget[0][1];
+
+			                transform2ScreenAxis obj = new transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
+			                Log.i("shinhua", "target " + MapList.target[0]+ ", " + MapList.target[1]);
+			                Log.i("shinhua", "obj " + obj.getXaxis() + ", " + obj.getYaxis());
+			                XMPPSet.XMPPSendText("semiauto start");
+			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
+			                obj = null;
+
+			                naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
+			                showToastMessage("Navi Start");
+			                gameView.postInvalidate();
+			            }
 			        } else showToastMessage("Lost XMPP Connection");
 			    }
 			    break;

@@ -17,7 +17,7 @@ public class SendCmdToBoardAlgorithm {
 	int originalX = 0, originalY = 0;
 	MapList mapList;
 
-	SetUIFunction setUIfunction = SetUIFunction.getInstance();
+	//SetUIFunction setUIfunction = SetUIFunction.getInstance();
 	
 	public static GameView _gameView ;
 	public static Game _game ;
