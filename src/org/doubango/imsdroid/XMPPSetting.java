@@ -165,7 +165,7 @@ public class XMPPSetting {
 		                        else {
 		                        	 obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
 		                        	
-		                            int tempTarget[][] = {{obj.getXaxis(), obj.getY_grid()}};
+		                            int tempTarget[][] = {{obj.getX_grid(), obj.getY_grid()}};
 		                            RobotOperationMode.targetQueue.offer(tempTarget);
 		                        }
 		                    }

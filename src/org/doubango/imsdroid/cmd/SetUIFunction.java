@@ -663,7 +663,7 @@ public class SetUIFunction {
 		}
 		
 		public void transform2ScreenGird(int x_axis, int y_axis){
-	
+			Log.i("shinhua", "transform2ScreenGird: "+ x_axis + " " + y_axis);
 			this.x_grid = (int)(x_axis / this.scalex);
 			this.y_grid = (int)(y_axis / this.scaley);
 			Log.i("shinhua", "transform2ScreenGird: "+ x_grid + " " + y_grid);
