@@ -258,12 +258,20 @@
         android:layout_above="@+id/hangupbtn"
         android:text="connect" />
 
+    <Spinner
+        android:id="@+id/conferenceSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/img_setup"
+        android:layout_above="@+id/connectbtn" />
+
     <TextView
         android:id="@+id/hourText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/hangupbtn"
         android:layout_above="@+id/hourSpinner"
+        android:layout_marginLeft="20dp"
         android:text="Hour"
         android:visibility="invisible" />
 
@@ -281,6 +289,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/hangupbtn"
+        android:layout_marginLeft="20dp"
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
 

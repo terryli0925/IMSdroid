@@ -28,12 +28,13 @@ public class XMPPSetting {
     public static final boolean IS_SERVER = false; // Server: true, Client: false
     public static final String[] ROBOT_ACCOUNT = {"rdc01", "rdc02", "rdc03"};
     public static final String[] ROBOT_PASSWORD = {"rdc01", "rdc02", "rdc03"};
-    public static final String[] USER_ACCOUNT = {"rdc04", "rdc05", "rdc06"};
-    public static final String[] USER_PASSWORD = {"rdc04", "rdc05", "rdc06"};
+    public static final String[] USER_ACCOUNT = {"rdc04", "rdc05", "rdc06", "rdc07", "rdc08", "rdc09"};
+    public static final String[] USER_PASSWORD = {"rdc04", "rdc05", "rdc06", "rdc07", "rdc08", "rdc09"};
 
-    //private static final String XMPP_SERVER_NAME = "61.222.245.149;   //Our Server IP
+    //private static final String XMPP_SERVER_NAME = "61.222.245.149";   //Our Server IP
     private static final String XMPP_SERVER_NAME = "ea-xmppserver.cloudapp.net";
     private static final String XMPP_PORT = "5222";
+    //private static final String XMPP_DOMAIN_NAME = "james-pc";
     private static final String XMPP_DOMAIN_NAME = "ea-xmppserver";
     private static final String XMPP_RESOURCE_NAME = "";
 
@@ -152,6 +153,7 @@ public class XMPPSetting {
 		                        else if (inM[2].equals("end")) {
 		                            RobotOperationMode.targetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
 		                            setUIfunction.naviStartPhase = RobotOperationMode.NAVI_START;
+
 		                            XMPPSendText("semiauto start");   //Notify robot to start navigating
 		                            _gameView.postInvalidate();
 		                        }

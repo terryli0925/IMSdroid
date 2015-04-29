@@ -192,12 +192,17 @@ public class SetUIFunction {
 
 	/* Temporary declare */
 	JustekSDKCore mCore;
-	private String[] account = {"40023", "40024"};
-	private String[] password = {"Oh5xLN6m", "Kiu72Reo"};
+//	private String[] account = {"40023", "40024"};
+//	private String[] password = {"Oh5xLN6m", "Kiu72Reo"};
+	private String[] conferenceAccount = {"40025", "40026", "40027", "40028", "40029", "40030"};   //40027~40030 only can use in TPE server
+	private String[] conferencePassword = {"qDFo2V1X", "2TamR5wC", "1oNtxqWu2", "eFg2onueLS", "H3ont0nAe", "4Vo3UinDp"};
 	//private String serverURL = "https://58.248.15.221:8443/justek_auth/authentication";
 	private String serverURL = "https://202.153.169.114:8443/justek_auth/authentication";
+	private Spinner conferenceSpinner;
 	private Button connect, call;
 	private ProgressDialog dialog; 
+	private ArrayAdapter<String> conferenceListAdapter;
+	private int conferenceID = 0;
 	
 	private final int mCoreStatusIdle = 0;
 	private final int mCoreStatusConnecting = 1;
@@ -260,6 +265,7 @@ public class SetUIFunction {
 		if (XMPPSet.isConnected()) {
 		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSetting.userID);
 		} else showToastMessage("Lost XMPP Connection");
+		Log.i("terry", "Login user= "+XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]+", conference account= "+conferenceAccount[XMPPSetting.userID]);
 
 		getScreenSize(globalActivity);
 
@@ -631,12 +637,14 @@ public class SetUIFunction {
 	private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
 
         @Override
-        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int position,
                 long arg3) {
             if (arg0.getId() == R.id.hourSpinner) {
                 selectedHour = Integer.valueOf(arg0.getSelectedItem().toString());
             }else if (arg0.getId() == R.id.minuteSpinner) {
                 selectedMinute = Integer.valueOf(arg0.getSelectedItem().toString());
+            }else if (arg0.getId() == R.id.conferenceSpinner) {
+                conferenceID = position;
             }
         }
 
@@ -1019,6 +1027,10 @@ public class SetUIFunction {
 		btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
 		btHang.setOnClickListener(videoClickListener);
 		
+		conferenceSpinner = (Spinner)globalActivity.findViewById(R.id.conferenceSpinner);
+		conferenceListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, XMPPSetting.USER_ACCOUNT);
+		conferenceSpinner.setAdapter(conferenceListAdapter);
+		conferenceSpinner.setOnItemSelectedListener(onItemSelectedListener);
 		
 		rl_remote = (RelativeLayout) globalActivity.findViewById(R.id.rl_remote);
 		rl_local = (RelativeLayout) globalActivity.findViewById(R.id.rl_local);
@@ -1028,9 +1040,10 @@ public class SetUIFunction {
 		/* Login: Server, auto connection */ 
 		if(XMPPSet.IS_SERVER){
 			connect.setVisibility(View.INVISIBLE);
-			connect.performClick();
+			//connect.performClick();
 		}
-				
+
+		videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
 	}
 	
 	private Button.OnClickListener videoClickListener = new OnClickListener(){
@@ -1040,13 +1053,18 @@ public class SetUIFunction {
 			switch(v.getId()){
 				case R.id.connectbtn:
 					
-					if(XMPPSet.IS_SERVER){
-						videoConferenceSignIn(account[0], password[0]);
-					} else if(!XMPPSet.IS_SERVER){
-						connect.setVisibility(View.INVISIBLE);
-						videoConferenceSignIn(account[1], password[1]);
-					}	
-					
+//					if(XMPPSet.IS_SERVER){
+//						videoConferenceSignIn(conferenceAccount[conferenceID], conferencePassword[conferenceID]);
+//					} else if(!XMPPSet.IS_SERVER){
+//						Log.i("shinhua", "Call Key Pressed");
+//						connect.setVisibility(View.INVISIBLE);
+//						videoConferenceSignIn(conferenceAccount[conferenceID], conferencePassword[conferenceID]);
+//					}
+				    if (mCore.getCoreStatus().equals(mCore.getCoreStatus().CoreStatusConnected)){
+				        connect.setVisibility(View.INVISIBLE);
+				        //videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
+				        clientNewLetter();
+				    } else showToastMessage("Lost Conference Connection!!");
 				break;
 				
 				case R.id.hangupbtn:
@@ -1105,7 +1123,7 @@ public class SetUIFunction {
 		    	case mCoreStatusConnected :
 		    	    showToastMessage("CoreStatusConnected");
 		    		comingCallService();
-		    		clientNewLetter();
+		    		//clientNewLetter();
 		    		
 		    		break;
 		    	case mCoreStatusDisconnecting :
@@ -1199,9 +1217,8 @@ public class SetUIFunction {
 	};
 	
 	private void clientNewLetter(){
-		if(XMPPSet.IS_SERVER == false){
-			callnumber(account[0]);
-		}
+	    Log.i("terry", "Call user= "+XMPPSetting.USER_ACCOUNT[conferenceID]+", conference account= "+conferenceAccount[conferenceID]);
+	    callnumber(conferenceAccount[conferenceID]);
 	}
 	
 	private void callnumber(String number){
@@ -1278,7 +1295,6 @@ public class SetUIFunction {
     }
 	
 	private void hangupComingCall(){
-		
 		if(nowClientCall != null){
 			nowClientCall.end();
 			nowClientCall = null ;
@@ -1286,10 +1302,9 @@ public class SetUIFunction {
 			rl_remote.removeAllViews();
 			fl_portrait.setVisibility(View.GONE);
 			
-			if(XMPPSet.IS_SERVER == false){
-				mCore.signOut();
-			}
-		
+//			if(XMPPSet.IS_SERVER == false){
+//				mCore.signOut();
+//			}
 		}
 	}
 	
