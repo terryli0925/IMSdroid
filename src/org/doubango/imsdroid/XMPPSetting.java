@@ -152,11 +152,12 @@ public class XMPPSetting {
 		                        else if (inM[2].equals("end")) {
 		                            RobotOperationMode.targetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
 		                            setUIfunction.naviStartPhase = RobotOperationMode.NAVI_START;
+		                            XMPPSendText("semiauto start");   //Notify robot to start navigating
 		                            _gameView.postInvalidate();
 		                        }
 		                        else {
-		                        	 obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
-		                        	
+		                            obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
+
 		                            int tempTarget[][] = {{obj.getX_grid(), obj.getY_grid()}};
 		                            RobotOperationMode.targetQueue.offer(tempTarget);
 		                        }
@@ -169,11 +170,14 @@ public class XMPPSetting {
 		                    //updateTrackPos(inM[1], inM[2], inM[3]);
 		                    //_gameView.postInvalidate();
 		                } else if (inM[0].equals("walkable")) {
-		                    cleanSemiAutoSetting();
+		                    // 0: Target is not walkable
+		                    if (inM[1].equals("0")) {
+		                        cleanSemiAutoSetting();
 
-		                    //Using handler to show toast message
-		                    android.os.Message message1 = modeButtonHandler.obtainMessage(3);
-		                    modeButtonHandler.sendMessage(message1);
+		                        //Using handler to show toast message
+		                        android.os.Message message1 = modeButtonHandler.obtainMessage(3);
+		                        modeButtonHandler.sendMessage(message1);
+		                    }
 		                }
 		                /*else if (inM[0].equals("auto"))
 		                {

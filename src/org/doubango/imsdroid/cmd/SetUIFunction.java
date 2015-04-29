@@ -589,9 +589,10 @@ public class SetUIFunction {
 
 				            transformScreenFormula obj = transformScreenFormula.getInstance();
 				            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
-			            
-			                XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
-			                XMPPSet.XMPPSendText("semiauto start");
+
+				            XMPPSet.XMPPSendText("semiauto coordinate start");
+				            XMPPSet.XMPPSendText("semiauto coordinate" +" "+ obj.getXaxis()  +" "+ obj.getYaxis());
+				            XMPPSet.XMPPSendText("semiauto coordinate end");
 			                
 			                naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
 			                showToastMessage("Navi Start");
