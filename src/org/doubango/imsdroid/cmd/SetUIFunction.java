@@ -27,6 +27,7 @@ import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.RobotOperationMode;
 import org.doubango.imsdroid.map.SendCmdToBoardAlgorithm;
+import org.doubango.imsdroid.map.transformScreenFormula;
 
 import us.justek.sdk.core.CoreStatus;
 import us.justek.sdk.core.CoreStatusListener;
@@ -38,7 +39,6 @@ import us.justek.sdk.core.phone.ClientCallListener;
 import us.justek.sdk.core.phone.ClientCallStatus;
 import us.justek.sdk.core.phone.IncomingCallListener;
 import us.justek.sdk.core.phone.MediaType;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -627,57 +627,6 @@ public class SetUIFunction {
 
 	};
 	
-	public static class transformScreenFormula{
-		private int x_axis;
-		private int y_axis;
-		private int x_grid;
-		private int y_grid;
-		private double scalex = 16.84;
-		private double scaley = 16.36;
-		private double halfx = scalex / 2;
-		private double halfy = scaley / 2;
-		
-		public transformScreenFormula(){	
-		}
-		
-		private static transformScreenFormula mInstance;
-		
-		public static transformScreenFormula getInstance(){
-			if(mInstance == null){
-				mInstance = new transformScreenFormula();
-			}
-			return mInstance;
-		}
-		
-		public void transform2ScreenAxis(int index_x, int index_y){
-			this.x_axis = (int)(index_x * scalex - halfx);
-			this.y_axis = (int)(index_y * scaley - halfy);
-		}
-		
-		public int getXaxis(){
-			return x_axis;
-		}
-		
-		public int getYaxis(){
-			return y_axis;
-		}
-		
-		public void transform2ScreenGird(int x_axis, int y_axis){
-			Log.i("shinhua", "transform2ScreenGird: "+ x_axis + " " + y_axis);
-			this.x_grid = (int)(x_axis / this.scalex);
-			this.y_grid = (int)(y_axis / this.scaley);
-			Log.i("shinhua", "transform2ScreenGird: "+ x_grid + " " + y_grid);
-		}
-
-		public int getX_grid() {
-			return x_grid;
-		}
-
-		public int getY_grid() {
-			return y_grid;
-		}
-	};
-
 	private AdapterView.OnItemSelectedListener onItemSelectedListener = new  AdapterView.OnItemSelectedListener() {
 
         @Override

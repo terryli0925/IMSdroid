@@ -3,11 +3,11 @@ package org.doubango.imsdroid;
 import java.io.IOException;
 
 import org.doubango.imsdroid.cmd.SetUIFunction;
-import org.doubango.imsdroid.cmd.SetUIFunction.transformScreenFormula;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.RobotOperationMode;
+import org.doubango.imsdroid.map.transformScreenFormula;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
