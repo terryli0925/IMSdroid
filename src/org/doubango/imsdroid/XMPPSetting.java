@@ -254,17 +254,18 @@ public class XMPPSetting {
 	}
 
 	private void updateSource(String x, String y) {
-
 	    obj.transform2ScreenGird(Integer.parseInt(x),Integer.parseInt(y));
 	    
 	    MapList.source[0] = obj.getX_grid();
 	    MapList.source[1] = obj.getY_grid();
 	    
-	    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {
+	    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+	            && setUIfunction.naviStartPhase == RobotOperationMode.NAVI_START) {
 	        int[][] tempTarget = RobotOperationMode.targetQueue.getFirst();
 	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
 	            RobotOperationMode.targetQueue.remove();
-	    } else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+	    } else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE
+	            && setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_START) {
 	        int[][] tempTarget = RobotOperationMode.autoTargetQueue.getFirst();
 	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
 	            RobotOperationMode.autoTargetQueue.remove();
