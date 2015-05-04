@@ -269,19 +269,20 @@
         android:id="@+id/hourText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/hangupbtn"
+        android:layout_alignLeft="@+id/hourSpinner"
         android:layout_above="@+id/hourSpinner"
-        android:layout_marginLeft="20dp"
         android:text="Hour"
+        android:textColor="#FFFFFF"
         android:visibility="invisible" />
 
     <TextView
         android:id="@+id/minuteText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/hourSpinner"
-        android:layout_above="@+id/hourSpinner"
+        android:layout_alignLeft="@+id/minuteSpinner"
+        android:layout_above="@+id/minuteSpinner"
         android:text="Minute"
+        android:textColor="#FFFFFF"
         android:visibility="invisible" />
 
     <Spinner
@@ -304,7 +305,7 @@
 	<ListView
         android:id="@+id/listView"
         android:layout_width="60dp"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/minuteSpinner"
         android:layout_alignParentBottom="true"
         android:scrollbars="vertical"

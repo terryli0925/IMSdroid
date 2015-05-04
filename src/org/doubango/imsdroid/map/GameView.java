@@ -43,11 +43,6 @@ public class GameView extends View {
 	public TextView CDTextView;
 	int span = 10;
 	int theta = 0;
-	public static boolean drawCircleFlag = false, turnToBigMap = false;
-
-	public static void setDrawCircleFlag(boolean drawCircleFlag) {
-		GameView.drawCircleFlag = drawCircleFlag;
-	}
 
 	public static int mL = 0, mR = 0, mT = 0, mB = 0;
 	
@@ -103,9 +98,6 @@ public class GameView extends View {
     int width, height, screenWidth, screenHeight, mapWidth, mapHeight;
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
-	
-
-
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 
 	public SetUIFunction setUIfunction;
@@ -148,39 +140,6 @@ public class GameView extends View {
 	public void SetRobotAxis(double x, double y) {
 		rX = x;
 		rY = y;
-	}
-
-	public void onDrawText(Canvas canvas) {
-		paint.setARGB(255, 255, 0, 0);
-		paint.setStyle(Style.STROKE);
-		paint.setTextSize(15);
-		canvas.drawText("Tx = " + touchX + " Ty = " + touchY, 380, drawBaseLine
-				+ drawIncrease, paint);
-		canvas.drawText("tempX,Y : " + tempwidth + "," + tempheight, 380,
-				drawBaseLine + drawIncrease * 2, paint);
-		canvas.drawText("GridX,Y : " + gridX + "," + gridY, 380, drawBaseLine
-				+ drawIncrease * 3, paint);
-		canvas.drawText("RX : " + String.format("%.3f", rX), 380, drawBaseLine
-				+ drawIncrease * 4, paint);
-		canvas.drawText("RY : " + String.format("%.3f", rY), 380, drawBaseLine
-				+ drawIncrease * 5, paint);
-
-	}
-
-	// Draw robot position
-	public void DrawRobotPosition(final Canvas canvas) {
-
-		// We get this from our self algorithm
-		int[][] tempA = getPathQueue().get(drawCount);
-
-		paint.setStyle(Style.FILL);
-		paint.setColor(Color.RED);
-		canvas.drawCircle(
-				tempA[0][0] * (span + 1) + span / 2 + fixWidthMapData,
-				tempA[0][1] * (span + 1) + span / 2 + fixHeightMapData,
-				span / 2, paint);
-
-		//Log.i(TAG, "Draw Circle X , Y ( " + tempA[0][0] + " " + tempA[0][1] + " )");
 	}
 
 	@SuppressLint("WrongCall")
@@ -229,13 +188,12 @@ public class GameView extends View {
 		}
 
 		// Canvas drawLine: Navigation path
+		paint.setColor(Color.BLACK);
+		paint.setStyle(Style.STROKE);
+		paint.setStrokeWidth(2);
+		int[] lastTarget = {MapList.source[0], MapList.source[1]};
 		if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
 		        && setUIfunction.naviStartPhase == RobotOperationMode.NAVI_START) {
-		    paint.setColor(Color.BLACK);
-		    paint.setStyle(Style.STROKE);
-		    paint.setStrokeWidth(2);
-
-		    int[] lastTarget = {MapList.source[0], MapList.source[1]};
 		    for (int i = 0; i < RobotOperationMode.targetQueue.size(); i++) {
 		        int[][] tempTarget = RobotOperationMode.targetQueue.get(i);
  
@@ -247,6 +205,19 @@ public class GameView extends View {
 		        lastTarget[0] = tempTarget[0][0];
 		        lastTarget[1] = tempTarget[0][1];
 		    }
+		} else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE
+                && setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_START) {
+		    for (int i = 0; i < RobotOperationMode.autoTargetQueue.size(); i++) {
+		        int[][] tempTarget = RobotOperationMode.autoTargetQueue.get(i);
+
+		        canvas.drawLine(fixWidthMapData + lastTarget[0] * (span + 1) + span / 2,
+		                fixHeightMapData + lastTarget[1] * (span + 1) + span / 2,
+		                fixWidthMapData + tempTarget[0][0] * (span + 1) + span / 2,
+		                fixHeightMapData + tempTarget[0][1] * (span + 1) + span / 2, paint);
+
+		        lastTarget[0] = tempTarget[0][0];
+		        lastTarget[1] = tempTarget[0][1];
+            }
 		}
 
 		// Canvas drawBitmap: Track point
@@ -265,31 +236,31 @@ public class GameView extends View {
 //		        }
 		    }
 		} else	if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
-		    if (!setUIfunction.isClickSchedule) {
-		        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
-		            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
-		            if (i == RobotOperationMode.autoTargetSettingQueue.size() -1) {
-		                canvas.drawBitmap(redBall,
-		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                        + tempTarget[0][1] * (span + 1), paint);
-		            } else {
-		                canvas.drawBitmap(greenBall,
-		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                        + tempTarget[0][1] * (span + 1), paint);
-		            }
-		        }
-		    }else {
+		    if (setUIfunction.isClickSchedule || setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_START) {
 		        for (int i = 0; i < RobotOperationMode.autoTargetQueue.size(); i++) {
 		            int[][] tempTarget = RobotOperationMode.autoTargetQueue.get(i);
-		            if (i == RobotOperationMode.autoTargetQueue.size() -1) {
-		                canvas.drawBitmap(redBall,
-		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                        + tempTarget[0][1] * (span + 1), paint);
-		            } else {
-		                canvas.drawBitmap(greenBall,
-		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
-		                        + tempTarget[0][1] * (span + 1), paint);
-		            }
+//		            if (i == RobotOperationMode.autoTargetQueue.size() -1) {
+//		                canvas.drawBitmap(redBall,
+//		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+//		                        + tempTarget[0][1] * (span + 1), paint);
+//		            } else {
+		            canvas.drawBitmap(greenBall,
+		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                    + tempTarget[0][1] * (span + 1), paint);
+//		            }
+		        }
+		    } else {
+		        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
+		            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
+//		            if (i == RobotOperationMode.autoTargetSettingQueue.size() -1) {
+//		                canvas.drawBitmap(redBall,
+//		                        fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+//		                        + tempTarget[0][1] * (span + 1), paint);
+//		            } else {
+		            canvas.drawBitmap(greenBall,
+		                    fixWidthMapData + tempTarget[0][0] * (span + 1), fixHeightMapData
+		                    + tempTarget[0][1] * (span + 1), paint);
+//		            }
 		        }
 		    }
 		}
@@ -300,23 +271,12 @@ public class GameView extends View {
 						+ game.source[1] * (span + 1), paint);
 					
 		// Canvas drawBitmap: Target
-		if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
+		if (setUIfunction.currRobotMode != RobotOperationMode.MANUAL_MODE
 		        && game.target[0] != 0 && game.target[1] != 0) {
 		    canvas.drawBitmap(target,
 		            fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
 		            + game.target[1] * (span + 1), paint);
 		}
-
-		// William Added
-		//onDrawText(canvas);
-
-		//Log.i(TAG,"drawcircleflag = " + drawCircleFlag );
-		if (drawCircleFlag == true) {
-			DrawRobotPosition(canvas);
-		}
-
-		
-
 	}
 	
 	private void reDrawBitmapSize(Canvas mCanvas, Paint mPaint, Bitmap mBitmap, int xCoordinate, int yCoordinate, int newWidth, int newHeight){
@@ -395,15 +355,6 @@ public class GameView extends View {
 				//Log.i(TAG, "touch target draw before");
 
 				if ( pos[0] != -1 && pos[1] != -1) {
-				    /*if (SetUIFunction.currRobotMode == RobotOperationMode.MANUAL_MODE) {
-				        MapList.target[0][0] = pos[0];
-				        MapList.target[0][1] = pos[1];
-
-				        if (_XMPPSet.isConnected())
-				            _XMPPSet.XMPPSendText("target " + MapList.target[0][0] +" " + MapList.target[0][1]);
-				        else Toast.makeText(mContext, "Lost XMPP Connection", Toast.LENGTH_LONG).show();
-
-				    } else if (SetUIFunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE) {*/
 				    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
 				            && setUIfunction.naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
@@ -420,18 +371,16 @@ public class GameView extends View {
 				            RobotOperationMode.targetQueue.remove(trackIndex);
 				            //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
 				        }
-				    } else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+				    } else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE
+				                    && setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_SETTING) {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
-
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            // Only one target
-				            if (RobotOperationMode.autoTargetSettingQueue.size() < 2)
+				            if (RobotOperationMode.autoTargetSettingQueue.isEmpty())
 				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-				            else {
-				                RobotOperationMode.autoTargetSettingQueue.poll();
-				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-				            }
+				            else
+				                RobotOperationMode.autoTargetSettingQueue.set(0, tempTarget);
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
 				        }

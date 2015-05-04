@@ -1,6 +1,9 @@
 package org.doubango.imsdroid;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import org.doubango.imsdroid.cmd.SetUIFunction;
 import org.doubango.imsdroid.map.Game;
@@ -121,8 +124,14 @@ public class XMPPSetting {
 		            if (message.getBody() != null && setUIfunction != null) {
 		                String fromName = StringUtils.parseBareAddress(message.getFrom());
 		                String[] inM = message.getBody().split("\\s+");
-
 		                Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
+
+		                /*
+		                 * userID: Get it from other user which he will does video conference with.
+		                 * source: Get source position from robot server.
+		                 * semiauto: Get message from robot server in semi-auto mode.
+		                 * auto: Get message from robot server in auto mode.
+		                 */
 		                if (inM[0].equals("userID"))
 		                {
 		                    userID = Integer.parseInt(inM[1]);
@@ -132,98 +141,76 @@ public class XMPPSetting {
 		                    updateSource(inM[1], inM[2]);
 		                    _gameView.postInvalidate();
 		                }
-		                /*else if (inM[0].equals("target"))
-		                {
-		                    updateTarget(inM[1], inM[2]);
-		                    _gameView.postInvalidate();
-		                }*/
 		                else if (inM[0].equals("semiauto"))
 		                {
-		                    //TODO: When robot start, user also can add/remove target
-		                    /*if (inM[1].equals("coordinate")) {
-		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
-		                        RobotOperationMode.targetQueue.offer(tempTarget);		                        
-		                    } else if (inM[1].equals("start")) {
-		                        Log.i(TAG, "Navi Start");
-		                        RobotOperationMode.isNaviStart = true;
-		                        //TODO: Robot start
-		                    }*/
-		                    if (inM[1].equals("corner")) {
+		                    if (inM[1].equals("walkable")) {
+		                        if (inM[2].equals("1")) {}
+		                        else if (inM[2].equals("0")) {
+		                            cleanSemiAutoSetting();
+
+		                            //Using handler to show toast message
+		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3, "The target is not walkable.\n Please try again.");
+		                            modeButtonHandler.sendMessage(message1);
+		                        }
+		                    } else if (inM[1].equals("corner")) {
 		                        if (inM[2].equals("start")) {}
 		                        else if (inM[2].equals("end")) {
 		                            RobotOperationMode.targetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
 		                            setUIfunction.naviStartPhase = RobotOperationMode.NAVI_START;
 
 		                            XMPPSendText("semiauto start");   //Notify robot to start navigating
+		                            //Using handler to show toast message
+		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3, "Navi Start");
+		                            modeButtonHandler.sendMessage(message1);
+
 		                            _gameView.postInvalidate();
-		                        }
-		                        else {
+		                        } else {
 		                            obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
 
 		                            int tempTarget[][] = {{obj.getX_grid(), obj.getY_grid()}};
 		                            RobotOperationMode.targetQueue.offer(tempTarget);
 		                        }
-		                    }
-		                    else if (inM[1].equals("end")) {
-		                        //Log.i(TAG, "Robot already move to target. Navication end");
+		                    } else if (inM[1].equals("end")) {
+		                        MapList.source[0] = MapList.target[0];
+		                        MapList.source[1] = MapList.target[1];
 		                        cleanSemiAutoSetting();
 		                        _gameView.postInvalidate();
 		                    }
-		                    //updateTrackPos(inM[1], inM[2], inM[3]);
-		                    //_gameView.postInvalidate();
-		                } else if (inM[0].equals("walkable")) {
-		                    // 0: Target is not walkable
-		                    if (inM[1].equals("0")) {
-		                        cleanSemiAutoSetting();
+		                }
+		                else if (inM[0].equals("auto"))
+		                {
+		                    if (inM[1].equals("walkable")) {
+		                        android.os.Message message1 = modeButtonHandler.obtainMessage(2, inM[2]);
+		                        modeButtonHandler.sendMessage(message1);
+		                    } else if (inM[1].equals("corner")) {
+		                        if (inM[2].equals("start")) {
+		                            Calendar tempCal = Calendar.getInstance();
+		                            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
+		                            RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(timeFormat.format(tempCal.getTime()));                            
+		                            int[][] tempTarget = RobotOperationMode.autoTargetQueue.poll();
+		                            MapList.target[0] = tempTarget[0][0];
+		                            MapList.target[1] = tempTarget[0][1];
+		                        } else if (inM[2].equals("end")) {
+		                            RobotOperationMode.autoTargetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
+		                            setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_START;
 
-		                        //Using handler to show toast message
-		                        android.os.Message message1 = modeButtonHandler.obtainMessage(3);
-		                        modeButtonHandler.sendMessage(message1);
+		                            //XMPPSendText("auto start");   //Notify robot to start navigating
+		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3, "Navi Start");
+		                            modeButtonHandler.sendMessage(message1);
+		                            _gameView.postInvalidate();
+		                        } else {
+		                            obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
+
+		                            int tempTarget[][] = {{obj.getX_grid(), obj.getY_grid()}};
+		                            RobotOperationMode.autoTargetQueue.offer(tempTarget);
+		                        }
+		                    } else if (inM[1].equals("end")) {
+		                        MapList.source[0] = MapList.target[0];
+		                        MapList.source[1] = MapList.target[1];
+		                        cleanAutoSetting();
+		                        _gameView.postInvalidate();
 		                    }
 		                }
-		                /*else if (inM[0].equals("auto"))
-		                {
-		                    if (inM[1].equals("scheduledTime")) {
-		                        setUIfunction.scheduledTime = inM[2];
-		                    } else if (inM[1].equals("coordinate")) {
-		                        int tempTarget[][] = {{Integer.parseInt(inM[2]), Integer.parseInt(inM[3])}};
-		                        RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-		                    } else if (inM[1].equals("setUpDone")) {
-		                        //Using handler to set schedule alarm
-		                        android.os.Message message1 = modeButtonHandler.obtainMessage(2);
-		                        modeButtonHandler.sendMessage(message1);
-		                    }
-		                }
-		                else if (inM[0].equals("mode"))
-		                {
-		                    //Using handler to update ImageButton
-		                    android.os.Message message1 = modeButtonHandler.obtainMessage(1, inM[1]);
-		                    modeButtonHandler.sendMessage(message1);
-		                }
-		                else if (inM[0].equals("ScreenSize")){
-		                	
-		                	_gameView.setRemoteScreenSize(Integer.valueOf(inM[1]), Integer.valueOf(inM[2]));
-		                }
-		                else if (inM[0].equals("coord")){
-		                	
-		                	_gameView.transRemoteCoord(Double.valueOf(inM[1]), Double.valueOf(inM[2]));
-		                }
-		                else
-		                {
-							try {
-								byte[] cmdByte = UCmd.GetAllByte(inM);
-								//Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" + " Func num = " + cmdByte[1] + " Direc = " + cmdByte[2]);
-								//Do JNI here , We got correct data format here.
-								//String decoded = new String(cmdByte, "ISO-8859-1");
-								UCmd.SendMsgUart(1,cmdByte);
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-		                }*/
-		                
-		                //We receive message here.
-		                
 		            }
 		        }
 		    }, filter);
@@ -276,6 +263,10 @@ public class XMPPSetting {
 	        int[][] tempTarget = RobotOperationMode.targetQueue.getFirst();
 	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
 	            RobotOperationMode.targetQueue.remove();
+	    } else if (setUIfunction.currRobotMode == RobotOperationMode.AUTO_MODE) {
+	        int[][] tempTarget = RobotOperationMode.autoTargetQueue.getFirst();
+	        if (MapList.source[0] == tempTarget[0][0] && MapList.source[1] == tempTarget[0][1])
+	            RobotOperationMode.autoTargetQueue.remove();
 	    }
 	}
 
@@ -286,8 +277,14 @@ public class XMPPSetting {
 
 	private void cleanSemiAutoSetting() {
 	    MapList.target[0] = 0;
-	    MapList.target[0] = 0;
+	    MapList.target[1] = 0;
 	    setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETTING;
+	}
+
+	private void cleanAutoSetting() {
+	    MapList.target[0] = 0;
+	    MapList.target[1] = 0;
+	    setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_SETTING;
 	}
 
 	private void updateTrackPos(String action, String x, String y) {
@@ -309,10 +306,14 @@ public class XMPPSetting {
 	        if(msg.what == 1) {
 	            setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
 	        } else if (msg.what == 2) {
-	            setUIfunction.setScheduleAlarm(true);
+	            if (Integer.valueOf((String)msg.obj) == 1) setUIfunction.setScheduleAlarm();
+	            else if (Integer.valueOf((String)msg.obj) == 0) {
+	                cleanAutoSetting();
+	                setUIfunction.showToastMessage("The target is not walkable.\n Please try again.");
+	            }
 	            setUIfunction.revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 	        } else if (msg.what == 3) {
-	            setUIfunction.showToastMessage("The target is not walkable.\n Please try again.");
+	            setUIfunction.showToastMessage((String)msg.obj);
 	        }
 	        _gameView.postInvalidate();
 	        super.handleMessage(msg);

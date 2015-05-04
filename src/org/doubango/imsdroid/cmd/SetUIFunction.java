@@ -176,6 +176,8 @@ public class SetUIFunction {
 	// Mode
 	public int currRobotMode = RobotOperationMode.NONE;
 	public int naviStartPhase = RobotOperationMode.NAVI_SETTING;
+	public int[] naviStartPhase1 = new int[]{ RobotOperationMode.NAVI_SETTING, RobotOperationMode.NAVI_SETTING,
+	                                            RobotOperationMode.NAVI_SETTING, RobotOperationMode.NAVI_SETTING };
 	public boolean isClickSchedule = false;
 
 	Calendar calendar;
@@ -463,9 +465,8 @@ public class SetUIFunction {
 	    for (int i = 0; i < 24; i++) hourList.add(Integer.toString(i));
 	    for (int i = 0; i < 60; i+= RobotOperationMode.MINUTE_INTERVAL) minuteList.add(Integer.toString(i));
 
-	    hourListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_dropdown_item, hourList);
-	    minuteListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_dropdown_item, minuteList);
-	    //scheduleListAdapter = new ArrayAdapter(globalActivity,android.R.layout.simple_list_item_1,list);
+	    hourListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, hourList);
+	    minuteListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, minuteList);
 	    scheduleListAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, scheduleList);
 
 	    hourSpinner.setAdapter(hourListAdapter);
@@ -475,7 +476,7 @@ public class SetUIFunction {
 	    hourSpinner.setOnItemSelectedListener(onItemSelectedListener);
 	    minuteSpinner.setOnItemSelectedListener(onItemSelectedListener);
 	    listView.setOnItemClickListener(onItemClickListener);
-	    listView.setOnItemLongClickListener(onItemLongClickListener);
+	    //listView.setOnItemLongClickListener(onItemLongClickListener);
 	}
 
 /* The OnTouchListener of Draw JoyStick */
@@ -557,7 +558,8 @@ public class SetUIFunction {
 				
 			case R.id.img_manual:
 			    if (currRobotMode != RobotOperationMode.MANUAL_MODE
-			            && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
+			            && naviStartPhase == RobotOperationMode.NAVI_SETTING
+			            && naviStartPhase1[currRobotMode] == RobotOperationMode.NAVI_SETTING) {
 			        updateRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        sendRobotModeState(RobotOperationMode.MANUAL_MODE);
 			        gameView.changeMapZoomIn(false);
@@ -565,7 +567,8 @@ public class SetUIFunction {
 			    }
 			    break;
 			case R.id.img_semiauto:
-			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE) {
+			    if (currRobotMode != RobotOperationMode.SEMI_AUTO_MODE
+			            && naviStartPhase1[currRobotMode] == RobotOperationMode.NAVI_SETTING) {
 			        updateRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        sendRobotModeState(RobotOperationMode.SEMI_AUTO_MODE);
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
@@ -601,7 +604,6 @@ public class SetUIFunction {
 				            XMPPSet.XMPPSendText("semiauto coordinate end");
 			                
 			                naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
-			                showToastMessage("Navi Start");
 			                gameView.postInvalidate();
 			            }
 			        } else showToastMessage("Lost XMPP Connection");
@@ -612,18 +614,25 @@ public class SetUIFunction {
 			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
 			            && naviStartPhase == RobotOperationMode.NAVI_SETTING) {
 			        revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
-			    } else if (currRobotMode == RobotOperationMode.AUTO_MODE) {
+			    } else if (currRobotMode == RobotOperationMode.AUTO_MODE
+			            && naviStartPhase1[currRobotMode] == RobotOperationMode.NAVI_SETTING) {
 			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 			    }
 			    gameView.changeMapZoomIn(false);
 			    gameView.postInvalidate();
 				break;
 			case R.id.img_setup:
-			    if (currRobotMode == RobotOperationMode.AUTO_MODE && !isClickSchedule) {
-			        setScheduleAlarm(false);
-			        sendAutoModeSchedule();
-			        revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
-			        gameView.postInvalidate();
+			    if (currRobotMode == RobotOperationMode.AUTO_MODE && !isClickSchedule
+			            && naviStartPhase1[currRobotMode] == RobotOperationMode.NAVI_SETTING) {
+			        if (scheduleList.size() >= RobotOperationMode.MAX_SCHEDULE_LIST) {
+			            showToastMessage("Only can set one schedule");
+			        } else if (RobotOperationMode.autoTargetSettingQueue.isEmpty()) {
+			            showToastMessage("You didn't set up target. Please try again.");
+			        } else {
+			            setScheduleTime();
+			            sendAutoModeSchedule();
+			            naviStartPhase1[currRobotMode] = RobotOperationMode.NAVI_SETUP_DONE;
+			        }
 			    }
 				break;
 			default:
@@ -699,11 +708,6 @@ public class SetUIFunction {
 	            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
 	            scheduleList.remove(timeFormat.format(tempCal.getTime()));
 	            scheduleListAdapter.notifyDataSetChanged();
-
-	            //For test
-	            game.source[0] = game.source[0] +1;
-	            game.source[1] = game.source[1] +1;
-	            gameView.postInvalidate();
 	        }
 	    }	    
 	};
@@ -785,27 +789,21 @@ public class SetUIFunction {
 	    else showToastMessage("Lost XMPP Connection");
 	}
 
-	public void setScheduleAlarm(boolean isRemote) {
+	public void setScheduleTime() {
 	    calendar.setTime(new Date());
+	    calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+	    calendar.set(Calendar.MINUTE, selectedMinute);
+	    calendar.set(Calendar.SECOND, 0);
 
-	    if (isRemote) {
-	        String[] time = scheduledTime.split(":");
-	        calendar.set(Calendar.HOUR_OF_DAY, Integer.valueOf(time[0]));
-	        calendar.set(Calendar.MINUTE, Integer.valueOf(time[1]));
-	        calendar.set(Calendar.SECOND, 0);
-	    } else {
-	        calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
-	        calendar.set(Calendar.MINUTE, selectedMinute);
-	        calendar.set(Calendar.SECOND, 0);
-
-	        SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
-	        scheduledTime = timeFormat.format(calendar.getTime());
-	    }
+	    SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
+	    scheduledTime = timeFormat.format(calendar.getTime());
 	    Log.i("terry", "Get scheduled time: "+calendar.getTime()+"\nSet scheduled alarm: "+scheduledTime);
+    }
 
-	    //Set alarm to trigger robot
-	    PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(RobotOperationMode.ACTION_INTENT_ALARM), PendingIntent.FLAG_UPDATE_CURRENT);
-	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+	public void setScheduleAlarm() {
+        //Set alarm to trigger robot
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(RobotOperationMode.ACTION_INTENT_ALARM), PendingIntent.FLAG_UPDATE_CURRENT);
+//	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
 	    //Update List
 	    scheduleList.add(scheduledTime);
@@ -818,10 +816,13 @@ public class SetUIFunction {
 
 	private void sendAutoModeSchedule() {
 	    if (XMPPSet.isConnected()) {
+	        transformScreenFormula obj = transformScreenFormula.getInstance();
+
 	        XMPPSet.XMPPSendText("auto scheduledTime "+ scheduledTime);
 	        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
-	            XMPPSet.XMPPSendText("auto coordinate" +" "+ tempTarget[0][0] +" "+ tempTarget[0][1]);
+	            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
+	            XMPPSet.XMPPSendText("auto coordinate" +" "+ obj.getXaxis() +" "+ obj.getYaxis());
             }
 	        XMPPSet.XMPPSendText("auto setUpDone");
 	    } else showToastMessage("Lost XMPP Connection");
