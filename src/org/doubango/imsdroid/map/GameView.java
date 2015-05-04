@@ -101,10 +101,6 @@ public class GameView extends View {
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 
 	public SetUIFunction setUIfunction;
-	
-	//Auto mode
-	public boolean isClickSchedule = false;
-
 
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
@@ -377,10 +373,8 @@ public class GameView extends View {
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            // Only one target
-				            if (RobotOperationMode.autoTargetSettingQueue.isEmpty())
+				            if (RobotOperationMode.autoTargetSettingQueue.size() <= RobotOperationMode.MAX_TARGET)
 				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
-				            else
-				                RobotOperationMode.autoTargetSettingQueue.set(0, tempTarget);
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
 				        }

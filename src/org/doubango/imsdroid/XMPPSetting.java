@@ -55,6 +55,9 @@ public class XMPPSetting {
 	
     transformScreenFormula obj = transformScreenFormula.getInstance();
 
+    private int walkableCount = 0;
+    private String currSchedule;
+
 	public static XMPPSetting getInstance() {
 //         if (instance == null){
 //             instance = new XMPPSetting();
@@ -162,8 +165,6 @@ public class XMPPSetting {
 		                            //Using handler to show toast message
 		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3, "Navi Start");
 		                            modeButtonHandler.sendMessage(message1);
-
-		                            _gameView.postInvalidate();
 		                        } else {
 		                            obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
 
@@ -180,35 +181,35 @@ public class XMPPSetting {
 		                else if (inM[0].equals("auto"))
 		                {
 		                    if (inM[1].equals("walkable")) {
-		                        android.os.Message message1 = modeButtonHandler.obtainMessage(2, inM[2]);
-		                        modeButtonHandler.sendMessage(message1);
-		                    } else if (inM[1].equals("corner")) {
-		                        if (inM[2].equals("start")) {
-		                            Calendar tempCal = Calendar.getInstance();
-		                            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
-		                            RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(timeFormat.format(tempCal.getTime()));                            
-		                            int[][] tempTarget = RobotOperationMode.autoTargetQueue.poll();
-		                            MapList.target[0] = tempTarget[0][0];
-		                            MapList.target[1] = tempTarget[0][1];
-		                        } else if (inM[2].equals("end")) {
-		                            RobotOperationMode.autoTargetQueue.offer(new int[][]{{MapList.target[0], MapList.target[1]}});
-		                            setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_START;
-
-		                            //XMPPSendText("auto start");   //Notify robot to start navigating
-		                            android.os.Message message1 = modeButtonHandler.obtainMessage(3, "Navi Start");
+		                        if (inM[2].equals("1")) {
+		                            walkableCount++;
+		                            if (walkableCount == RobotOperationMode.autoTargetSettingQueue.size()) {
+	                                    android.os.Message message1 = modeButtonHandler.obtainMessage(2, "1");
+	                                    modeButtonHandler.sendMessage(message1);
+	                                    walkableCount = 0;
+		                            }
+		                        } else if (inM[2].equals("0")) {
+		                            android.os.Message message1 = modeButtonHandler.obtainMessage(2, "0");
 		                            modeButtonHandler.sendMessage(message1);
-		                            _gameView.postInvalidate();
-		                        } else {
-		                            obj.transform2ScreenGird(Integer.parseInt(inM[2]),Integer.parseInt(inM[3]));
-
-		                            int tempTarget[][] = {{obj.getX_grid(), obj.getY_grid()}};
-		                            RobotOperationMode.autoTargetQueue.offer(tempTarget);
+		                            walkableCount = 0;
 		                        }
+		                    } else if (inM[1].equals("start")) {
+		                        Calendar tempCal = Calendar.getInstance();
+		                        SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
+		                        currSchedule = timeFormat.format(tempCal.getTime());
+		                        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(currSchedule);
+		                        int[][] tempTarget = RobotOperationMode.autoTargetQueue.getLast();
+		                        MapList.target[0] = tempTarget[0][0];
+		                        MapList.target[1] = tempTarget[0][1];
+		                        setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_START;
+
+		                        android.os.Message message1 = modeButtonHandler.obtainMessage(3, "Navi Start");
+		                        modeButtonHandler.sendMessage(message1);
 		                    } else if (inM[1].equals("end")) {
 		                        MapList.source[0] = MapList.target[0];
 		                        MapList.source[1] = MapList.target[1];
-		                        cleanAutoSetting();
-		                        _gameView.postInvalidate();
+		                        android.os.Message message1 = modeButtonHandler.obtainMessage(4);
+		                        modeButtonHandler.sendMessage(message1);
 		                    }
 		                }
 		            }
@@ -302,7 +303,13 @@ public class XMPPSetting {
 
 	private Handler modeButtonHandler = new Handler(){
 	    public void handleMessage(android.os.Message msg){
-	        // Workaround for app forced close
+	        /*
+	         * Define message what value
+	         * 1: For update imageButton
+	         * 2: For auto mode setting
+	         * 3: For show toast message
+	         * 4: For remove schedule and update list
+	         */
 	        if(msg.what == 1) {
 	            setUIfunction.updateRobotModeState(Integer.valueOf((String)msg.obj));
 	        } else if (msg.what == 2) {
@@ -314,6 +321,9 @@ public class XMPPSetting {
 	            setUIfunction.revertRobotModeStatus(RobotOperationMode.AUTO_MODE);
 	        } else if (msg.what == 3) {
 	            setUIfunction.showToastMessage((String)msg.obj);
+	        } else if (msg.what == 4) {
+	            setUIfunction.removeSchedule(currSchedule);
+	            cleanAutoSetting();
 	        }
 	        _gameView.postInvalidate();
 	        super.handleMessage(msg);

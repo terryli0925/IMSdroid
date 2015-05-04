@@ -819,12 +819,13 @@ public class SetUIFunction {
 	        transformScreenFormula obj = transformScreenFormula.getInstance();
 
 	        XMPPSet.XMPPSendText("auto scheduledTime "+ scheduledTime);
+	        XMPPSet.XMPPSendText("semiauto coordinate start");
 	        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
 	            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
 	            XMPPSet.XMPPSendText("auto coordinate" +" "+ obj.getXaxis() +" "+ obj.getYaxis());
             }
-	        XMPPSet.XMPPSendText("auto setUpDone");
+	        XMPPSet.XMPPSendText("auto coordinate end");
 	    } else showToastMessage("Lost XMPP Connection");
 	}
 
@@ -1321,5 +1322,10 @@ public class SetUIFunction {
 	        toast.setDuration(Toast.LENGTH_SHORT);
 	    }
 	    toast.show();
+	}
+
+	public void removeSchedule(String schedule) {
+	    scheduleList.remove(schedule);
+	    scheduleListAdapter.notifyDataSetChanged();
 	}
 }
