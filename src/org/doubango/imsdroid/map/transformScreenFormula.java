@@ -26,8 +26,10 @@ public class transformScreenFormula {
 	}
 	
 	public void transform2ScreenAxis(int index_x, int index_y){
+	    Log.i("shinhua", "Grid transform2ScreenAxis: "+ index_x + " " + index_y);
 		this.x_axis = (int)(index_x * scalex - halfx);
 		this.y_axis = (int)(index_y * scaley - halfy);
+		Log.i("shinhua", "Axis transform2ScreenAxis: "+ x_axis + " " + y_axis);
 	}
 	
 	public int getXaxis(){
@@ -39,10 +41,10 @@ public class transformScreenFormula {
 	}
 	
 	public void transform2ScreenGird(int x_axis, int y_axis){
-		Log.i("shinhua", "transform2ScreenGird: "+ x_axis + " " + y_axis);
-		this.x_grid = (int)(x_axis / this.scalex);
-		this.y_grid = (int)(y_axis / this.scaley);
-		Log.i("shinhua", "transform2ScreenGird: "+ x_grid + " " + y_grid);
+		Log.i("shinhua", "Axis transform2ScreenGird: "+ x_axis + " " + y_axis);
+		this.x_grid = (int)Math.ceil(x_axis / this.scalex);
+		this.y_grid = (int)Math.ceil(y_axis / this.scaley);
+		Log.i("shinhua", "Grid transform2ScreenGird: "+ x_grid + " " + y_grid);
 	}
 
 	public int getX_grid() {
