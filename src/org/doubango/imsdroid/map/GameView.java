@@ -36,6 +36,7 @@ public class GameView extends View {
 	private static int VIEW_HEIGHT = 640;
 
 	public Game game;
+	public SetUIFunction setUIfunction;
 	GameView GV;
 	public XMPPSetting _XMPPSet;
 	private NetworkStatus loggin;
@@ -99,8 +100,6 @@ public class GameView extends View {
 	int xcoordinate = 5, ycoordinate = 5;
 	private boolean touchDown = false, zoomout = false, isZoom = false;
 	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
-
-	public SetUIFunction setUIfunction;
 
 	/* Drawing BaseMap */
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);

@@ -21,12 +21,10 @@ import org.doubango.imsdroid.Screens.ScreenDraw;
 import org.doubango.imsdroid.Screens.ScreenUIJoyStick;
 import org.doubango.imsdroid.Screens.ScreenUISildeMenu;
 import org.doubango.imsdroid.Screens.ScreenUIVerticalSeekBar;
-import org.doubango.imsdroid.Utils.NetworkStatus;
 import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.RobotOperationMode;
-import org.doubango.imsdroid.map.SendCmdToBoardAlgorithm;
 import org.doubango.imsdroid.map.transformScreenFormula;
 
 import us.justek.sdk.core.CoreStatus;
@@ -65,7 +63,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.ViewManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -90,26 +87,16 @@ public class SetUIFunction {
 
 	private String TAG = "App";
 	private XMPPSetting XMPPSet;
-	private NetworkStatus loggin;
 	public UartCmd uartCmd = UartCmd.getInstance();
-	
-//	public UartCmd uartCmd;
-	
 	private UartReceive uartRec;
 
 	// For map use
-	private Button getAxisBtn,jsRunBtn,btHang;
+	private Button btHang;
 
 	GameView gameView;
 	private TextView loginUser, controlRobot;
 	EditText Axis_TestAxisInput;
 	Game game;
-	
-	// End for Map use
-	MapList map = new MapList();
-
-	SendCmdToBoardAlgorithm SendAlgo;
-
 	
 	int height, width;
 	
@@ -158,18 +145,6 @@ public class SetUIFunction {
 	private ImageButton manual, semiauto, auto, navistart, reset, setup;
 	
 	private Handler handler = new Handler();
-	
-	/* Detect Robot Location */
-	Runnable Axis_trigger_thread = new Axis_thread();
-	
-	/* Navigation parameter */ 
-	public int Axis_InputY_fromDW1000;
-	public int Axis_InputX_fromDW1000;
-	public int Axis_BRSserchArray_Index_Y = 0;
-	public int Axis_BRSserchArray_Index_X = 0;
-
-	//private int Axis_GetPollTime = 1000;
-	private int Axis_GetPollTime = 5000;   //For test
 
 	ScreenAV _ScreenAV;
 
@@ -181,7 +156,6 @@ public class SetUIFunction {
 	public boolean isClickSchedule = false;
 
 	Calendar calendar;
-	AlarmManager alarmManager;
 	private TextView hourText, minuteText;
 	private ListView listView;
 	private Spinner hourSpinner, minuteSpinner;
@@ -225,19 +199,22 @@ public class SetUIFunction {
 	private Toast toast;
 	
 	public SetUIFunction(Activity activity) {
+	    instance = this;
 		globalActivity = activity;
 		mContext = activity.getWindow().getDecorView().getContext();
+		calendar = Calendar.getInstance();
+		XMPPSet = XMPPSetting.getInstance();
 	}
 	
 	public static SetUIFunction getInstance() {
-		 if (instance == null){
-	            synchronized(SetUIFunction.class){
-	                if(instance == null) {
-	                     instance = new SetUIFunction(globalActivity);
-	                }
-	            }
-	        }
-	        return instance;
+//		 if (instance == null){
+//	            synchronized(SetUIFunction.class){
+//	                if(instance == null) {
+//	                     instance = new SetUIFunction(globalActivity);
+//	                }
+//	            }
+//	        }
+	    return instance;
 	}
 	
 	public void SaveAVSession(ScreenAV screenAV){
@@ -246,26 +223,11 @@ public class SetUIFunction {
 
 	@SuppressLint("NewApi") 
 	public void StartUIFunction() {
-		loggin = NetworkStatus.getInstance();
-
-		calendar = Calendar.getInstance();
-		alarmManager = (AlarmManager) globalActivity.getSystemService(Context.ALARM_SERVICE);
-
-		gameView = (GameView) globalActivity.findViewById(R.id.gameView1);
-		game = new Game();
-		
-//		XMPPSet = new XMPPSetting();
-		XMPPSet = XMPPSetting.getInstance();
-		XMPPSetting.setUIfunction = this;
-		
-		//gameView.setXMPPSetting(XMPPSet);
-		gameView.setUIfunction =this;
-		
-		SendAlgo = new SendCmdToBoardAlgorithm();
+	    init();
 
 		// Client side need to deliver their userID to robot which user control
 		if (XMPPSet.isConnected()) {
-		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSetting.userID);
+		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSet.mCurrentUserId);
 		} else showToastMessage("Lost XMPP Connection");
 //		Log.i("terry", "Login user= "+XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]+", conference account= "+conferenceAccount[XMPPSetting.userID]);
 //		Log.i("terry", "Remote control robot "+XMPPSetting.ROBOT_ACCOUNT[XMPPSetting.robotID]);
@@ -292,13 +254,23 @@ public class SetUIFunction {
 		/*--------------------------------------------------*/
 		/* Temporary */
 		
-		uartRec = new UartReceive();
-		uartRec.RunRecThread();
+//		uartRec = new UartReceive();
+//		uartRec.RunRecThread();
 
 		// Broadcast for auto mode triggered
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(RobotOperationMode.ACTION_INTENT_ALARM);
-		globalActivity.registerReceiver(autoTriggerReceiver, intentFilter);
+//		IntentFilter intentFilter = new IntentFilter();
+//		intentFilter.addAction(RobotOperationMode.ACTION_INTENT_ALARM);
+//		globalActivity.registerReceiver(autoTriggerReceiver, intentFilter);
+	}
+
+	private void init() {
+	    gameView = (GameView) globalActivity.findViewById(R.id.gameView1);
+	    game = new Game();
+	    game.reloadMap(0, gameView);
+	    gameView.setUIfunction = this;
+	    gameView.game = this.game;
+	    XMPPSet.gameView = this.gameView;
+	    XMPPSet.setUIfunction = this;
 	}
 
 	@SuppressLint("NewApi")
@@ -394,17 +366,14 @@ public class SetUIFunction {
 	private void declareTextView(){
 	    loginUser = (TextView) globalActivity.findViewById(R.id.loginUser);
 	    controlRobot = (TextView) globalActivity.findViewById(R.id.controlRobot);
-	    loginUser.setText(XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]);
-	    controlRobot.setText(XMPPSetting.ROBOT_ACCOUNT[XMPPSetting.robotID]);
+
+	    loginUser.setText(XMPPSetting.USER_ACCOUNT[XMPPSet.mCurrentUserId]);
+	    controlRobot.setText(XMPPSetting.ROBOT_ACCOUNT[XMPPSet.mCurrentUserId]);
 	}
 
 	private void declareButton() {
-	    getAxisBtn = (Button) globalActivity.findViewById(R.id.getAxisBtn);
-	    jsRunBtn = (Button) globalActivity.findViewById(R.id.runjs);
 	    btHang = (Button)globalActivity.findViewById(R.id.hangupbtn);
 
-	    getAxisBtn.setOnClickListener(onClickListener);
-	    jsRunBtn.setOnClickListener(onClickListener);
 	    btHang.setOnClickListener(onClickListener);
 	}
 	
@@ -528,26 +497,6 @@ public class SetUIFunction {
 			case R.id.hangupbtn:
 				if (_ScreenAV != null)
 					_ScreenAV.hangUpCall();
-				break;
-			
-			case R.id.getAxisBtn:
-				SendCmdToBoardAlgorithm.SetCompass();
-				handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
-
-				break;
-
-			case R.id.runjs:
-				synchronized (SendAlgo) {
-					try {
-						SendAlgo.RobotStart(gameView, game, XMPPSet);
-					
-						
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				//SendCmdToBoardAlgorithm.SetCompass();
-
 				break;
 			
 			case R.id.img_arrow:
@@ -700,21 +649,21 @@ public class SetUIFunction {
 	    }
 	};
 
-	private final BroadcastReceiver autoTriggerReceiver	= new BroadcastReceiver() {
-	    @Override
-	    public void onReceive(Context context, Intent intent) {
-	        final String action = intent.getAction();
-	        if(RobotOperationMode.ACTION_INTENT_ALARM.equals(action)){
-	            Log.i("terry", "Get intent "+ RobotOperationMode.ACTION_INTENT_ALARM);
-
-	            //Update List
-	            Calendar tempCal = Calendar.getInstance();
-	            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
-	            scheduleList.remove(timeFormat.format(tempCal.getTime()));
-	            scheduleListAdapter.notifyDataSetChanged();
-	        }
-	    }	    
-	};
+//	private final BroadcastReceiver autoTriggerReceiver	= new BroadcastReceiver() {
+//	    @Override
+//	    public void onReceive(Context context, Intent intent) {
+//	        final String action = intent.getAction();
+//	        if(RobotOperationMode.ACTION_INTENT_ALARM.equals(action)){
+//	            Log.i("terry", "Get intent "+ RobotOperationMode.ACTION_INTENT_ALARM);
+//
+//	            //Update List
+//	            Calendar tempCal = Calendar.getInstance();
+//	            SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
+//	            scheduleList.remove(timeFormat.format(tempCal.getTime()));
+//	            scheduleListAdapter.notifyDataSetChanged();
+//	        }
+//	    }
+//	};
 
 	/* Arc Menu */
 	private void initArcMenu(final ArcMenu menu, int[] itemDrawables, Activity v) {
@@ -806,6 +755,7 @@ public class SetUIFunction {
 
 	public void setScheduleAlarm() {
         //Set alarm to trigger robot
+//	    AlarmManager alarmManager = (AlarmManager) globalActivity.getSystemService(Context.ALARM_SERVICE);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(RobotOperationMode.ACTION_INTENT_ALARM), PendingIntent.FLAG_UPDATE_CURRENT);
 //	    alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
@@ -944,25 +894,6 @@ public class SetUIFunction {
 		}
 	}
 
-	public class Axis_thread implements Runnable {
-		@SuppressLint("UseValueOf") public void run() {
-
-		    //Client don't need to get robot position
-		    if (XMPPSetting.IS_SERVER) {
-		        //TODO: Get source position
-		        //For test
-		        //game.source[0] = game.source[0] + 1;
-		        //game.source[1] = game.source[1] + 1;
-		        if (XMPPSet.isConnected())
-		            XMPPSet.XMPPSendText("source " + game.source[0] +" " + game.source[1]);
-		        else showToastMessage("Lost XMPP Connection");
-
-		        gameView.postInvalidate();
-		        handler.postDelayed(Axis_trigger_thread, Axis_GetPollTime);
-		    }
-		}
-	}
-
 	/* Create ThreadPool to fix thread quantity */
 	private void useThreadPool(ExecutorService service, String Msg) {
 		service.execute(new MyThread(Msg));
@@ -1049,7 +980,7 @@ public class SetUIFunction {
 			//connect.performClick();
 		}
 
-		videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
+		videoConferenceSignIn(conferenceAccount[XMPPSet.mCurrentUserId], conferencePassword[XMPPSet.mCurrentUserId]);
 	}
 	
 	private Button.OnClickListener videoClickListener = new OnClickListener(){
@@ -1066,11 +997,14 @@ public class SetUIFunction {
 //						connect.setVisibility(View.INVISIBLE);
 //						videoConferenceSignIn(conferenceAccount[conferenceID], conferencePassword[conferenceID]);
 //					}
-				    if (mCore.getCoreStatus().equals(mCore.getCoreStatus().CoreStatusConnected)){
-				        connect.setVisibility(View.INVISIBLE);
-				        //videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
-				        clientNewLetter();
-				    } else showToastMessage("Lost Conference Connection!!");
+				    if (conferenceID == XMPPSet.mCurrentUserId) showToastMessage("Can't call youself. Please re-choose user again.");
+				    else {
+				        if (mCore.getCoreStatus().equals(mCore.getCoreStatus().CoreStatusConnected)){
+				            connect.setVisibility(View.INVISIBLE);
+				            //videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
+				            clientNewLetter();
+				        } else showToastMessage("Lost Conference Connection!!");
+				    }
 				break;
 				
 				case R.id.hangupbtn:

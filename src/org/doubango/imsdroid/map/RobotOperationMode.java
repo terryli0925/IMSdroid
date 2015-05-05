@@ -9,8 +9,6 @@ public class RobotOperationMode {
     public static final int SEMI_AUTO_MODE = 2;
     public static final int AUTO_MODE = 3;
 
-    public static final String ACTION_TARGET_ADD = "TARGET_ADD";
-    public static final String ACTION_TARGET_REMOVE = "TARGET_REMOVE";
     public static final String ACTION_INTENT_ALARM = "imsdroid.intent.action.ALARM";
 
     //Semi-Auto mode

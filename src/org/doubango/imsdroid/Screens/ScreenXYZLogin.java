@@ -80,6 +80,8 @@ public class ScreenXYZLogin extends BaseScreen {
 		setScreenBackground();
 		getScreenSize();
 
+		XMPPSet = new XMPPSetting();
+
 		enterBtn  = (Button)findViewById(R.id.loginenter);
 		cencelBtn = (Button)findViewById(R.id.logincencel);
 
@@ -212,7 +214,6 @@ public class ScreenXYZLogin extends BaseScreen {
 				editTextPassword.setText(editTextPassword.getText().toString().trim());
 				
 				setXmpploggin(editTextUsername, editTextPassword);
-				XMPPSet = new XMPPSetting();
 				XMPPThreadv = new XMPPThread();
 				XMPPThreadv.start();
 				
@@ -234,13 +235,13 @@ public class ScreenXYZLogin extends BaseScreen {
             if (arg0.getId() == R.id.accountSpinner) {
                     editTextUsername.setText(XMPPSetting.USER_ACCOUNT[position]);
                     editTextPassword.setText(XMPPSetting.USER_PASSWORD[position]);
-                    XMPPSetting.userID = position;
+                    XMPPSet.mCurrentUserId = position;
             } else if (arg0.getId() == R.id.robotSpinner) {
                 if (XMPPSetting.IS_SERVER) {
                     editTextUsername.setText(XMPPSetting.ROBOT_ACCOUNT[position]);
                     editTextPassword.setText(XMPPSetting.ROBOT_PASSWORD[position]);
                 } else {
-                    XMPPSetting.robotID = position;
+                    XMPPSet.mSelectedRobotId = position;
                 }
             }
 

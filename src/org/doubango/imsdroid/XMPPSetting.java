@@ -47,16 +47,16 @@ public class XMPPSetting {
 	private boolean LogSuc = false;
 	
 	//public Game game = new Game();
-	public static GameView _gameView;
-	public static SetUIFunction setUIfunction;
+	public GameView gameView;
+	public SetUIFunction setUIfunction;
 
-	public static int robotID = 0;
-	public static int userID = 0;
+	public int mSelectedRobotId = 0;
+	public int mCurrentUserId = 0;
 	
     transformScreenFormula obj = transformScreenFormula.getInstance();
 
-    private int walkableCount = 0;
-    private String currSchedule;
+    private int mWalkableCount = 0;
+    private String mCurrentSchedule;
 
 	public static XMPPSetting getInstance() {
 //         if (instance == null){
@@ -124,7 +124,7 @@ public class XMPPSetting {
 		    connection.addPacketListener(new PacketListener() {
 		        public void processPacket(Packet packet) {
 		            Message message = (Message) packet;
-		            if (message.getBody() != null && setUIfunction != null) {
+		            if (message.getBody() != null && setUIfunction != null && gameView != null) {
 		                String fromName = StringUtils.parseBareAddress(message.getFrom());
 		                String[] inM = message.getBody().split("\\s+");
 		                Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" );
@@ -137,12 +137,12 @@ public class XMPPSetting {
 		                 */
 		                if (inM[0].equals("userID"))
 		                {
-		                    userID = Integer.parseInt(inM[1]);
+		                    mCurrentUserId = Integer.parseInt(inM[1]);
 		                }
 		                else if (inM[0].equals("source"))
 		                {
 		                    updateSource(inM[1], inM[2]);
-		                    _gameView.postInvalidate();
+		                    gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("semiauto"))
 		                {
@@ -175,29 +175,29 @@ public class XMPPSetting {
 		                        MapList.source[0] = MapList.target[0];
 		                        MapList.source[1] = MapList.target[1];
 		                        cleanSemiAutoSetting();
-		                        _gameView.postInvalidate();
+		                        gameView.postInvalidate();
 		                    }
 		                }
 		                else if (inM[0].equals("auto"))
 		                {
 		                    if (inM[1].equals("walkable")) {
 		                        if (inM[2].equals("1")) {
-		                            walkableCount++;
-		                            if (walkableCount == RobotOperationMode.autoTargetSettingQueue.size()) {
+		                            mWalkableCount++;
+		                            if (mWalkableCount == RobotOperationMode.autoTargetSettingQueue.size()) {
 	                                    android.os.Message message1 = modeButtonHandler.obtainMessage(2, "1");
 	                                    modeButtonHandler.sendMessage(message1);
-	                                    walkableCount = 0;
+	                                    mWalkableCount = 0;
 		                            }
 		                        } else if (inM[2].equals("0")) {
 		                            android.os.Message message1 = modeButtonHandler.obtainMessage(2, "0");
 		                            modeButtonHandler.sendMessage(message1);
-		                            walkableCount = 0;
+		                            mWalkableCount = 0;
 		                        }
 		                    } else if (inM[1].equals("start")) {
 		                        Calendar tempCal = Calendar.getInstance();
 		                        SimpleDateFormat timeFormat = new SimpleDateFormat(RobotOperationMode.DATE_FORMAT, Locale.getDefault());
-		                        currSchedule = timeFormat.format(tempCal.getTime());
-		                        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(currSchedule);
+		                        mCurrentSchedule = timeFormat.format(tempCal.getTime());
+		                        RobotOperationMode.autoTargetQueue = RobotOperationMode.RobotScheduleHashMap.get(mCurrentSchedule);
 		                        int[][] tempTarget = RobotOperationMode.autoTargetQueue.getLast();
 		                        MapList.target[0] = tempTarget[0][0];
 		                        MapList.target[1] = tempTarget[0][1];
@@ -221,9 +221,9 @@ public class XMPPSetting {
 	public void XMPPSendText(String xmppText)
 	{
 	    if (IS_SERVER) {
-	        XMPPSendText(USER_ACCOUNT[userID], xmppText);
+	        XMPPSendText(USER_ACCOUNT[mCurrentUserId], xmppText);
 	    } else {
-	        XMPPSendText(ROBOT_ACCOUNT[robotID], xmppText);
+	        XMPPSendText(ROBOT_ACCOUNT[mSelectedRobotId], xmppText);
 	    }
 	}
 
@@ -272,11 +272,6 @@ public class XMPPSetting {
 	    }
 	}
 
-	private void updateTarget(String x, String y) {
-	    MapList.target[0] = Integer.parseInt(x);
-	    MapList.target[1] = Integer.parseInt(y);
-	}
-
 	private void cleanSemiAutoSetting() {
 	    MapList.target[0] = 0;
 	    MapList.target[1] = 0;
@@ -287,19 +282,6 @@ public class XMPPSetting {
 	    MapList.target[0] = 0;
 	    MapList.target[1] = 0;
 	    setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_SETTING;
-	}
-
-	private void updateTrackPos(String action, String x, String y) {
-	    int tempTarget[][] = {{Integer.parseInt(x), Integer.parseInt(y)}};
-
-	    if (action.equals(RobotOperationMode.ACTION_TARGET_ADD)) {
-	        RobotOperationMode.targetQueue.offer(tempTarget);
-	        //Log.i(TAG, "Offer targetQueue, size= "+MapList.targetQueue.size());
-	    }else if (action.equals(RobotOperationMode.ACTION_TARGET_REMOVE)) {
-	        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.targetQueue);
-	        if (trackIndex != -1) RobotOperationMode.targetQueue.remove(trackIndex);
-	        //Log.i(TAG, "Remove targetQueue, size= "+MapList.targetQueue.size());
-	    }
 	}
 
 	private Handler modeButtonHandler = new Handler(){
@@ -323,10 +305,10 @@ public class XMPPSetting {
 	        } else if (msg.what == 3) {
 	            setUIfunction.showToastMessage((String)msg.obj);
 	        } else if (msg.what == 4) {
-	            setUIfunction.removeSchedule(currSchedule);
+	            setUIfunction.removeSchedule(mCurrentSchedule);
 	            cleanAutoSetting();
 	        }
-	        _gameView.postInvalidate();
+	        gameView.postInvalidate();
 	        super.handleMessage(msg);
 	    }
 	};

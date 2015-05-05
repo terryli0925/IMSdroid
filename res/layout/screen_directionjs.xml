@@ -215,24 +215,6 @@
         android:text="hangup" />
 
     <Button
-        android:id="@+id/runjs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/hangupbtn"
-        android:layout_toRightOf="@+id/img_auto"
-        android:text="run"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/getAxisBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/runjs"
-        android:layout_alignLeft="@+id/runjs"
-        android:text="GetAxis"
-        android:visibility="gone" />
-
-    <Button
         android:id="@+id/connectbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -286,7 +268,7 @@
 
 	<ListView
         android:id="@+id/listView"
-        android:layout_width="60dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/minuteSpinner"
         android:layout_alignParentBottom="true"
@@ -307,9 +289,9 @@
         android:id="@+id/loginUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FF0000" />
 
     <TextView
         android:id="@+id/controlRobot"
@@ -317,5 +299,5 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFF00" />
 </RelativeLayout>
