@@ -101,7 +101,7 @@ public class SetUIFunction {
 	private Button getAxisBtn,jsRunBtn,btHang;
 
 	GameView gameView;
-	TextView Axis_show_X, Axis_show_Y;
+	private TextView loginUser, controlRobot;
 	EditText Axis_TestAxisInput;
 	Game game;
 	
@@ -267,7 +267,8 @@ public class SetUIFunction {
 		if (XMPPSet.isConnected()) {
 		    if (!XMPPSetting.IS_SERVER) XMPPSet.XMPPSendText("userID "+XMPPSetting.userID);
 		} else showToastMessage("Lost XMPP Connection");
-		Log.i("terry", "Login user= "+XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]+", conference account= "+conferenceAccount[XMPPSetting.userID]);
+//		Log.i("terry", "Login user= "+XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]+", conference account= "+conferenceAccount[XMPPSetting.userID]);
+//		Log.i("terry", "Remote control robot "+XMPPSetting.ROBOT_ACCOUNT[XMPPSetting.robotID]);
 
 		getScreenSize(globalActivity);
 
@@ -380,6 +381,7 @@ public class SetUIFunction {
 		slideLayout = (LinearLayout) globalActivity.findViewById(R.id.linearLayout1);
 		arrow = (ImageButton) globalActivity.findViewById(R.id.img_arrow);
 		arrow.setOnClickListener(onClickListener);
+		arrow.setVisibility(View.INVISIBLE);
 		
 		ViewGroup.LayoutParams param = slideLayout.getLayoutParams();
 		param.width = 0;
@@ -390,8 +392,10 @@ public class SetUIFunction {
 	}
 
 	private void declareTextView(){
-	    Axis_show_X = (TextView) globalActivity.findViewById(R.id.Axis_show_X);
-	    Axis_show_Y = (TextView) globalActivity.findViewById(R.id.Axis_show_Y);
+	    loginUser = (TextView) globalActivity.findViewById(R.id.loginUser);
+	    controlRobot = (TextView) globalActivity.findViewById(R.id.controlRobot);
+	    loginUser.setText(XMPPSetting.USER_ACCOUNT[XMPPSetting.userID]);
+	    controlRobot.setText(XMPPSetting.ROBOT_ACCOUNT[XMPPSetting.robotID]);
 	}
 
 	private void declareButton() {
@@ -1182,10 +1186,10 @@ public class SetUIFunction {
 									case CallConnected:
 										Log.i("shinhua",
 												"CallConnected Success!");
-										clientCall.setLocalVideoView(
-												globalActivity, rl_local,
-												new Point(rl_local.getWidth(),
-														rl_local.getHeight()));
+//										clientCall.setLocalVideoView(
+//												globalActivity, rl_local,
+//												new Point(rl_local.getWidth(),
+//														rl_local.getHeight()));
 										clientCall.setRemoteVideoView(
 												globalActivity,
 												rl_remote,
@@ -1195,7 +1199,7 @@ public class SetUIFunction {
 										break;
 									case CallEnded:
 										try {
-											rl_local.removeAllViews();
+											//rl_local.removeAllViews();
 											rl_remote.removeAllViews();
 										} catch (Exception e) {
 
@@ -1243,7 +1247,7 @@ public class SetUIFunction {
 								case CallConnected:
 									Log.i("shinhua", "CallCallCall!");
 									dialog.cancel();
-									nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+//									nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
 									nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
 									break;
 								case CallEnded:
@@ -1252,7 +1256,7 @@ public class SetUIFunction {
 									connect.setVisibility(View.VISIBLE);
 									if(nowClientCall != null){
 										nowClientCall = null ;
-										rl_local.removeAllViews();
+										//rl_local.removeAllViews();
      									rl_remote.removeAllViews();
 										fl_portrait.setVisibility(View.GONE);
 									}
@@ -1300,7 +1304,7 @@ public class SetUIFunction {
 		if(nowClientCall != null){
 			nowClientCall.end();
 			nowClientCall = null ;
-			rl_local.removeAllViews();
+			//rl_local.removeAllViews();
 			rl_remote.removeAllViews();
 			fl_portrait.setVisibility(View.GONE);
 			

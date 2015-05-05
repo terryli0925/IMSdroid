@@ -232,24 +232,6 @@
         android:text="GetAxis"
         android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/Axis_show_Y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/Axis_show_X"
-        android:layout_alignLeft="@+id/getAxisBtn"
-        android:text="Axis_show_X"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/Axis_show_X"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/getAxisBtn"
-        android:layout_toRightOf="@+id/img_auto"
-        android:text="Axis_show_Y"
-        android:visibility="gone" />
-
     <Button
         android:id="@+id/connectbtn"
         android:layout_width="wrap_content"
@@ -321,4 +303,19 @@
 	    android:padding="0dp"
 	 />
 
+    <TextView
+        android:id="@+id/loginUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/controlRobot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:textColor="#FFFFFF" />
 </RelativeLayout>
