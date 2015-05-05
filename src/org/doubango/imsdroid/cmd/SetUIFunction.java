@@ -82,6 +82,8 @@ import android.widget.Toast;
 import com.capricorn.ArcMenu;
 
 public class SetUIFunction {
+    private static final int IMAGE_BUTTON_SIZE = 400;
+
 	static Activity globalActivity;
 	Context mContext;
 
@@ -383,11 +385,11 @@ public class SetUIFunction {
 		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi, R.drawable.reset, R.drawable.setup};
 		
 		for(int i=0; i<3; i++){
-			adjustButtonSize(mID[i], mDrawable[i], 300, 300);
+			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
 		}
 		
 		for(int i=3; i<mID.length;i++){
-			adjustButtonSize(mID[i], mDrawable[i], 300, 150);
+			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE / 2);
 		}
 		
 		
@@ -688,7 +690,7 @@ public class SetUIFunction {
 	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, 300, 300);
+        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
             layout_joystick.setVisibility(View.VISIBLE);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.INVISIBLE);
@@ -701,7 +703,7 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, 300, 300);
+        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
             layout_joystick.setVisibility(View.GONE);
             navistart.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
@@ -714,7 +716,7 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, 300, 300);
+        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
             layout_joystick.setVisibility(View.GONE);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.VISIBLE);
@@ -731,9 +733,9 @@ public class SetUIFunction {
 	}
 
 	private void revertImageButton(){
-		adjustButtonSize(R.id.img_manual, R.drawable.manual0, 300, 300);
-		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, 300, 300);
-		adjustButtonSize(R.id.img_auto, R.drawable.auto0, 300, 300);
+		adjustButtonSize(R.id.img_manual, R.drawable.manual0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+		adjustButtonSize(R.id.img_auto, R.drawable.auto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
 	}
 	
 	public void sendRobotModeState(int mode) {
