@@ -22,6 +22,8 @@ public class ScreenUIJoyStick{
 	public static final int STICK_DOWNLEFT = 6;
 	public static final int STICK_LEFT = 7;
 	public static final int STICK_UPLEFT = 8;
+
+	public static final int STICK_ACTION_INTERVAL = 500;   //millisecond
 	
 	private int STICK_ALPHA = 200;
 	private int LAYOUT_ALPHA = 200;

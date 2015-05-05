@@ -927,14 +927,14 @@ public class SetUIFunction {
 			while (isContinue) {
 				try {
 					// Using SCTP transmit message
-					Log.i(TAG, "Send message" + SendMsg);
+					//Log.i(TAG, "Send message" + SendMsg);
 
 					String sub = SendMsg.substring(SendMsg.indexOf("/") + 1);
 					if (SendMsg.equals("stop"))
 						SendToBoard("stop stop");
 					else
 						SendToBoard("direction " + sub);
-					Thread.sleep(100l);
+					Thread.sleep(ScreenUIJoyStick.STICK_ACTION_INTERVAL);
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
