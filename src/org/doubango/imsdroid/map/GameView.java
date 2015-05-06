@@ -372,7 +372,7 @@ public class GameView extends View {
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
 				        if (trackIndex == -1) {     //Add this new target in track list
 				            // Only one target
-				            if (RobotOperationMode.autoTargetSettingQueue.size() <= RobotOperationMode.MAX_TARGET)
+				            if (RobotOperationMode.autoTargetSettingQueue.size() < RobotOperationMode.MAX_TARGET)
 				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
