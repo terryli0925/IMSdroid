@@ -359,7 +359,7 @@ public class SetUIFunction {
 	    controlRobot = (TextView) globalActivity.findViewById(R.id.controlRobot);
 
 	    loginUser.setText(XMPPSetting.USER_ACCOUNT[XMPPSet.mCurrentUserId]);
-	    controlRobot.setText(XMPPSetting.ROBOT_ACCOUNT[XMPPSet.mCurrentUserId]);
+	    controlRobot.setText(XMPPSetting.ROBOT_ACCOUNT[XMPPSet.mSelectedRobotId]);
 	}
 
 	private void declareButton() {
@@ -987,7 +987,7 @@ public class SetUIFunction {
 				    else {
 				        if (mCore.getCoreStatus().equals(mCore.getCoreStatus().CoreStatusConnected)){
 				            connect.setVisibility(View.INVISIBLE);
-				            //videoConferenceSignIn(conferenceAccount[XMPPSetting.userID], conferencePassword[XMPPSetting.userID]);
+				            //videoConferenceSignIn(conferenceAccount[XMPPSet.mCurrentUserId], conferencePassword[XMPPSet.mCurrentUserId]);
 				            clientNewLetter();
 				        } else showToastMessage("Lost Conference Connection!!");
 				    }
