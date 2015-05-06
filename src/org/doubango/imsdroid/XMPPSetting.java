@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import org.doubango.imsdroid.cmd.SetUIFunction;
-import org.doubango.imsdroid.map.Game;
 import org.doubango.imsdroid.map.GameView;
 import org.doubango.imsdroid.map.MapList;
 import org.doubango.imsdroid.map.RobotOperationMode;
@@ -43,10 +42,8 @@ public class XMPPSetting {
 
     private static XMPPSetting instance;
 	private static XMPPConnection connection;
-	private UartCmd UCmd = UartCmd.getInstance();
 	private boolean LogSuc = false;
-	
-	//public Game game = new Game();
+
 	public GameView gameView;
 	public SetUIFunction setUIfunction;
 

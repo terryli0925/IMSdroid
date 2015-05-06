@@ -1,39 +1,21 @@
 package org.doubango.imsdroid.Screens;
 
 import org.doubango.imsdroid.R;
-import org.doubango.imsdroid.UartCmd;
-import org.doubango.imsdroid.XMPPSetting;
-import org.doubango.imsdroid.Screens.BaseScreen.SCREEN_TYPE;
-import org.doubango.imsdroid.Screens.ScreenHome.ScreenHomeAdapter;
-import org.doubango.imsdroid.Screens.ScreenWLogin.XMPPThread;
-import org.doubango.ngn.events.NgnEventArgs;
-import org.doubango.ngn.events.NgnRegistrationEventArgs;
 import org.doubango.ngn.services.INgnConfigurationService;
 import org.doubango.ngn.services.INgnSipService;
 import org.doubango.ngn.sip.NgnSipSession.ConnectionState;
-import org.doubango.ngn.utils.NgnConfigurationEntry;
-import org.doubango.ngn.utils.NgnStringUtils;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -48,8 +30,6 @@ public class ScreenXYZsignin extends BaseScreen {
 	private ImageButton signinBtn, createAccountBtn;
 	int Screen_width, Screen_height;
 	int horizontalscope, verticalscope;	
-
-	private UartCmd uartCmd = UartCmd.getInstance();
 	
 	public ScreenXYZsignin() {
 		super(SCREEN_TYPE.HOME_T, TAG);
@@ -65,16 +45,8 @@ public class ScreenXYZsignin extends BaseScreen {
 		// *************** Get each field from default configure , 
 		// *************** if we modify it on view,  will save to default configure on ClickListener function.
 		
-        if (UartCmd.driFd == 0 || UartCmd.dw1000Fd == 0)
-        {
-        	uartCmd.OpenSetUartPort("ttymxc3");
-        	uartCmd.OpenSetUartPort("ttymxc2");
-        }
-		
 		setScreenBackground();
 		getScreenParameter();
-
-		Log.i(TAG,"william oncreate screen login here");
 		
 		signinBtn = (ImageButton)findViewById(R.id.signin_btn);
 		setupButtonPosition(signinBtn, 10, 3, 3);

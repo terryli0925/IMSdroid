@@ -13,8 +13,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.doubango.imsdroid.R;
-import org.doubango.imsdroid.UartCmd;
-import org.doubango.imsdroid.UartReceive;
 import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.Screens.ScreenAV;
 import org.doubango.imsdroid.Screens.ScreenDraw;
@@ -89,8 +87,6 @@ public class SetUIFunction {
 
 	private String TAG = "App";
 	private XMPPSetting XMPPSet;
-	public UartCmd uartCmd = UartCmd.getInstance();
-	private UartReceive uartRec;
 
 	// For map use
 	private Button btHang;
@@ -251,13 +247,6 @@ public class SetUIFunction {
 //		} else {
 //			videoConferenceSignIn(account[1], password[1]);
 //		}
-
-
-		/*--------------------------------------------------*/
-		/* Temporary */
-		
-//		uartRec = new UartReceive();
-//		uartRec.RunRecThread();
 
 		// Broadcast for auto mode triggered
 //		IntentFilter intentFilter = new IntentFilter();
@@ -858,11 +847,6 @@ public class SetUIFunction {
 	        if (XMPPSet.isConnected())
 	            XMPPSet.XMPPSendText(inStr);
 	        else showToastMessage("Lost XMPP Connection");
-	    } else {
-	        String[] inM = inStr.split("\\s+");
-	        byte[] cmdByte = uartCmd.GetAllByte(inM);
-	        //String decoded = new String(cmdByte, "ISO-8859-1");
-	        UartCmd.SendMsgUart(1, cmdByte);
 	    }
 	}
 
