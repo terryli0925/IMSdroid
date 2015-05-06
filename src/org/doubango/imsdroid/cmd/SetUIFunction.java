@@ -429,8 +429,8 @@ public class SetUIFunction {
 	    for (int i = 0; i < 24; i++) hourList.add(Integer.toString(i));
 	    for (int i = 0; i < 60; i+= RobotOperationMode.MINUTE_INTERVAL) minuteList.add(Integer.toString(i));
 
-	    hourListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, hourList);
-	    minuteListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, minuteList);
+	    hourListAdapter = new ArrayAdapter<String>(mContext, R.layout.custom_spinner_item, hourList);
+	    minuteListAdapter = new ArrayAdapter<String>(mContext, R.layout.custom_spinner_item, minuteList);
 	    scheduleListAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, scheduleList);
 
 	    hourSpinner.setAdapter(hourListAdapter);
@@ -951,7 +951,7 @@ public class SetUIFunction {
 		btHang.setOnClickListener(videoClickListener);
 		
 		conferenceSpinner = (Spinner)globalActivity.findViewById(R.id.conferenceSpinner);
-		conferenceListAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, XMPPSetting.USER_ACCOUNT);
+		conferenceListAdapter = new ArrayAdapter<String>(mContext, R.layout.custom_spinner_item, XMPPSetting.USER_ACCOUNT);
 		conferenceSpinner.setAdapter(conferenceListAdapter);
 		conferenceSpinner.setOnItemSelectedListener(onItemSelectedListener);
 		

@@ -291,7 +291,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:textColor="#FF0000" />
+        android:textColor="#FF0000"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+id/controlRobot"
@@ -299,5 +300,6 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:textColor="#FFFF00" />
+        android:textColor="#FFFF00"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 </RelativeLayout>

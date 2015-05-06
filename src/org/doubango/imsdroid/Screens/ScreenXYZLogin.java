@@ -93,8 +93,8 @@ public class ScreenXYZLogin extends BaseScreen {
 		accountSpinner = (Spinner)findViewById(R.id.accountSpinner);
 		robotSpinner = (Spinner)findViewById(R.id.robotSpinner);
 
-		accountListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, XMPPSetting.USER_ACCOUNT);
-		robotListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, XMPPSetting.ROBOT_ACCOUNT);
+		accountListAdapter = new ArrayAdapter<String>(this, R.layout.custom_spinner_item, XMPPSetting.USER_ACCOUNT);
+		robotListAdapter = new ArrayAdapter<String>(this, R.layout.custom_spinner_item, XMPPSetting.ROBOT_ACCOUNT);
 		accountSpinner.setAdapter(accountListAdapter);
 		robotSpinner.setAdapter(robotListAdapter);
 
@@ -208,6 +208,7 @@ public class ScreenXYZLogin extends BaseScreen {
 			switch (v.getId()) {
 			
 			case R.id.loginenter:
+			    Log.i(TAG, "Login");
 				editTextUsername.setText(editTextUsername.getText().toString().trim());
 				editTextPassword.setText(editTextPassword.getText().toString().trim());
 				
