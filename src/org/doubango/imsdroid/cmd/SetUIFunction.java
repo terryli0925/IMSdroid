@@ -176,6 +176,7 @@ public class SetUIFunction {
 	private ProgressDialog dialog; 
 	private ArrayAdapter<String> conferenceListAdapter;
 	private int conferenceID = 0;
+	private boolean isUserCancel;
 	
 	private final int mCoreStatusIdle = 0;
 	private final int mCoreStatusConnecting = 1;
@@ -1082,7 +1083,7 @@ public class SetUIFunction {
 			switch (msg.what) {
 			case mIncomingCall:
 				if (nowClientCall != null) {
-				    showToastMessage("BuildComingCall");
+				    //showToastMessage("BuildComingCall");
 					fl_portrait.setVisibility(View.VISIBLE);
 					nowClientCall.answer(MediaType.Video,
 							new ClientCallListener() {
@@ -1094,8 +1095,7 @@ public class SetUIFunction {
 
 									switch (clientCallStatus) {
 									case CallConnected:
-										Log.i("shinhua",
-												"CallConnected Success!");
+										Log.i("shinhua", "CallConnected Success!");
 //										clientCall.setLocalVideoView(
 //												globalActivity, rl_local,
 //												new Point(rl_local.getWidth(),
@@ -1136,8 +1136,9 @@ public class SetUIFunction {
 	    Log.i("terry", "Call user= "+XMPPSetting.USER_ACCOUNT[conferenceID]+", conference account= "+conferenceAccount[conferenceID]);
 	    callnumber(conferenceAccount[conferenceID]);
 	}
-	
+
 	private void callnumber(String number){
+	    isUserCancel = false;
 		if(nowClientCall == null){
 			fl_portrait.setVisibility(View.VISIBLE);
 			nowClientCall = mPhoneService.makeCall(number,
@@ -1157,8 +1158,15 @@ public class SetUIFunction {
 								case CallConnected:
 									Log.i("shinhua", "CallCallCall!");
 									dialog.cancel();
-//									nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
-									nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
+									if (isUserCancel) {
+									    if(nowClientCall != null){
+									        nowClientCall.end();
+									        nowClientCall = null;
+									    }
+									}else {
+									    //nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+									    nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
+									}
 									break;
 								case CallEnded:
 								    showToastMessage(" You can recall Robot again ");
@@ -1174,19 +1182,14 @@ public class SetUIFunction {
 							}
 						}
 					});
-			dialog = new ProgressDialog(globalActivity);
+			dialog = new ProgressDialog(mContext);
 			dialog.setTitle("Dialing");
     		dialog.setMessage("pls wait");
     		dialog.setCancelable(false);
     		dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Cancel", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					if(nowClientCall != null){
-						nowClientCall.end();
-						nowClientCall = null ;
-						fl_portrait.setVisibility(View.GONE);
-					}
-					connect.setVisibility(View.VISIBLE);
+				    isUserCancel = true;
 				}
 			});
     		dialog.show();
