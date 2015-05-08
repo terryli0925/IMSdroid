@@ -51,6 +51,7 @@ public class GameView extends View {
     int xcoordinate = 5, ycoordinate = 5;
     private boolean isZoom = false;
     public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
+    public boolean isSourceVisible = true;
 
 	// BaseMap
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
@@ -235,19 +236,21 @@ public class GameView extends View {
 	}
 
 	private void drawSource(Canvas mCanvas) {
-        // Get original source size and robot compass degree
-        int sourceWidth = source.getWidth();
-        int sourceHeight = source.getHeight();
-        int rotateDegree = 0 - MapList.robotCompassDegree;
+	    if (isSourceVisible) {
+	        // Get original source size and robot compass degree
+	        int sourceWidth = source.getWidth();
+	        int sourceHeight = source.getHeight();
+	        int rotateDegree = 0 - MapList.robotCompassDegree;
 
-        // Set rotate
-        Matrix matrix = new Matrix();
-        matrix.setRotate(rotateDegree);
+	        // Set rotate
+	        Matrix matrix = new Matrix();
+	        matrix.setRotate(rotateDegree);
 
-        //Set new source with current robot compass degree
-        Bitmap newSource = Bitmap.createBitmap(source, 0, 0, sourceWidth, sourceHeight, matrix, true);
-        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
-                fixHeightMapData + game.source[1] * (span + 1), paint);
+	        //Set new source with current robot compass degree
+	        Bitmap newSource = Bitmap.createBitmap(source, 0, 0, sourceWidth, sourceHeight, matrix, true);
+	        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
+	                fixHeightMapData + game.source[1] * (span + 1), paint);
+	    }
 	}
 
 	@Override

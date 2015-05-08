@@ -140,6 +140,10 @@ public class XMPPSetting {
 		                {
 		                    updateSource(inM[1], inM[2]);
 		                    MapList.robotCompassDegree = Integer.parseInt(inM[3]);
+		                    if (setUIfunction.naviStartPhase == RobotOperationMode.NAVI_START
+		                            || setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_START) {
+		                        gameView.isSourceVisible = !gameView.isSourceVisible;
+		                    }
 		                    gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("semiauto"))
@@ -172,6 +176,7 @@ public class XMPPSetting {
 		                    } else if (inM[1].equals("end")) {
 		                        MapList.source[0] = MapList.target[0];
 		                        MapList.source[1] = MapList.target[1];
+		                        gameView.isSourceVisible = true;
 		                        cleanSemiAutoSetting();
 		                        gameView.postInvalidate();
 		                    }
@@ -206,6 +211,7 @@ public class XMPPSetting {
 		                    } else if (inM[1].equals("end")) {
 		                        MapList.source[0] = MapList.target[0];
 		                        MapList.source[1] = MapList.target[1];
+		                        gameView.isSourceVisible = true;
 		                        android.os.Message message1 = modeButtonHandler.obtainMessage(4);
 		                        modeButtonHandler.sendMessage(message1);
 		                    }
