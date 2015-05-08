@@ -42,17 +42,6 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/layout_joystick"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/joystickbg" >
-    </RelativeLayout>
-
  <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
@@ -302,4 +291,93 @@
         android:layout_alignParentTop="true"
         android:textColor="#FFFF00"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+	<ImageView
+	    android:id="@+id/bacRig"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/loginUser"
+	    android:layout_alignParentRight="true"
+	    android:padding="0dp"
+	    android:src="@drawable/backrig"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/right"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/bacRig"
+	    android:layout_alignParentRight="true"
+	    android:padding="0dp"
+	    android:src="@drawable/right"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/forRig"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/right"
+	    android:layout_alignParentRight="true"
+	    android:padding="0dp"
+	    android:src="@drawable/forrig"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/backward"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/loginUser"
+	    android:layout_toLeftOf="@+id/bacRig"
+	    android:padding="0dp"
+	    android:src="@drawable/back"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/forward"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/right"
+	    android:layout_toLeftOf="@+id/forRig"
+	    android:padding="0dp"
+	    android:src="@drawable/forward"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/bacLeft"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/loginUser"
+	    android:layout_toLeftOf="@+id/backward"
+	    android:padding="0dp"
+	    android:src="@drawable/backleft"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/left"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/bacLeft"
+	    android:layout_toLeftOf="@+id/backward"
+	    android:padding="0dp"
+	    android:src="@drawable/left"
+	    android:visibility="invisible"
+	 />
+
+	<ImageView
+	    android:id="@+id/forLeft"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/left"
+	    android:layout_toLeftOf="@+id/forward"
+	    android:padding="0dp"
+	    android:src="@drawable/fordleft"
+	    android:visibility="invisible"
+	 />
+
 </RelativeLayout>

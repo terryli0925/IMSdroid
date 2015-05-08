@@ -310,7 +310,7 @@ public class GameView extends View {
             getMapSize();
 
             xcoordinate = (int) ((screenWidth / 2) - (mapWidth / 2)); 
-            ycoordinate = (int) ((screenHeight / 2) - (mapHeight / 2));
+            ycoordinate = (int) ((screenHeight / 2) - mapHeight);
 
             fixWidthMapData = xcoordinate;    // ZoomIn Screen in the right
             //fixWidthMapData = 0;            // ZoomIn Screen in the middle

@@ -105,15 +105,14 @@ public class SetUIFunction {
 
 	/* Parameter declare */
 	private volatile boolean isContinue = false;
-	private int joystickAction;
 	private String[] str = { "stop", "forward", "forRig", "right", "bacRig",
 			"backward", "bacLeft", "left", "forLeft" };
 	private int instructor; /* Robot Commands Direction Instructor */
 	int colorValue;
 	
-	/* JoyStick object declare */
-	RelativeLayout layout_joystick, layout_menu, layout_robot;
-	ScreenUIJoyStick js;
+	/* DirectionButton object declare */
+	private ImageView forward, forRig, right, bacRig, backward, bacLeft, left, forLeft;
+	RelativeLayout layout_menu, layout_robot;
 	ScreenDraw myDraw;
 
 	/* ARC Menu object declare */
@@ -232,7 +231,7 @@ public class SetUIFunction {
 
 		getScreenSize(globalActivity);
 
-		declarJoyStick();
+		declareDirectionKey();
 		declareRobot();
 		declareSlideRobotMenu();
 		declareTextView();
@@ -277,26 +276,24 @@ public class SetUIFunction {
 		else showToastMessage("Lost XMPP Connection");
 	}
 
-	private void declarJoyStick(){
-		layout_joystick = (RelativeLayout) globalActivity.findViewById(R.id.layout_joystick);
-		setJoyStickParameter(globalActivity);
-		layout_joystick.setOnTouchListener(joystickListener);
-		
-		layout_joystick.setVisibility(View.GONE);
-	}
-	
-	private void setJoyStickParameter(Activity v) {
-		js = new ScreenUIJoyStick(v.getApplicationContext(), layout_joystick,
-				R.drawable.joystick);
+	private void declareDirectionKey() {
+	    forward = (ImageView) globalActivity.findViewById(R.id.forward);
+	    forRig = (ImageView) globalActivity.findViewById(R.id.forRig);
+	    right = (ImageView) globalActivity.findViewById(R.id.right);
+	    bacRig = (ImageView) globalActivity.findViewById(R.id.bacRig);
+	    backward = (ImageView) globalActivity.findViewById(R.id.backward);
+	    bacLeft = (ImageView) globalActivity.findViewById(R.id.bacLeft);
+	    left = (ImageView) globalActivity.findViewById(R.id.left);
+	    forLeft = (ImageView) globalActivity.findViewById(R.id.forLeft);
 
-		js.setStickSize(200, 200);
-		js.setStickAlpha(150);
-		// js.setLayoutSize(250, 250);
-		js.setLayoutSize(300, 300);
-		js.setLayoutAlpha(150);
-		js.setoffset(70);
-		js.setMinimumDistance(70); /* JoyStick Sensitivity */
-		js.drawStickDefault(); /* Draw JoyStick function */
+	    forward.setOnTouchListener(directionKeyListener);
+	    forRig.setOnTouchListener(directionKeyListener);
+	    right.setOnTouchListener(directionKeyListener);
+	    bacRig.setOnTouchListener(directionKeyListener);
+	    backward.setOnTouchListener(directionKeyListener);
+	    bacLeft.setOnTouchListener(directionKeyListener);
+	    left.setOnTouchListener(directionKeyListener);
+	    forLeft.setOnTouchListener(directionKeyListener);
 	}
 
 	private void declareRobot(){
@@ -443,38 +440,25 @@ public class SetUIFunction {
 	    //listView.setOnItemLongClickListener(onItemLongClickListener);
 	}
 
-/* The OnTouchListener of Draw JoyStick */
-	OnTouchListener joystickListener = new OnTouchListener() {
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			joystickAction = event.getAction();
+	OnTouchListener directionKeyListener = new OnTouchListener() {
 
-			/* Draw JoyStick */
-			js.drawStick(event);
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int action = event.getAction();
 
-			switch (joystickAction) {
-			case MotionEvent.ACTION_DOWN:
-			case MotionEvent.ACTION_MOVE:
-				isContinue = true;
-				instructor = js.get8Direction();
-				if (instructor != 0) {
-					useThreadPool(newService, str[instructor]);
-				}
-
-				break;
-			case MotionEvent.ACTION_UP:
-				isContinue = true;
-				useThreadPool(newService, str[0]);
-				isContinue = false;
-				break;
-			default:
-				isContinue = false;
-				break;
-			}
-
-			return true;
-		}
-
+            switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                isContinue = true;
+                useThreadPool(newService, v);
+                break;
+            case MotionEvent.ACTION_UP:
+                isContinue = false;
+                sendCommands("stop stop");
+                break;
+            }
+            return true;
+        }
+	    
 	};
 
 	/* Set Navigation & others Button onClickListener */
@@ -680,7 +664,7 @@ public class SetUIFunction {
         if (mode == RobotOperationMode.MANUAL_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_manual, R.drawable.manual1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
-            layout_joystick.setVisibility(View.VISIBLE);
+        	setDirectionKeyVisibility(true);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.INVISIBLE);
             setup.setVisibility(View.INVISIBLE);
@@ -693,7 +677,7 @@ public class SetUIFunction {
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
-            layout_joystick.setVisibility(View.GONE);
+        	setDirectionKeyVisibility(false);
             navistart.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
             setup.setVisibility(View.INVISIBLE);
@@ -706,7 +690,7 @@ public class SetUIFunction {
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_auto, R.drawable.auto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
-            layout_joystick.setVisibility(View.GONE);
+        	setDirectionKeyVisibility(false);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.VISIBLE);
             setup.setVisibility(View.VISIBLE);
@@ -725,6 +709,28 @@ public class SetUIFunction {
 		adjustButtonSize(R.id.img_manual, R.drawable.manual0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
 		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
 		adjustButtonSize(R.id.img_auto, R.drawable.auto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+	}
+
+	private void setDirectionKeyVisibility(boolean visibility) {
+	    if (visibility) {
+	        forward.setVisibility(View.VISIBLE);
+	        forRig.setVisibility(View.VISIBLE);
+	        right.setVisibility(View.VISIBLE);
+	        bacRig.setVisibility(View.VISIBLE);
+	        backward.setVisibility(View.VISIBLE);
+	        bacLeft.setVisibility(View.VISIBLE);
+	        left.setVisibility(View.VISIBLE);
+	        forLeft.setVisibility(View.VISIBLE);
+	    } else {
+            forward.setVisibility(View.INVISIBLE);
+            forRig.setVisibility(View.INVISIBLE);
+            right.setVisibility(View.INVISIBLE);
+            bacRig.setVisibility(View.INVISIBLE);
+            backward.setVisibility(View.INVISIBLE);
+            bacLeft.setVisibility(View.INVISIBLE);
+            left.setVisibility(View.INVISIBLE);
+            forLeft.setVisibility(View.INVISIBLE);
+	    }
 	}
 	
 	public void sendRobotModeState(int mode) {
@@ -830,49 +836,33 @@ public class SetUIFunction {
 		}
 
 	};
-	
-	private void sendCommands(String message){
-		try {
-			SendToBoard(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
 
 	/* XMPP Sendfunction */
-	public void SendToBoard(String inStr) throws IOException {
-	    if (!XMPPSetting.IS_SERVER) {
-	        if (XMPPSet.isConnected())
-	            XMPPSet.XMPPSendText(inStr);
-	        else showToastMessage("Lost XMPP Connection");
-	    }
+	private void sendCommands(String command){
+        if (!XMPPSetting.IS_SERVER) {
+            if (XMPPSet.isConnected())
+                XMPPSet.XMPPSendText(command);
+            else showToastMessage("Lost XMPP Connection");
+        }
 	}
 
 	/* Use thread pool for XMPP communication */
 	public class MyThread implements Runnable {
-		String SendMsg;
+	    View view;
 
-		public MyThread(String SendMsg) {
+		public MyThread(View v) {
 			// store parameter for later user
-			this.SendMsg = SendMsg;
+			this.view = v;
 		}
 
 		public void run() {
 			while (isContinue) {
 				try {
-					// Using SCTP transmit message
-					//Log.i(TAG, "Send message" + SendMsg);
-
+				    String SendMsg = view.getResources().getResourceName(view.getId());
+				    //Log.i("terry", "Send message" + SendMsg);
 					String sub = SendMsg.substring(SendMsg.indexOf("/") + 1);
-					if (SendMsg.equals("stop"))
-						SendToBoard("stop stop");
-					else
-						SendToBoard("direction " + sub);
+					sendCommands("direction " + sub);
 					Thread.sleep(ScreenUIJoyStick.STICK_ACTION_INTERVAL);
-				} catch (IOException e) {
-					e.printStackTrace();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -881,8 +871,8 @@ public class SetUIFunction {
 	}
 
 	/* Create ThreadPool to fix thread quantity */
-	private void useThreadPool(ExecutorService service, String Msg) {
-		service.execute(new MyThread(Msg));
+	private void useThreadPool(ExecutorService service, View v) {
+		service.execute(new MyThread(v));
 	}
 
 	/* Monitor wifi signal */
