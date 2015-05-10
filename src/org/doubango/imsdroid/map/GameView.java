@@ -17,9 +17,12 @@ import android.graphics.Point;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
 
 public class GameView extends View {
 
@@ -29,12 +32,12 @@ public class GameView extends View {
 
 	public Game game;
 	public SetUIFunction setUIfunction;
-	GameView GV;
 	public XMPPSetting _XMPPSet;
 
     Canvas gcanvas;
     Paint paint = new Paint();
     Context mContext;
+    PopupMenu popupMenu;
 
 	// Detect touch
 	int touchX = 0, touchY = 0;
@@ -69,6 +72,12 @@ public class GameView extends View {
 		getScreenSize();
 
 		_XMPPSet = XMPPSetting.getInstance();
+
+		popupMenu = new PopupMenu(mContext, this);
+		popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
+		Menu menu = popupMenu.getMenu();
+		for (int j = 0; j <= RobotOperationMode.MAX_STAY_PERIOD; j+= RobotOperationMode.MINUTE_INTERVAL)
+		    menu.add(Menu.NONE, j, Menu.NONE, Integer.toString(j));
 	}
 
 	protected void onDraw(Canvas canvas) {
@@ -205,9 +214,6 @@ public class GameView extends View {
 
 		// Canvas drawBitmap: Source
 		drawSource(canvas);
-//		canvas.drawBitmap(source,
-//				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
-//						+ game.source[1] * (span + 1), paint);
 					
 		// Canvas drawBitmap: Target
 		if (setUIfunction.currRobotMode != RobotOperationMode.MANUAL_MODE
@@ -250,6 +256,8 @@ public class GameView extends View {
 	        Bitmap newSource = Bitmap.createBitmap(source, 0, 0, sourceWidth, sourceHeight, matrix, true);
 	        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
 	                fixHeightMapData + game.source[1] * (span + 1), paint);
+//	        mCanvas.drawBitmap(source, fixWidthMapData + game.source[0] * (span + 1),
+//	                fixHeightMapData + game.source[1] * (span + 1), paint);
 	    }
 	}
 
@@ -306,10 +314,6 @@ public class GameView extends View {
 				tempheight = touchY - y;
 
 				int[] pos = getPosW(event);
-				// Draw Grid position on canvas
-				gridX = pos[0];
-				gridY = pos[1];
-				//Log.i(TAG, "touch target draw before");
 
 				if ( pos[0] != -1 && pos[1] != -1) {
 				    if (setUIfunction.currRobotMode == RobotOperationMode.SEMI_AUTO_MODE
@@ -333,9 +337,12 @@ public class GameView extends View {
 				        int[][] tempTarget = {{pos[0], pos[1]}};
 				        int trackIndex = RobotOperationMode.getIndexInTrackList(tempTarget, RobotOperationMode.autoTargetSettingQueue);
 				        if (trackIndex == -1) {     //Add this new target in track list
-				            // Only one target
-				            if (RobotOperationMode.autoTargetSettingQueue.size() < RobotOperationMode.MAX_TARGET)
-				                RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+				            if (RobotOperationMode.autoTargetSettingQueue.size() < RobotOperationMode.MAX_TARGET) {
+				                gridX = pos[0];
+				                gridY = pos[1];
+
+				                showPopupMenu();
+				            }
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
 				        }
@@ -350,7 +357,30 @@ public class GameView extends View {
 			}
 		}
 	}
-	
+
+	private void showPopupMenu() {
+	    popupMenu = new PopupMenu(mContext, this);
+	    popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
+	    Menu menu = popupMenu.getMenu();
+	    for (int j = 0; j <= RobotOperationMode.MAX_STAY_PERIOD; j+= RobotOperationMode.MINUTE_INTERVAL)
+	        menu.add(Menu.NONE, j, Menu.NONE, Integer.toString(j));
+	    popupMenu.show();
+	}
+
+	PopupMenu.OnMenuItemClickListener onMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            //Log.i("terry", "Item="+ item.getItemId());
+            int[][] tempTarget = {{gridX, gridY, item.getItemId()}};
+            RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
+
+            postInvalidate();
+
+            return true;
+        }	    
+	};
+
 	// Avoid thread competition , when user touch 2 points at the same time
 	private void avoidThreadCompetition(long millis){ 
 		try {

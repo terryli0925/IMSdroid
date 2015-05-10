@@ -21,6 +21,7 @@ public class RobotOperationMode {
     public static final int MINUTE_INTERVAL = 5;
     public static final int MAX_SCHEDULE_LIST = 1;
     public static final int MAX_TARGET = 5;
+    public static final int MAX_STAY_PERIOD = 30;
     public static final String DATE_FORMAT = "HH:mm";   //MM-dd HH:mm
     public static LinkedList<int[][]> autoTargetSettingQueue=new LinkedList<int[][]>();
     public static LinkedList<int[][]> autoTargetQueue=new LinkedList<int[][]>();

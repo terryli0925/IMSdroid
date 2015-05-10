@@ -54,7 +54,10 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
+import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -70,6 +73,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -152,6 +156,7 @@ public class SetUIFunction {
 	                                            RobotOperationMode.NAVI_SETTING, RobotOperationMode.NAVI_SETTING };
 	public boolean isClickSchedule = false;
 
+	//Auto mode
 	Calendar calendar;
 	private TextView hourText, minuteText;
 	private ListView listView;
@@ -240,7 +245,6 @@ public class SetUIFunction {
 		declareImageButton();
 		declareAutoModeUI();
 		delcareViedoConferenceFunction();
-		
 
 //		if(XMPPSet.IS_SERVER){
 //			videoConferenceSignIn(account[0], password[0]);
@@ -775,7 +779,7 @@ public class SetUIFunction {
 	        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
 	            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
-	            XMPPSet.XMPPSendText("auto coordinate" +" "+ obj.getXaxis() +" "+ obj.getYaxis());
+	            XMPPSet.XMPPSendText("auto coordinate" +" "+ obj.getXaxis() +" "+ obj.getYaxis()+" "+tempTarget[0][2]);
             }
 	        XMPPSet.XMPPSendText("auto coordinate end");
 	    } else showToastMessage("Lost XMPP Connection");
