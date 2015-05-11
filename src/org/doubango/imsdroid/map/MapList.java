@@ -3,6 +3,7 @@ package org.doubango.imsdroid.map;
 public class MapList {
 	public static int[] source={1,1};
 	public static int[] target={0,0};
+	public static int robotCompassDegree = 0;
 
 	static int[][][] map = new int[][][]
 	{

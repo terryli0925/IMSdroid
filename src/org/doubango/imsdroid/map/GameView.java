@@ -1,12 +1,7 @@
 package org.doubango.imsdroid.map;
 
-import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.XMPPSetting;
-import org.doubango.imsdroid.Utils.NetworkStatus;
 import org.doubango.imsdroid.cmd.SetUIFunction;
 
 import android.annotation.SuppressLint;
@@ -25,9 +20,6 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class GameView extends View {
 
@@ -39,70 +31,33 @@ public class GameView extends View {
 	public SetUIFunction setUIfunction;
 	GameView GV;
 	public XMPPSetting _XMPPSet;
-	private NetworkStatus loggin;
-	public Spinner mySpinner;// Spinner���ޥ�
-	public TextView CDTextView;
-	int span = 10;
-	int theta = 0;
 
-	public static int mL = 0, mR = 0, mT = 0, mB = 0;
-	
-	Bitmap source = BitmapFactory.decodeResource(getResources(),
-			R.drawable.source);
-	Bitmap target = BitmapFactory.decodeResource(getResources(),
-			R.drawable.target);
-	Bitmap redBall = BitmapFactory.decodeResource(getResources(),
-            R.drawable.bullet_ball_glass_red_16);
-	Bitmap greenBall = BitmapFactory.decodeResource(getResources(),
-	        R.drawable.bullet_ball_glass_green_16);
-	Paint paint = new Paint();
+    Canvas gcanvas;
+    Paint paint = new Paint();
+    Context mContext;
 
-	// William Added
+	// Detect touch
 	int touchX = 0, touchY = 0;
 	int x, y;
-	int tempwidth = 0;
-	int tempheight = 0;
-	String inStr = "test";
-	String inStr2 = "test2";
-	int fixMapData = 5;
+	int tempwidth = 0, tempheight = 0;
 	
-	/* Edit */
+	// Map
+	int span = 10;
 	int fixWidthMapData = 5, fixHeightMapData = 5;
 	int gridX = 0, gridY = 0;
 	int row = 0, col = 0;
-	Game gamejava = new Game();
-	int drawBaseLine = 100, drawIncrease = 20;
-
-	public static int drawCount = 5; // For drawcircle position
-
-	double rX = 0, rY = 0;
 	int[][] map;
-	int[] old_pos;
-	MapList maplist = new MapList();
-
-	public boolean refreshFlag = false, doubleCmd = false,
-			algorithmDone = false, mapTouchSize = false;
-	private ExecutorService singleThreadExecutor = Executors
-			.newSingleThreadExecutor();
-	public static ShowThread st;
-
-	/*
-	 * [0] : Original position X [1] : Original position Y [2] : Next position X
-	 * [3] : Next position Y
-	 */
-	private static ArrayList<int[][]> pathQueue = new ArrayList<int[][]>();
-
-	Canvas gcanvas;
-
-	/* shinhua add */
-	Context mContext;
     int width, height, screenWidth, screenHeight, mapWidth, mapHeight;
-	int xcoordinate = 5, ycoordinate = 5;
-	private boolean touchDown = false, zoomout = false, isZoom = false;
-	public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
+    int xcoordinate = 5, ycoordinate = 5;
+    private boolean isZoom = false;
+    public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
 
-	/* Drawing BaseMap */
+	// BaseMap
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
+    Bitmap source = BitmapFactory.decodeResource(getResources(), R.drawable.source);
+    Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.target);
+    Bitmap redBall = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_ball_glass_red_16);
+    Bitmap greenBall = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_ball_glass_green_16);
 
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
@@ -110,10 +65,8 @@ public class GameView extends View {
 			return;
 		}
 		mContext = context;
-		st = new ShowThread();
 		getScreenSize();
 
-		loggin = NetworkStatus.getInstance();
 		_XMPPSet = XMPPSetting.getInstance();
 	}
 
@@ -124,17 +77,6 @@ public class GameView extends View {
 
 		} catch (Exception e) {
 		}
-	}
-
-	public void RunThreadTouch(boolean inFlag) {
-		st = new ShowThread();
-		refreshFlag = inFlag;
-		singleThreadExecutor.execute(st);
-	}
-
-	public void SetRobotAxis(double x, double y) {
-		rX = x;
-		rY = y;
 	}
 
 	@SuppressLint("WrongCall")
@@ -261,9 +203,10 @@ public class GameView extends View {
 		}
 
 		// Canvas drawBitmap: Source
-		canvas.drawBitmap(source,
-				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
-						+ game.source[1] * (span + 1), paint);
+		drawSource(canvas);
+//		canvas.drawBitmap(source,
+//				fixWidthMapData + game.source[0] * (span + 1), fixHeightMapData
+//						+ game.source[1] * (span + 1), paint);
 					
 		// Canvas drawBitmap: Target
 		if (setUIfunction.currRobotMode != RobotOperationMode.MANUAL_MODE
@@ -289,6 +232,22 @@ public class GameView extends View {
 
 		Bitmap newBasemap = Bitmap.createBitmap(mBitmap, 0, 0, width, height, matrix, true);
 		mCanvas.drawBitmap(newBasemap, xCoordinate, yCoordinate, mPaint);
+	}
+
+	private void drawSource(Canvas mCanvas) {
+        // Get original source size and robot compass degree
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+        int rotateDegree = 0 - MapList.robotCompassDegree;
+
+        // Set rotate
+        Matrix matrix = new Matrix();
+        matrix.setRotate(rotateDegree);
+
+        //Set new source with current robot compass degree
+        Bitmap newSource = Bitmap.createBitmap(source, 0, 0, sourceWidth, sourceHeight, matrix, true);
+        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
+                fixHeightMapData + game.source[1] * (span + 1), paint);
 	}
 
 	@Override
@@ -378,7 +337,6 @@ public class GameView extends View {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
 				        }
 				    }
-					zoomout = true;
 				}
 
 				// Update Target bitmap position
@@ -423,13 +381,6 @@ public class GameView extends View {
 		double x = e.getX();
 		double y = e.getY();
 
-		// /////////////////////////////////////////////////////////////
-		// (col*(span+1)+fixMapData) = X total length //
-		// (row*(span+1)+fixMapData) = Y total length //
-		// /////////////////////////////////////////////////////////////
-
-		// int xGridSize = (col*(span+1)+fixWidthMapData) / col;
-		// int yGridSize = (row*(span+1)+fixHeightMapData) / row;
 		int xGridSize = (col * (span + 1)) / col;
 		int yGridSize = (row * (span + 1)) / row;
 
@@ -460,35 +411,6 @@ public class GameView extends View {
 			pos[1] = -1;
 		}
 		return pos;
-	}
-
-	// Use this thread for update canvas information frequently
-	// We don't use this now.
-	public class ShowThread implements Runnable {
-		int delayTime = 50;
-
-		public ShowThread() {
-			refreshFlag = true;
-		}
-
-		public void run() {
-			while (refreshFlag) {
-				synchronized (inStr) {
-					try {
-						postInvalidate();
-						// Log.i(TAG,"Thread ID = " +
-						// android.os.Process.myTid());
-
-						// Avoid thread competition , when user touch 2 points
-						// at the same time
-						Thread.sleep(delayTime);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
-			}
-		}
 	}
 
 	@Override
@@ -560,18 +482,6 @@ public class GameView extends View {
 
 	public static void setVIEW_HEIGHT(int vIEW_HEIGHT) {
 		VIEW_HEIGHT = vIEW_HEIGHT;
-	}
-
-	public static ArrayList<int[][]> getPathQueue() {
-		return pathQueue;
-	}
-
-	public void setPathQueue(ArrayList<int[][]> pathQueue) {
-		this.pathQueue = pathQueue;
-	}
-
-	public void PathQueueClear() {
-		this.pathQueue.clear();
 	}
 	
 	public void transRemoteCoord(double CoordX, double CoordY){

@@ -139,6 +139,7 @@ public class XMPPSetting {
 		                else if (inM[0].equals("source"))
 		                {
 		                    updateSource(inM[1], inM[2]);
+		                    MapList.robotCompassDegree = Integer.parseInt(inM[3]);
 		                    gameView.postInvalidate();
 		                }
 		                else if (inM[0].equals("semiauto"))
