@@ -54,10 +54,7 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
-import android.view.MenuInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,7 +70,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -433,7 +429,7 @@ public class SetUIFunction {
 
 	    hourListAdapter = new ArrayAdapter<String>(mContext, R.layout.custom_spinner_item, hourList);
 	    minuteListAdapter = new ArrayAdapter<String>(mContext, R.layout.custom_spinner_item, minuteList);
-	    scheduleListAdapter = new ArrayAdapter<String>(mContext, R.layout.automode_list, scheduleList);
+	    scheduleListAdapter = new ArrayAdapter<String>(mContext, R.layout.schedule_list, scheduleList);
 
 	    hourSpinner.setAdapter(hourListAdapter);
 	    minuteSpinner.setAdapter(minuteListAdapter);

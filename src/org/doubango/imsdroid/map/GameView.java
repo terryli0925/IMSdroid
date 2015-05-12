@@ -1,5 +1,7 @@
 package org.doubango.imsdroid.map;
 
+import java.util.ArrayList;
+
 import org.doubango.imsdroid.R;
 import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.cmd.SetUIFunction;
@@ -14,15 +16,20 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 
 public class GameView extends View {
 
@@ -37,7 +44,6 @@ public class GameView extends View {
     Canvas gcanvas;
     Paint paint = new Paint();
     Context mContext;
-    PopupMenu popupMenu;
 
 	// Detect touch
 	int touchX = 0, touchY = 0;
@@ -56,6 +62,10 @@ public class GameView extends View {
     public int remoteCoordX, remoteCoordY, remoteScreenWidth, remoteScreenHeight;
     public boolean isSourceVisible = true;
 
+    // Auto mode
+    private PopupWindow mPopupWindow;
+    private ListView mIntervalListView;
+
 	// BaseMap
 	Bitmap baseMap = BitmapFactory.decodeResource(getResources(), R.drawable.basemap);
     Bitmap source = BitmapFactory.decodeResource(getResources(), R.drawable.source);
@@ -73,11 +83,7 @@ public class GameView extends View {
 
 		_XMPPSet = XMPPSetting.getInstance();
 
-		popupMenu = new PopupMenu(mContext, this);
-		popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
-		Menu menu = popupMenu.getMenu();
-		for (int j = 0; j <= RobotOperationMode.MAX_STAY_PERIOD; j+= RobotOperationMode.MINUTE_INTERVAL)
-		    menu.add(Menu.NONE, j, Menu.NONE, Integer.toString(j));
+		popupMenuInit();
 	}
 
 	protected void onDraw(Canvas canvas) {
@@ -341,7 +347,7 @@ public class GameView extends View {
 				                gridX = pos[0];
 				                gridY = pos[1];
 
-				                showPopupMenu();
+				                mPopupWindow.showAtLocation(this, Gravity.NO_GRAVITY, fixWidthMapData+touchX, fixHeightMapData+touchY);
 				            }
 				        } else {
 				            RobotOperationMode.autoTargetSettingQueue.remove(trackIndex);
@@ -358,27 +364,40 @@ public class GameView extends View {
 		}
 	}
 
-	private void showPopupMenu() {
-	    popupMenu = new PopupMenu(mContext, this);
-	    popupMenu.setOnMenuItemClickListener(onMenuItemClickListener);
-	    Menu menu = popupMenu.getMenu();
-	    for (int j = 0; j <= RobotOperationMode.MAX_STAY_PERIOD; j+= RobotOperationMode.MINUTE_INTERVAL)
-	        menu.add(Menu.NONE, j, Menu.NONE, Integer.toString(j));
-	    popupMenu.show();
+	private void popupMenuInit() {
+	    LayoutInflater mLayoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	    View popupView = mLayoutInflater.inflate(R.layout.popupwindow, null);
+
+	    mIntervalListView = (ListView)popupView.findViewById(R.id.intervalListView);
+	    ArrayList<String> intervalList = new ArrayList<String>();
+	    for (int i = 0; i <= 30; i+=5) intervalList.add(Integer.toString(i));
+	    ArrayAdapter<String> intervalListAdapter = new ArrayAdapter<String>(mContext, R.layout.stay_interval_list, intervalList);
+	    mIntervalListView.setAdapter(intervalListAdapter);
+	    mIntervalListView.setOnItemClickListener(onItemClickListener);
+
+	    mPopupWindow = new PopupWindow(popupView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+	    //mPopupWindow = new PopupWindow(mContext);
+	    //mPopupWindow.setContentView(v_pop);
+	    mPopupWindow.setFocusable(true);
+	    mPopupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+	    //mPopupWindow.showAtLocation(this, Gravity.NO_GRAVITY, fixWidthMapData+touchX, fixHeightMapData+touchY);   
 	}
 
-	PopupMenu.OnMenuItemClickListener onMenuItemClickListener = new PopupMenu.OnMenuItemClickListener() {
+	AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener(){
 
         @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            //Log.i("terry", "Item="+ item.getItemId());
-            int[][] tempTarget = {{gridX, gridY, item.getItemId()}};
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                long id) {
+            int clickInterval = Integer.valueOf((String)mIntervalListView.getItemAtPosition(position));
+            //Log.i("terry", "clickInterval= "+clickInterval);
+
+            int[][] tempTarget = {{gridX, gridY, clickInterval}};
             RobotOperationMode.autoTargetSettingQueue.offer(tempTarget);
 
             postInvalidate();
 
-            return true;
-        }	    
+            mPopupWindow.dismiss();
+        }
 	};
 
 	// Avoid thread competition , when user touch 2 points at the same time
