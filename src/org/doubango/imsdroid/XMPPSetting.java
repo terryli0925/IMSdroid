@@ -277,15 +277,15 @@ public class XMPPSetting {
 	}
 
 	private void cleanSemiAutoSetting() {
-	    MapList.target[0] = 0;
-	    MapList.target[1] = 0;
+	    MapList.target[0] = -1;
+	    MapList.target[1] = -1;
 	    RobotOperationMode.targetQueue.clear();
 	    setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETTING;
 	}
 
 	private void cleanAutoSetting() {
-	    MapList.target[0] = 0;
-	    MapList.target[1] = 0;
+	    MapList.target[0] = -1;
+	    MapList.target[1] = -1;
 	    RobotOperationMode.autoTargetQueue.clear();
 	    setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] = RobotOperationMode.NAVI_SETTING;
 	}

@@ -112,6 +112,7 @@ public class GameView extends View {
 			for (int j = 0; j < col; j++) {
 				if (map[i][j] == 0) {
 					paint.setColor(Color.WHITE);
+					//paint.setStyle(Style.FILL);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
 //					canvas.drawRect(fixWidthMapData + j * (span + 1),
@@ -123,10 +124,10 @@ public class GameView extends View {
 					//paint.setStyle(Style.FILL);
 					paint.setStyle(Style.FILL_AND_STROKE);
 					paint.setStrokeWidth(5); 
-					canvas.drawRect(fixWidthMapData + j * (span + 1),
-							fixHeightMapData + i * (span + 1), fixWidthMapData
-									+ j * (span + 1) + span, fixHeightMapData
-									+ i * (span + 1) + span, paint);
+//					canvas.drawRect(fixWidthMapData + j * (span + 1),
+//							fixHeightMapData + i * (span + 1), fixWidthMapData
+//									+ j * (span + 1) + span, fixHeightMapData
+//									+ i * (span + 1) + span, paint);
 				}else if (map[i][j] == 2) {// �¦�
 //					paint.setColor(Color.LTGRAY);
 //					//paint.setStyle(Style.FILL);
@@ -218,16 +219,16 @@ public class GameView extends View {
 		    }
 		}
 
-		// Canvas drawBitmap: Source
-		drawSource(canvas);
-					
 		// Canvas drawBitmap: Target
 		if (setUIfunction.currRobotMode != RobotOperationMode.MANUAL_MODE
-		        && game.target[0] != 0 && game.target[1] != 0) {
+		        && game.target[0] != -1 && game.target[1] != -1) {
 		    canvas.drawBitmap(target,
 		            fixWidthMapData + game.target[0] * (span + 1), fixHeightMapData
 		            + game.target[1] * (span + 1), paint);
 		}
+
+		// Canvas drawBitmap: Source
+		if (isSourceVisible) drawSource(canvas);
 	}
 	
 	private void reDrawBitmapSize(Canvas mCanvas, Paint mPaint, Bitmap mBitmap, int xCoordinate, int yCoordinate, int newWidth, int newHeight){
@@ -248,11 +249,10 @@ public class GameView extends View {
 	}
 
 	private void drawSource(Canvas mCanvas) {
-	    if (isSourceVisible) {
 	        // Get original source size and robot compass degree
 	        int sourceWidth = source.getWidth();
 	        int sourceHeight = source.getHeight();
-	        int rotateDegree = 0 - MapList.robotCompassDegree;
+	        int rotateDegree = MapList.robotCompassDegree;
 
 	        // Set rotate
 	        Matrix matrix = new Matrix();
@@ -264,7 +264,6 @@ public class GameView extends View {
 	                fixHeightMapData + game.source[1] * (span + 1), paint);
 //	        mCanvas.drawBitmap(source, fixWidthMapData + game.source[0] * (span + 1),
 //	                fixHeightMapData + game.source[1] * (span + 1), paint);
-	    }
 	}
 
 	@Override
@@ -370,7 +369,7 @@ public class GameView extends View {
 
 	    mIntervalListView = (ListView)popupView.findViewById(R.id.intervalListView);
 	    ArrayList<String> intervalList = new ArrayList<String>();
-	    for (int i = 0; i <= 30; i+=5) intervalList.add(Integer.toString(i));
+	    for (int i = 0; i <= RobotOperationMode.MAX_STAY_PERIOD; i++) intervalList.add(Integer.toString(i));
 	    ArrayAdapter<String> intervalListAdapter = new ArrayAdapter<String>(mContext, R.layout.stay_interval_list, intervalList);
 	    mIntervalListView.setAdapter(intervalListAdapter);
 	    mIntervalListView.setOnItemClickListener(onItemClickListener);
@@ -447,13 +446,13 @@ public class GameView extends View {
 			// Avoid map object be used on onMyDraw function
 			synchronized (map) {
 				try {
-					if (map[yPos][xPos] == 0) {
+					//if (map[yPos][xPos] == 0) {
 						pos[0] = xPos;
 						pos[1] = yPos;
-					} else {
-						pos[0] = -1;
-						pos[1] = -1;
-					}
+//					} else {
+//						pos[0] = -1;
+//						pos[1] = -1;
+//					}
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
