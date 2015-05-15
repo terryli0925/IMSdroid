@@ -72,7 +72,7 @@ public class GameView extends View {
     Bitmap redBall = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_ball_glass_red_16);
     Bitmap greenBall = BitmapFactory.decodeResource(getResources(), R.drawable.bullet_ball_glass_green_16);
     Bitmap arrow = BitmapFactory.decodeResource(getResources(), R.drawable.arrow);
-    
+
 	public GameView(Context context, AttributeSet attrs) {// �غc����
 		super(context, attrs);
 		if (isInEditMode()) {
@@ -99,13 +99,13 @@ public class GameView extends View {
 	protected void onMyDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
+		//canvas.drawColor(Color.GRAY); // gray background, annotate this line, the view don't show
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
 
 		/* Draw BaseMap */
 		Log.i("shinhua" , "Map" + mapWidth + ", " + mapHeight);
-		//reDrawBitmapSize(canvas, paint, baseMap, fixWidthMapData, fixHeightMapData, mapWidth, mapHeight);
+		reDrawBitmapSize(canvas, paint, baseMap, fixWidthMapData, fixHeightMapData, mapWidth, mapHeight);
 		
 		
 		for (int i = 0; i < row; i++) {
@@ -128,15 +128,6 @@ public class GameView extends View {
 //							fixHeightMapData + i * (span + 1), fixWidthMapData
 //									+ j * (span + 1) + span, fixHeightMapData
 //									+ i * (span + 1) + span, paint);
-				}else if (map[i][j] == 2) {// �¦�
-					paint.setColor(Color.LTGRAY);
-					paint.setStyle(Style.FILL);
-					//paint.setStyle(Style.FILL_AND_STROKE);
-					//paint.setStrokeWidth(5); 
-					canvas.drawRect(fixWidthMapData + j * (span + 1),
-							fixHeightMapData + i * (span + 1), fixWidthMapData
-									+ j * (span + 1) + span, fixHeightMapData
-									+ i * (span + 1) + span, paint);
 				}
 			}
 		}
@@ -250,11 +241,9 @@ public class GameView extends View {
 
 	private void drawSource(Canvas mCanvas) {
 	        // Get original source size and robot compass degree
-
 	        int sourceWidth = arrow.getWidth();
 	        int sourceHeight = arrow.getHeight();
 	        int rotateDegree = MapList.robotCompassDegree;
-
 
 	        // Set rotate
 	        Matrix matrix = new Matrix();
@@ -264,12 +253,8 @@ public class GameView extends View {
 	        Bitmap newSource = Bitmap.createBitmap(arrow, 0, 0, sourceWidth, sourceHeight, matrix, true);
 	        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
 	                fixHeightMapData + game.source[1] * (span + 1), paint);
-
 //	        mCanvas.drawBitmap(source, fixWidthMapData + game.source[0] * (span + 1),
 //	                fixHeightMapData + game.source[1] * (span + 1), paint);
-
-	  
-
 	}
 
 	@Override
