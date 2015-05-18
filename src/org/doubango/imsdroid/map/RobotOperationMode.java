@@ -18,7 +18,7 @@ public class RobotOperationMode {
     public static LinkedList<int[][]> targetQueue=new LinkedList<int[][]>();
 
     //Auto mode
-    public static final int MINUTE_INTERVAL = 5;
+    public static final int MINUTE_INTERVAL = 1;
     public static final int MAX_SCHEDULE_LIST = 1;
     public static final int MAX_TARGET = 5;
     public static final int MAX_STAY_PERIOD = 15;

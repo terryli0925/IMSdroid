@@ -771,7 +771,7 @@ public class SetUIFunction {
 	        transformScreenFormula obj = transformScreenFormula.getInstance();
 
 	        XMPPSet.XMPPSendText("auto scheduledTime "+ scheduledTime);
-	        XMPPSet.XMPPSendText("semiauto coordinate start");
+	        XMPPSet.XMPPSendText("auto coordinate start");
 	        for (int i = 0; i < RobotOperationMode.autoTargetSettingQueue.size(); i++) {
 	            int[][] tempTarget = RobotOperationMode.autoTargetSettingQueue.get(i);
 	            obj.transform2ScreenAxis(tempTarget[0][0], tempTarget[0][1]);
