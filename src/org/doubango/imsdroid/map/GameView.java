@@ -221,7 +221,7 @@ public class GameView extends View {
 		// Canvas drawBitmap: Source
 		if (isSourceVisible) drawSource(canvas);
 	}
-	
+
 	private void reDrawBitmapSize(Canvas mCanvas, Paint mPaint, Bitmap mBitmap, int xCoordinate, int yCoordinate, int newWidth, int newHeight){
 		
 		/* Get Original map size */
@@ -244,17 +244,19 @@ public class GameView extends View {
 	        int sourceWidth = arrow.getWidth();
 	        int sourceHeight = arrow.getHeight();
 	        int rotateDegree = MapList.robotCompassDegree;
+	        float Scale = (float) 0.7;
+	        float shiftX = (float)(sourceWidth * Scale / 3);
+	        float shiftY = (float)(sourceHeight * Scale / 3);
 
 	        // Set rotate
 	        Matrix matrix = new Matrix();
-	        matrix.setRotate(rotateDegree);
+	        matrix.postRotate(rotateDegree, sourceWidth / 2, sourceHeight / 2);
+	        matrix.postScale(Scale, Scale);
 
 	        //Set new source with current robot compass degree
 	        Bitmap newSource = Bitmap.createBitmap(arrow, 0, 0, sourceWidth, sourceHeight, matrix, true);
-	        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1),
-	                fixHeightMapData + game.source[1] * (span + 1), paint);
-//	        mCanvas.drawBitmap(source, fixWidthMapData + game.source[0] * (span + 1),
-//	                fixHeightMapData + game.source[1] * (span + 1), paint);
+	        mCanvas.drawBitmap(newSource, fixWidthMapData + game.source[0] * (span + 1) - shiftX,
+	                fixHeightMapData + game.source[1] * (span + 1) - shiftY, paint);
 	}
 
 	@Override
