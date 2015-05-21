@@ -688,6 +688,10 @@ public class SetUIFunction {
             minuteSpinner.setVisibility(View.INVISIBLE);
             listView.setVisibility(View.INVISIBLE);
             currRobotMode = RobotOperationMode.SEMI_AUTO_MODE;
+
+            // For DEMO
+            right.setVisibility(View.VISIBLE);
+            left.setVisibility(View.VISIBLE);
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
         	adjustButtonSize(R.id.img_auto, R.drawable.auto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
