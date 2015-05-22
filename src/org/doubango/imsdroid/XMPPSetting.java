@@ -139,7 +139,10 @@ public class XMPPSetting {
 		                else if (inM[0].equals("source"))
 		                {
 		                    updateSource(inM[1], inM[2]);
-		                    MapList.robotCompassDegree = Integer.parseInt(inM[3]);
+		                    // Avoid we don't get robot's compass
+		                    if (inM.length == 4) MapList.robotCompassDegree = Integer.parseInt(inM[3]);
+		                    else MapList.robotCompassDegree = 0;
+
 		                    if (setUIfunction.naviStartPhase == RobotOperationMode.NAVI_START
 		                            || setUIfunction.naviStartPhase1[setUIfunction.currRobotMode] == RobotOperationMode.NAVI_START) {
 		                        gameView.isSourceVisible = !gameView.isSourceVisible;
