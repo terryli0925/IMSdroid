@@ -229,6 +229,10 @@ public class XMPPSetting {
 		}
     }
 
+	public void XMPPDisconnect() {
+	    connection.disconnect();
+	}
+
 	public void XMPPSendText(String xmppText)
 	{
 	    if (IS_SERVER) {

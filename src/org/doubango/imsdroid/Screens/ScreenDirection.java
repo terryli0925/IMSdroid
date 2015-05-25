@@ -2,6 +2,7 @@ package org.doubango.imsdroid.Screens;
 
 import org.doubango.imsdroid.Main;
 import org.doubango.imsdroid.R;
+import org.doubango.imsdroid.XMPPSetting;
 import org.doubango.imsdroid.cmd.SetUIFunction;
 
 import android.os.Bundle;
@@ -11,6 +12,7 @@ public class ScreenDirection extends BaseScreen{
 	private static String TAG = ScreenDirection.class.getCanonicalName();
 
 	private SetUIFunction setUI;
+	private XMPPSetting XMPPSet;
 	
 	public ScreenDirection() {
 		super(SCREEN_TYPE.DIALER_T, TAG);
@@ -36,6 +38,9 @@ public class ScreenDirection extends BaseScreen{
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+
+		XMPPSet = XMPPSetting.getInstance();
+		XMPPSet.XMPPDisconnect();
 	}
 
 	@Override
