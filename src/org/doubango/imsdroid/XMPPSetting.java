@@ -219,10 +219,6 @@ public class XMPPSetting {
 		                        modeButtonHandler.sendMessage(message1);
 		                    }
 		                }
-		                else if(inM[0].equals("demo")){
-		                	selectDemoMode(inM[1]);
-		                }
-		                
 		            }
 		        }
 		    }, filter);
@@ -329,40 +325,4 @@ public class XMPPSetting {
 	        super.handleMessage(msg);
 	    }
 	};
-	
-	private void selectDemoMode(String temp){
-		int demo_x, demo_y;
-		
-		if(temp == "a"){
-			demo_x=0;
-			demo_y=0;
-			workflowforDemo(demo_x, demo_y);
-		}
-		else if(temp == "b"){
-			demo_x=0;
-			demo_y=0;
-			workflowforDemo(demo_x, demo_y);
-		}
-		else if(temp == "c"){
-			demo_x=0;
-			demo_y=0;
-			workflowforDemo(demo_x, demo_y);
-		}
-		
-	}
-	
-	private void workflowforDemo(int demo_x, int demo_y){
-		obj.transform2ScreenGird(demo_x, demo_y);
-		int[][] tempTarget = {{obj.getX_grid(), obj.getY_grid()}};
-		RobotOperationMode.targetQueue.offer(tempTarget);
-		
-        XMPPSendText("semiauto coordinate start");
-        XMPPSendText("semiauto coordinate" +" "+ demo_x +" "+ demo_y);
-        XMPPSendText("semiauto coordinate end");
-        
-        setUIfunction.naviStartPhase = RobotOperationMode.NAVI_SETUP_DONE;
-        gameView.postInvalidate();
-	}
-	
-	
 }
