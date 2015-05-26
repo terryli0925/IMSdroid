@@ -80,7 +80,8 @@ import android.widget.Toast;
 import com.capricorn.ArcMenu;
 
 public class SetUIFunction {
-    private static final int IMAGE_BUTTON_SIZE = 400;
+    private static final int IMAGE_BUTTON_SIZE_1 = 360;
+    private static final int IMAGE_BUTTON_SIZE_2 = 270;
 
 	static Activity globalActivity;
 	Context mContext;
@@ -139,7 +140,7 @@ public class SetUIFunction {
 	private boolean isMenuOpen = false;
 	
 	/* ImageButton */
-	private ImageButton manual, semiauto, auto, navistart, reset, setup;
+	private ImageButton manual, semiauto, auto, navistart, reset, setup, navistop;
 	
 	private Handler handler = new Handler();
 
@@ -368,15 +369,15 @@ public class SetUIFunction {
 	
 	private void declareImageButton(){
 	   
-		int[] mID = { R.id.img_manual, R.id.img_semiauto, R.id.img_auto, R.id.img_navi, R.id.img_reset, R.id.img_setup};
-		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi, R.drawable.reset, R.drawable.setup};
+		int[] mID = { R.id.img_manual, R.id.img_semiauto, R.id.img_auto, R.id.img_navi, R.id.img_reset, R.id.img_setup, R.id.img_stop};
+		int[] mDrawable = { R.drawable.manual0, R.drawable.semiauto0, R.drawable.auto0, R.drawable.navi_start, R.drawable.reset, R.drawable.setup, R.drawable.navi_stop};
 		
 		for(int i=0; i<3; i++){
-			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
 		}
 		
 		for(int i=3; i<mID.length;i++){
-			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE / 2);
+			adjustButtonSize(mID[i], mDrawable[i], IMAGE_BUTTON_SIZE_2, IMAGE_BUTTON_SIZE_2 / 2);
 		}
 		
 		
@@ -387,6 +388,7 @@ public class SetUIFunction {
 		navistart = (ImageButton) globalActivity.findViewById(R.id.img_navi);
 		reset 	  = (ImageButton) globalActivity.findViewById(R.id.img_reset);
 		setup 	  = (ImageButton) globalActivity.findViewById(R.id.img_setup);
+		navistop       = (ImageButton) globalActivity.findViewById(R.id.img_stop);
 		
 		manual.setOnClickListener(onClickListener);
 		semiauto.setOnClickListener(onClickListener);
@@ -394,6 +396,7 @@ public class SetUIFunction {
 		navistart.setOnClickListener(onClickListener);
 		reset.setOnClickListener(onClickListener);
 		setup.setOnClickListener(onClickListener);
+		navistop.setOnClickListener(onClickListener);
 	}
 	
 	private void adjustButtonSize(int mId, int mDrawable, int newWidth, int newHeight){
@@ -564,6 +567,18 @@ public class SetUIFunction {
 			        }
 			    }
 				break;
+			case R.id.img_stop:
+			    if (currRobotMode == RobotOperationMode.SEMI_AUTO_MODE && naviStartPhase == RobotOperationMode.NAVI_START) {
+			        if (XMPPSet.isConnected()) {
+			            XMPPSet.XMPPSendText("semiauto stop");
+			            MapList.target[0] = -1;
+			            MapList.target[1] = -1;
+			            revertRobotModeStatus(RobotOperationMode.SEMI_AUTO_MODE);
+			            naviStartPhase = RobotOperationMode.NAVI_SETTING;
+			            gameView.postInvalidate();
+			        }
+			    }
+			    break;
 			default:
 				break;
 
@@ -664,11 +679,12 @@ public class SetUIFunction {
 	public void updateRobotModeState(int mode) {
         if (mode == RobotOperationMode.MANUAL_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+        	adjustButtonSize(R.id.img_manual, R.drawable.manual1, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
         	setDirectionKeyVisibility(true);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.INVISIBLE);
             setup.setVisibility(View.INVISIBLE);
+            navistop.setVisibility(View.INVISIBLE);
             hourText.setVisibility(View.INVISIBLE);
             minuteText.setVisibility(View.INVISIBLE);
             hourSpinner.setVisibility(View.INVISIBLE);
@@ -677,11 +693,12 @@ public class SetUIFunction {
             currRobotMode = RobotOperationMode.MANUAL_MODE;
         }else if (mode == RobotOperationMode.SEMI_AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+        	adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto1, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
         	setDirectionKeyVisibility(false);
             navistart.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
             setup.setVisibility(View.INVISIBLE);
+            navistop.setVisibility(View.VISIBLE);
             hourText.setVisibility(View.INVISIBLE);
             minuteText.setVisibility(View.INVISIBLE);
             hourSpinner.setVisibility(View.INVISIBLE);
@@ -694,11 +711,12 @@ public class SetUIFunction {
             left.setVisibility(View.VISIBLE);
         }else if (mode == RobotOperationMode.AUTO_MODE) {
         	revertImageButton();
-        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+        	adjustButtonSize(R.id.img_auto, R.drawable.auto1, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
         	setDirectionKeyVisibility(false);
             navistart.setVisibility(View.INVISIBLE);
             reset.setVisibility(View.VISIBLE);
             setup.setVisibility(View.VISIBLE);
+            navistop.setVisibility(View.INVISIBLE);
             hourText.setVisibility(View.VISIBLE);
             minuteText.setVisibility(View.VISIBLE);
             hourSpinner.setSelection(0);
@@ -711,9 +729,9 @@ public class SetUIFunction {
 	}
 
 	private void revertImageButton(){
-		adjustButtonSize(R.id.img_manual, R.drawable.manual0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
-		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
-		adjustButtonSize(R.id.img_auto, R.drawable.auto0, IMAGE_BUTTON_SIZE, IMAGE_BUTTON_SIZE);
+		adjustButtonSize(R.id.img_manual, R.drawable.manual0, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
+		adjustButtonSize(R.id.img_semiauto, R.drawable.semiauto0, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
+		adjustButtonSize(R.id.img_auto, R.drawable.auto0, IMAGE_BUTTON_SIZE_1, IMAGE_BUTTON_SIZE_1);
 	}
 
 	private void setDirectionKeyVisibility(boolean visibility) {

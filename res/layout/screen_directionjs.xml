@@ -195,11 +195,21 @@
 	    android:padding="0dp"
 	 />
 
+    <ImageButton
+	    android:id="@+id/img_stop"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBottom="@+id/img_setup"
+	    android:layout_toRightOf="@+id/img_setup"
+	    android:background="@null"
+	    android:padding="0dp"
+	 />
+
     <Button
         android:id="@+id/hangupbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/img_setup"
+        android:layout_toRightOf="@+id/img_stop"
         android:layout_alignParentBottom="true"
         android:text="hangup" />
 
@@ -207,7 +217,7 @@
         android:id="@+id/connectbtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/img_setup"
+        android:layout_toRightOf="@+id/img_stop"
         android:layout_above="@+id/hangupbtn"
         android:text="connect" />
 
@@ -215,7 +225,7 @@
         android:id="@+id/conferenceSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/img_setup"
+        android:layout_toRightOf="@+id/img_stop"
         android:layout_above="@+id/connectbtn" />
 
     <TextView
