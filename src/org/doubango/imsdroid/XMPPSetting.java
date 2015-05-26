@@ -332,17 +332,18 @@ public class XMPPSetting {
 	
 	private void selectDemoMode(String temp){
 		int demo_x, demo_y;
-		if(temp.equals("a")){
-			demo_x = 400;
-			demo_y = 250;
-			workflowforDemo(demo_x, demo_y);
-		}
-		else if(temp.equals("b")){
+		
+		if(temp == "a"){
 			demo_x=0;
 			demo_y=0;
 			workflowforDemo(demo_x, demo_y);
 		}
-		else if(temp.equals("c")){
+		else if(temp == "b"){
+			demo_x=0;
+			demo_y=0;
+			workflowforDemo(demo_x, demo_y);
+		}
+		else if(temp == "c"){
 			demo_x=0;
 			demo_y=0;
 			workflowforDemo(demo_x, demo_y);
@@ -351,10 +352,10 @@ public class XMPPSetting {
 	}
 	
 	private void workflowforDemo(int demo_x, int demo_y){
-	    obj.transform2ScreenGird(demo_x, demo_y);
-	    MapList.target[0] = obj.getX_grid();
-	    MapList.target[1] = obj.getY_grid();
-
+		obj.transform2ScreenGird(demo_x, demo_y);
+		int[][] tempTarget = {{obj.getX_grid(), obj.getY_grid()}};
+		RobotOperationMode.targetQueue.offer(tempTarget);
+		
         XMPPSendText("semiauto coordinate start");
         XMPPSendText("semiauto coordinate" +" "+ demo_x +" "+ demo_y);
         XMPPSendText("semiauto coordinate end");
