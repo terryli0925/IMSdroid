@@ -38,7 +38,7 @@ public class ScreenXYZLogin extends BaseScreen {
 	
 	private final INgnConfigurationService mConfigurationService;
 	private final INgnSipService mSipService;
-	private BroadcastReceiver mSipBroadCastRecv;
+	//private BroadcastReceiver mSipBroadCastRecv;
 	
 	private Button enterBtn, cencelBtn;
 	
@@ -51,15 +51,15 @@ public class ScreenXYZLogin extends BaseScreen {
 	
 	private NetworkStatus loggin;
 
-	public boolean notEnterLoginPage = true;
+	//public boolean notEnterLoginPage = true;
 	
 	private String xmppUsername, xmppPassword; 	//For XMPP thread user name & password
 	private XMPPSetting XMPPSet;
 	public Thread XMPPThreadv = new XMPPThread(); 
 
 	/* Maybe it can be remove */
-	private EditText editTextRealm, editTextImpi,  editTextImpu;
-	private CheckBox checkBoxEarlyIMS;
+//	private EditText editTextRealm, editTextImpi,  editTextImpu;
+//	private CheckBox checkBoxEarlyIMS;
 	
 
 	int horizontalscope, verticalscope;	
@@ -102,10 +102,10 @@ public class ScreenXYZLogin extends BaseScreen {
 		robotSpinner.setOnItemSelectedListener(onItemSelectedListener);
 
 		/* Maybe below can be remove*/ 
-		editTextRealm = (EditText)findViewById(R.id.editText_realm);
-		editTextImpi  = (EditText)findViewById(R.id.editText_impi);
-		editTextImpu  = (EditText)findViewById(R.id.editText_impu);
-		checkBoxEarlyIMS = (CheckBox)findViewById(R.id.checkBox_earlyIMS);
+//		editTextRealm = (EditText)findViewById(R.id.editText_realm);
+//		editTextImpi  = (EditText)findViewById(R.id.editText_impi);
+//		editTextImpu  = (EditText)findViewById(R.id.editText_impu);
+//		checkBoxEarlyIMS = (CheckBox)findViewById(R.id.checkBox_earlyIMS);
 		/*---------------------------*/
 			
 //		editTextUsername.setText(mConfigurationService.getString(
@@ -122,68 +122,68 @@ public class ScreenXYZLogin extends BaseScreen {
 		    editTextUsername.setText(XMPPSetting.USER_ACCOUNT[0]);
 		    editTextPassword.setText(XMPPSetting.USER_PASSWORD[0]);
 		}
-		editTextImpu.setText("sip:"+editTextUsername.getText().toString().trim()+"@61.222.245.149");
-		editTextImpi.setText(editTextUsername.getText().toString().trim());
+//		editTextImpu.setText("sip:"+editTextUsername.getText().toString().trim()+"@61.222.245.149");
+//		editTextImpi.setText(editTextUsername.getText().toString().trim());
 //		editTextPassword.setText(mConfigurationService.getString(
 //				NgnConfigurationEntry.IDENTITY_PASSWORD,
 //				NgnConfigurationEntry.DEFAULT_IDENTITY_PASSWORD));
-		editTextRealm.setText("sip:61.222.245.149");
-		checkBoxEarlyIMS.setChecked(false);
+//		editTextRealm.setText("sip:61.222.245.149");
+//		checkBoxEarlyIMS.setChecked(false);
 			
-		super.addConfigurationListener(editTextUsername);
-        super.addConfigurationListener(editTextImpu);
-        super.addConfigurationListener(editTextImpi);
-        super.addConfigurationListener(editTextPassword);
-        super.addConfigurationListener(editTextRealm);
-        super.addConfigurationListener(checkBoxEarlyIMS);
+//		super.addConfigurationListener(editTextUsername);
+//        super.addConfigurationListener(editTextImpu);
+//        super.addConfigurationListener(editTextImpi);
+//        super.addConfigurationListener(editTextPassword);
+//        super.addConfigurationListener(editTextRealm);
+//        super.addConfigurationListener(checkBoxEarlyIMS);
 		
         loggin = NetworkStatus.getInstance();
       
-        super.SetmName(editTextUsername.getText().toString().trim());
-        super.SetmPass(editTextPassword.getText().toString().trim());
+//        super.SetmName(editTextUsername.getText().toString().trim());
+//        super.SetmPass(editTextPassword.getText().toString().trim());
 
-		mSipBroadCastRecv = new BroadcastReceiver(){
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				// TODO Auto-generated method stub
-				final String action = intent.getAction();
-				//Log.i("william","enter broadcase");
-				// Registration Event
-				if(NgnRegistrationEventArgs.ACTION_REGISTRATION_EVENT.equals(action)){
-					NgnRegistrationEventArgs args = intent.getParcelableExtra(NgnEventArgs.EXTRA_EMBEDDED);
-					
-					if(args == null){
-						Log.e(TAG, "Invalid event args");
-						return;
-					}
-					
-					switch(args.getEventType()){
-						case REGISTRATION_NOK:
-						case UNREGISTRATION_OK:
-						case REGISTRATION_OK:
-						case REGISTRATION_INPROGRESS:
-						case UNREGISTRATION_INPROGRESS:
-						case UNREGISTRATION_NOK:
-						default:
-							Log.i(TAG,"Show main view here");
-							if (notEnterLoginPage)
-							{
-							    //mScreenService.show(ScreenFuncTest.class, "FuncTest");
-								mScreenService.show(ScreenDirection.class, "Direction");
-							    notEnterLoginPage = false;
-							}
-							//mScreenService.show(ScreenDirectionJS.class, "ScreenDirectionJS");
-							
-							break;
-					}
-				}
-			}
-			
-		};
-		final IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(NgnRegistrationEventArgs.ACTION_REGISTRATION_EVENT);
-	    registerReceiver(mSipBroadCastRecv, intentFilter);
+//		mSipBroadCastRecv = new BroadcastReceiver(){
+//
+//			@Override
+//			public void onReceive(Context context, Intent intent) {
+//				// TODO Auto-generated method stub
+//				final String action = intent.getAction();
+//				//Log.i("william","enter broadcase");
+//				// Registration Event
+//				if(NgnRegistrationEventArgs.ACTION_REGISTRATION_EVENT.equals(action)){
+//					NgnRegistrationEventArgs args = intent.getParcelableExtra(NgnEventArgs.EXTRA_EMBEDDED);
+//					
+//					if(args == null){
+//						Log.e(TAG, "Invalid event args");
+//						return;
+//					}
+//					
+//					switch(args.getEventType()){
+//						case REGISTRATION_NOK:
+//						case UNREGISTRATION_OK:
+//						case REGISTRATION_OK:
+//						case REGISTRATION_INPROGRESS:
+//						case UNREGISTRATION_INPROGRESS:
+//						case UNREGISTRATION_NOK:
+//						default:
+//							Log.i(TAG,"Show main view here");
+//							if (notEnterLoginPage)
+//							{
+//							    //mScreenService.show(ScreenFuncTest.class, "FuncTest");
+//								mScreenService.show(ScreenDirection.class, "Direction");
+//							    notEnterLoginPage = false;
+//							}
+//							//mScreenService.show(ScreenDirectionJS.class, "ScreenDirectionJS");
+//							
+//							break;
+//					}
+//				}
+//			}
+//			
+//		};
+//		final IntentFilter intentFilter = new IntentFilter();
+//		intentFilter.addAction(NgnRegistrationEventArgs.ACTION_REGISTRATION_EVENT);
+//	    registerReceiver(mSipBroadCastRecv, intentFilter);
 		
 	}
 	
@@ -273,10 +273,6 @@ public class ScreenXYZLogin extends BaseScreen {
 					Log.i(TAG, mName + " Loggin Fail");
 					Sendmsg("Loggin Fail");
 				}
-				
-
-				
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -303,26 +299,28 @@ public class ScreenXYZLogin extends BaseScreen {
 						.show();
 			} else if (serverResponse == "ok") {
 
-				if (mSipService.getRegistrationState() == ConnectionState.CONNECTING
-						|| mSipService.getRegistrationState() == ConnectionState.TERMINATING) {
-					mSipService.stopStack();
-				} 
-				else if (mSipService.isRegistered()) {
-					mSipService.unRegister();
-				} 
-				else {
-					mSipService.register(ScreenXYZLogin.this);
-				}
+//				if (mSipService.getRegistrationState() == ConnectionState.CONNECTING
+//						|| mSipService.getRegistrationState() == ConnectionState.TERMINATING) {
+//					mSipService.stopStack();
+//				} 
+//				else if (mSipService.isRegistered()) {
+//					mSipService.unRegister();
+//				} 
+//				else {
+//					mSipService.register(ScreenXYZLogin.this);
+//				}
+                Log.i(TAG,"Show main view here");
+                mScreenService.show(ScreenDirection.class, "Direction");
 			}
 		}
     };
 
 	@Override
 	protected void onDestroy() {
-       if(mSipBroadCastRecv != null){
-    	   unregisterReceiver(mSipBroadCastRecv);
-    	   mSipBroadCastRecv = null;
-       }
+//       if(mSipBroadCastRecv != null){
+//    	   unregisterReceiver(mSipBroadCastRecv);
+//    	   mSipBroadCastRecv = null;
+//       }
       
        super.onDestroy();
 	}
@@ -335,30 +333,30 @@ public class ScreenXYZLogin extends BaseScreen {
 	}
 	
 	protected void onPause() {
-		if(super.mComputeConfiguration){
-			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_DISPLAY_NAME, 
-					editTextUsername.getText().toString().trim());
-			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPU, 
-					editTextImpu.getText().toString().trim());
-			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPI, 
-					editTextImpi.getText().toString().trim());
-			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_PASSWORD, 
-					editTextPassword.getText().toString().trim());
-			mConfigurationService.putString(NgnConfigurationEntry.NETWORK_REALM, 
-					editTextRealm.getText().toString().trim());
-			mConfigurationService.putBoolean(NgnConfigurationEntry.NETWORK_USE_EARLY_IMS, 
-					checkBoxEarlyIMS.isChecked());
-			
-			super.SetmName(editTextUsername.getText().toString().trim());
-			super.SetmPass(editTextPassword.getText().toString().trim());
-			
-			// Compute
-			if(!mConfigurationService.commit()){
-				Log.e(TAG, "Failed to Commit() configuration");
-			}
-			
-			super.mComputeConfiguration = false;
-		}
+//		if(super.mComputeConfiguration){
+//			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_DISPLAY_NAME, 
+//					editTextUsername.getText().toString().trim());
+//			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPU, 
+//					editTextImpu.getText().toString().trim());
+//			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_IMPI, 
+//					editTextImpi.getText().toString().trim());
+//			mConfigurationService.putString(NgnConfigurationEntry.IDENTITY_PASSWORD, 
+//					editTextPassword.getText().toString().trim());
+//			mConfigurationService.putString(NgnConfigurationEntry.NETWORK_REALM, 
+//					editTextRealm.getText().toString().trim());
+//			mConfigurationService.putBoolean(NgnConfigurationEntry.NETWORK_USE_EARLY_IMS, 
+//					checkBoxEarlyIMS.isChecked());
+//			
+//			super.SetmName(editTextUsername.getText().toString().trim());
+//			super.SetmPass(editTextPassword.getText().toString().trim());
+//			
+//			// Compute
+//			if(!mConfigurationService.commit()){
+//				Log.e(TAG, "Failed to Commit() configuration");
+//			}
+//			
+//			super.mComputeConfiguration = false;
+//		}
 		super.onPause();
 	}
 	
