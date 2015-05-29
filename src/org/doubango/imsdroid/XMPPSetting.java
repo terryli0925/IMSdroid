@@ -333,8 +333,8 @@ public class XMPPSetting {
 	private void selectDemoMode(String temp){
 		int demo_x, demo_y;
 		if(temp.equals("b")){
-			demo_x = 450;
-			demo_y = 135;
+			demo_x = 504;
+			demo_y = 142;
 			workflowforDemo(demo_x, demo_y);
 		}
 		else if(temp.equals("c")){
@@ -343,8 +343,8 @@ public class XMPPSetting {
 			workflowforDemo(demo_x, demo_y);
 		}
 		else if(temp.equals("d")){
-			demo_x = 350;
-			demo_y = 185;
+			demo_x = 328;
+			demo_y = 187;
 			workflowforDemo(demo_x, demo_y);
 		}
 		
