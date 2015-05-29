@@ -187,7 +187,7 @@ public class SetUIFunction {
 	private final int mCoreStatusDisconnected = 4;
 	
 	public RelativeLayout rl_remote, rl_local ;
-	private FrameLayout fl_portrait ;
+	private LinearLayout fl_portrait ;
 	private PhoneService mPhoneService;
 	
 	private ClientCall nowClientCall ;
@@ -970,7 +970,7 @@ public class SetUIFunction {
 		
 		rl_remote = (RelativeLayout) globalActivity.findViewById(R.id.rl_remote);
 		rl_local = (RelativeLayout) globalActivity.findViewById(R.id.rl_local);
-		fl_portrait = (FrameLayout) globalActivity.findViewById(R.id.fl_portrait);
+		fl_portrait = (LinearLayout) globalActivity.findViewById(R.id.fl_portrait);
 		fl_portrait.setVisibility(View.GONE);
 		
 		/* Login: Server, auto connection */ 
@@ -1118,20 +1118,20 @@ public class SetUIFunction {
 									switch (clientCallStatus) {
 									case CallConnected:
 										Log.i("shinhua", "CallConnected Success!");
-//										clientCall.setLocalVideoView(
-//												globalActivity, rl_local,
-//												new Point(rl_local.getWidth(),
-//														rl_local.getHeight()));
+										clientCall.setLocalVideoView(
+												globalActivity, rl_local,
+												new Point(rl_local.getWidth(),
+														rl_local.getHeight()));
 										clientCall.setRemoteVideoView(
 												globalActivity,
 												rl_remote,
-												new Point(fl_portrait
+												new Point(rl_remote
 														.getWidth(),
-														fl_portrait.getHeight()));
+														rl_remote.getHeight()));
 										break;
 									case CallEnded:
 										try {
-											//rl_local.removeAllViews();
+											rl_local.removeAllViews();
 											rl_remote.removeAllViews();
 										} catch (Exception e) {
 
@@ -1186,8 +1186,8 @@ public class SetUIFunction {
 									        nowClientCall = null;
 									    }
 									}else {
-									    //nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
-									    nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(fl_portrait.getWidth(), fl_portrait.getHeight()));
+									    nowClientCall.setLocalVideoView(globalActivity, rl_local, new Point(rl_local.getWidth(), rl_local.getHeight()));
+									    nowClientCall.setRemoteVideoView(globalActivity, rl_remote, new Point(rl_remote.getWidth(), rl_remote.getHeight()));
 									}
 									break;
 								case CallEnded:
@@ -1196,7 +1196,7 @@ public class SetUIFunction {
 									connect.setVisibility(View.VISIBLE);
 									if(nowClientCall != null){
 										nowClientCall = null ;
-										//rl_local.removeAllViews();
+										rl_local.removeAllViews();
      									rl_remote.removeAllViews();
 										fl_portrait.setVisibility(View.GONE);
 									}
@@ -1239,7 +1239,7 @@ public class SetUIFunction {
 		if(nowClientCall != null){
 			nowClientCall.end();
 			nowClientCall = null ;
-			//rl_local.removeAllViews();
+			rl_local.removeAllViews();
 			rl_remote.removeAllViews();
 			fl_portrait.setVisibility(View.GONE);
 			
