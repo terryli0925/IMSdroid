@@ -5,29 +5,26 @@
     android:layout_height="fill_parent"
     android:background="#000000" >
 
-        <FrameLayout
+	<LinearLayout
         android:id="@+id/fl_portrait"
-        android:layout_width="600dp"
-        android:layout_height="400dp"
-        android:layout_weight="1" >
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="left" >
         
-        <RelativeLayout
-            android:id="@+id/rl_remote"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
+		<RelativeLayout
+			android:id="@+id/rl_remote"
+			android:layout_width="480dp"
+			android:layout_height="360dp" >
+		</RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/rl_local"
-                android:layout_width="300dp"
-                android:layout_height="200dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="341dp" >
-            </RelativeLayout>
+		<RelativeLayout
+			android:id="@+id/rl_local"
+			android:layout_width="320dp"
+			android:layout_height="240dp" >
+		</RelativeLayout>
 
-        </RelativeLayout>
-
-    </FrameLayout>
+    </LinearLayout>
     
     
     <RelativeLayout
